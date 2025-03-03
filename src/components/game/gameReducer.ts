@@ -1,10 +1,25 @@
-import { GameState, GameAction, GameResources, HistoricalEra, Upgrade } from './types';
+import { 
+  GameState, 
+  GameAction, 
+  GameResources, 
+  HistoricalEra, 
+  Upgrade,
+  GameMode,
+  GameEnding 
+} from './types';
 import { historicalEras } from './eraData';
 import { upgrades } from './upgradeData';
 import { conspiracyTheories } from './conspiracyData';
+import { 
+  ethicalActions, 
+  educationalContent, 
+  criticalThinkingQuotes, 
+  gameEndings,
+  initialEthicalStats 
+} from './ethicalData';
 
 /**
- * Calculates resource multipliers based on active era and purchased upgrades
+ * Calculates resource multipliers based on active era, purchased upgrades, and game mode
  * @param state Current game state
  * @returns Record of multipliers for each resource
  */
@@ -36,6 +51,21 @@ const calculateResourceMultipliers = (state: GameState): Record<keyof GameResour
       }
     });
   
+  // Apply game mode modifiers
+  if (state.gameMode === 'revelation') {
+    // In revelation mode, credibility and influence grow faster, manipulation points slower
+    multipliers.credibility *= 1.5;
+    multipliers.influence *= 1.2;
+    multipliers.manipulationPoints *= 0.5;
+    
+    // Critical thinking level boosts credibility in revelation mode
+    multipliers.credibility *= (1 + state.criticalThinking / 200); // Max +50% at 100 critical thinking
+  } else {
+    // In manipulation mode, low ethics boosts manipulation points
+    const ethicsMultiplier = Math.max(0.5, 1 - (state.ethicalScore / 200)); // +50% at 0 ethics, no bonus at 100 ethics
+    multipliers.manipulationPoints *= ethicsMultiplier;
+  }
+  
   return multipliers;
 };
 
@@ -62,18 +92,22 @@ const calculatePassiveGeneration = (state: GameState): Partial<Record<keyof Game
 };
 
 /**
- * Calculates updated resources based on time passed, active era, and upgrades
+ * Calculates updated resources based on time passed, active era, upgrades, and game mode
  * @param resources Current game resources
  * @param deltaTime Time passed since last update in milliseconds
  * @param multipliers Resource multipliers
  * @param passiveGen Passive generation values
+ * @param criticalThinking Critical thinking level (affects resource generation in revelation mode)
+ * @param gameMode Current game mode
  * @returns Updated resources
  */
 const calculateResourcesUpdate = (
   resources: GameResources, 
   deltaTime: number,
   multipliers: Record<keyof GameResources, number>,
-  passiveGen: Partial<Record<keyof GameResources, number>>
+  passiveGen: Partial<Record<keyof GameResources, number>>,
+  criticalThinking: number,
+  gameMode: GameMode
 ): GameResources => {
   // Calculate resource growth based on time passed and modifiers
   const timeMultiplier = deltaTime / 1000; // Convert milliseconds to seconds
@@ -84,7 +118,15 @@ const calculateResourcesUpdate = (
   updatedResources.credibility += 0.1 * timeMultiplier * multipliers.credibility;
   updatedResources.influence += 0.05 * timeMultiplier * multipliers.influence;
   updatedResources.networks += 0.01 * timeMultiplier * multipliers.networks;
-  updatedResources.manipulationPoints += 0.02 * timeMultiplier * multipliers.manipulationPoints;
+  
+  // Manipulation points generation depends on game mode
+  if (gameMode === 'manipulation') {
+    updatedResources.manipulationPoints += 0.02 * timeMultiplier * multipliers.manipulationPoints;
+  } else {
+    // In revelation mode, manipulation points are generated slower but based on critical thinking
+    const criticalThinkingBonus = 1 + (criticalThinking / 200); // Up to +50% at 100 critical thinking
+    updatedResources.manipulationPoints += 0.01 * timeMultiplier * multipliers.manipulationPoints * criticalThinkingBonus;
+  }
   
   // Add passive generation
   Object.entries(passiveGen).forEach(([resource, value]) => {
@@ -120,6 +162,68 @@ const updateUpgradeVisibility = (state: GameState): Upgrade[] => {
       visible: prerequisitesMet
     };
   });
+};
+
+/**
+ * Updates the ethical actions availability based on conditions
+ * @param state Current game state
+ * @returns Updated ethical actions array
+ */
+const updateEthicalActionsAvailability = (state: GameState) => {
+  return state.ethicalActions.map(action => {
+    // If no unlock condition or already performed, keep current state
+    if (!action.unlockCondition || action.performed) {
+      return action;
+    }
+    
+    let conditionMet = false;
+    
+    switch (action.unlockCondition.type) {
+      case 'ethicalScore':
+        conditionMet = state.ethicalScore >= action.unlockCondition.value;
+        break;
+      case 'criticalThinking':
+        conditionMet = state.criticalThinking >= action.unlockCondition.value;
+        break;
+      case 'propagatedTheories':
+        const propagatedCount = state.conspiracyTheories.filter(theory => theory.propagated).length;
+        conditionMet = propagatedCount >= action.unlockCondition.value;
+        break;
+    }
+    
+    return {
+      ...action,
+      // An action is available if from current era and condition met
+      visible: action.eraId === state.currentEraId && conditionMet
+    };
+  });
+};
+
+/**
+ * Checks if any game ending conditions are met
+ * @param state Current game state
+ * @returns GameEnding that has been triggered, or null if none
+ */
+const checkGameEndings = (state: GameState): GameEnding | null => {
+  // Only check if game has not ended yet
+  if (state.gameEnded) {
+    return null;
+  }
+  
+  // Find the first ending with met conditions
+  const triggeredEnding = state.gameEndings.find(ending => {
+    // Check all required conditions
+    const ethicalScoreMet = state.ethicalScore >= ending.condition.ethicalScore;
+    const criticalThinkingMet = state.criticalThinking >= ending.condition.criticalThinking;
+    const influenceMet = state.resources.influence >= ending.condition.influence;
+    
+    // Check mode requirement if specified
+    const modeMet = !ending.condition.requiredMode || state.gameMode === ending.condition.requiredMode;
+    
+    return ethicalScoreMet && criticalThinkingMet && influenceMet && modeMet;
+  });
+  
+  return triggeredEnding || null;
 };
 
 /**
@@ -180,7 +284,19 @@ const addRewards = (
 };
 
 /**
- * Initial game state with resources, eras, upgrades, and theories
+ * Calculate the number of lives impacted based on influence and networks
+ * @param influence Current influence value
+ * @param networks Current networks value
+ * @returns Estimated number of lives impacted
+ */
+const calculateLivesImpacted = (influence: number, networks: number): number => {
+  // Simple formula: influence * networks * 10 
+  // This gives a sense of scale while keeping numbers manageable
+  return Math.floor(influence * networks * 10);
+};
+
+/**
+ * Initial game state with resources, eras, upgrades, theories and ethical system
  */
 export const initialGameState: GameState = {
   resources: {
@@ -192,8 +308,21 @@ export const initialGameState: GameState = {
   eras: historicalEras,
   currentEraId: "antiquity", // Start in the Antiquity era
   upgrades: upgrades,
-  conspiracyTheories: conspiracyTheories,
+  conspiracyTheories: conspiracyTheories.map(theory => ({
+    ...theory,
+    // Add critical thinking impact (negative) to existing conspiracy theories
+    criticalThinkingImpact: Math.min(-1, Math.floor(theory.ethicalImpact * 1.2)) 
+  })),
   ethicalScore: 100, // Start with perfect ethics
+  criticalThinking: 20, // Start with some critical thinking
+  ethicalActions: ethicalActions,
+  gameMode: 'manipulation', // Start in manipulation mode
+  educationalContent: educationalContent,
+  criticalThinkingQuotes: criticalThinkingQuotes,
+  gameEndings: gameEndings,
+  ethicalStats: initialEthicalStats,
+  gameEnded: false,
+  activeEndingId: null,
   lastTick: Date.now(),
   tickInterval: 1000, // 1 second tick rate
 };
@@ -214,29 +343,80 @@ export const gameReducer = (state: GameState, action: GameAction): GameState => 
       const multipliers = calculateResourceMultipliers(state);
       const passiveGen = calculatePassiveGeneration(state);
       
+      // Update resources
+      const updatedResources = calculateResourcesUpdate(
+        state.resources, 
+        deltaTime, 
+        multipliers, 
+        passiveGen,
+        state.criticalThinking,
+        state.gameMode
+      );
+      
       // Update upgrade visibility
       const updatedUpgrades = updateUpgradeVisibility(state);
+      
+      // Update ethical actions availability
+      const updatedEthicalActions = updateEthicalActionsAvailability(state);
+      
+      // Update statistics
+      const updatedStats = {
+        ...state.ethicalStats,
+        livesImpacted: calculateLivesImpacted(updatedResources.influence, updatedResources.networks)
+      };
+      
+      // Check for game endings
+      const triggeredEnding = checkGameEndings({
+        ...state,
+        resources: updatedResources,
+        ethicalStats: updatedStats
+      });
+      
+      const gameEnded = !!triggeredEnding;
+      const activeEndingId = triggeredEnding ? triggeredEnding.id : null;
+      
+      // Update endings if one was triggered
+      const updatedEndings = gameEnded 
+        ? state.gameEndings.map(ending => 
+            ending.id === activeEndingId ? { ...ending, triggered: true } : ending
+          )
+        : state.gameEndings;
       
       return {
         ...state,
         lastTick: currentTime,
-        resources: calculateResourcesUpdate(state.resources, deltaTime, multipliers, passiveGen),
-        upgrades: updatedUpgrades
+        resources: updatedResources,
+        upgrades: updatedUpgrades,
+        ethicalActions: updatedEthicalActions,
+        ethicalStats: updatedStats,
+        gameEndings: updatedEndings,
+        gameEnded,
+        activeEndingId
       };
     }
     
     case 'MANIPULATE': {
-      // Calculate multipliers to apply to manual manipulation
-      const multipliers = calculateResourceMultipliers(state);
-      
-      // Increment manipulation points with active multiplier
-      return {
-        ...state,
-        resources: {
-          ...state.resources,
-          manipulationPoints: state.resources.manipulationPoints + 1 * multipliers.manipulationPoints,
-        },
-      };
+      // Different behavior based on game mode
+      if (state.gameMode === 'manipulation') {
+        // In manipulation mode, generate manipulation points
+        const multipliers = calculateResourceMultipliers(state);
+        
+        // Increment manipulation points with active multiplier
+        return {
+          ...state,
+          resources: {
+            ...state.resources,
+            manipulationPoints: state.resources.manipulationPoints + 1 * multipliers.manipulationPoints,
+          },
+        };
+      } else {
+        // In revelation mode, gain ethics and critical thinking instead
+        return {
+          ...state,
+          ethicalScore: Math.min(100, state.ethicalScore + 0.5),
+          criticalThinking: Math.min(100, state.criticalThinking + 0.2),
+        };
+      }
     }
     
     case 'UNLOCK_ERA': {
@@ -272,17 +452,19 @@ export const gameReducer = (state: GameState, action: GameAction): GameState => 
         return state;
       }
       
-      // After changing era, update upgrade visibility
+      // After changing era, update upgrade visibility and ethical actions
       const updatedState = {
         ...state,
         currentEraId: eraId
       };
       
       const updatedUpgrades = updateUpgradeVisibility(updatedState);
+      const updatedEthicalActions = updateEthicalActionsAvailability(updatedState);
       
       return {
         ...updatedState,
-        upgrades: updatedUpgrades
+        upgrades: updatedUpgrades,
+        ethicalActions: updatedEthicalActions
       };
     }
     
@@ -304,9 +486,15 @@ export const gameReducer = (state: GameState, action: GameAction): GameState => 
       // Purchase the upgrade and spend resources
       const updatedResources = spendResources(state.resources, upgradeToPurchase.cost);
       
+      // In revelation mode, purchasing upgrades can increase critical thinking
+      const updatedCriticalThinking = state.gameMode === 'revelation'
+        ? Math.min(100, state.criticalThinking + 1)
+        : state.criticalThinking;
+      
       const updatedState = {
         ...state,
         resources: updatedResources,
+        criticalThinking: updatedCriticalThinking,
         upgrades: state.upgrades.map(upgrade => 
           upgrade.id === upgradeId ? { ...upgrade, purchased: true } : upgrade
         )
@@ -343,9 +531,18 @@ export const gameReducer = (state: GameState, action: GameAction): GameState => 
       // Determine success based on success rate
       const isSuccessful = Math.random() < theoryToPropagate.successRate;
       
-      // Calculate ethical impact
+      // Calculate ethical impact and critical thinking impact
       const ethicalImpact = theoryToPropagate.ethicalImpact;
+      const criticalThinkingImpact = theoryToPropagate.criticalThinkingImpact;
+      
       const newEthicalScore = Math.max(0, Math.min(100, state.ethicalScore + ethicalImpact));
+      const newCriticalThinking = Math.max(0, Math.min(100, state.criticalThinking + criticalThinkingImpact));
+      
+      // Update statistics
+      const updatedStats = {
+        ...state.ethicalStats,
+        theoriesPropagated: state.ethicalStats.theoriesPropagated + 1
+      };
       
       if (isSuccessful) {
         // Add rewards if successful
@@ -355,6 +552,8 @@ export const gameReducer = (state: GameState, action: GameAction): GameState => 
           ...state,
           resources: resourcesWithRewards,
           ethicalScore: newEthicalScore,
+          criticalThinking: newCriticalThinking,
+          ethicalStats: updatedStats,
           conspiracyTheories: state.conspiracyTheories.map(theory => 
             theory.id === theoryId ? { ...theory, propagated: true } : theory
           )
@@ -364,9 +563,99 @@ export const gameReducer = (state: GameState, action: GameAction): GameState => 
         return {
           ...state,
           resources: updatedResources,
-          ethicalScore: newEthicalScore
+          ethicalScore: newEthicalScore,
+          criticalThinking: newCriticalThinking,
+          ethicalStats: updatedStats
         };
       }
+    }
+    
+    case 'PERFORM_ETHICAL_ACTION': {
+      const { actionId } = action.payload;
+      const actionToPerform = state.ethicalActions.find(a => a.id === actionId);
+      
+      // If action doesn't exist, is already performed, or player can't afford it, do nothing
+      if (
+        !actionToPerform || 
+        actionToPerform.performed || 
+        !canAfford(state.resources, actionToPerform.cost)
+      ) {
+        return state;
+      }
+      
+      // Spend resources
+      const updatedResources = spendResources(state.resources, actionToPerform.cost);
+      
+      // Calculate influence sacrificed for statistics
+      const influenceSacrificed = actionToPerform.cost.influence || 0;
+      
+      // Apply ethical and critical thinking gains
+      const newEthicalScore = Math.min(100, state.ethicalScore + actionToPerform.ethicalGain);
+      const newCriticalThinking = Math.min(100, state.criticalThinking + actionToPerform.criticalThinkingGain);
+      
+      // Update statistics
+      const updatedStats = {
+        ...state.ethicalStats,
+        ethicalActionsPerformed: state.ethicalStats.ethicalActionsPerformed + 1,
+        influenceSacrificed: state.ethicalStats.influenceSacrificed + influenceSacrificed,
+        criticalThinkingRaised: state.ethicalStats.criticalThinkingRaised + actionToPerform.criticalThinkingGain
+      };
+      
+      return {
+        ...state,
+        resources: updatedResources,
+        ethicalScore: newEthicalScore,
+        criticalThinking: newCriticalThinking,
+        ethicalStats: updatedStats,
+        ethicalActions: state.ethicalActions.map(action => 
+          action.id === actionId ? { ...action, performed: true } : action
+        )
+      };
+    }
+    
+    case 'SWITCH_GAME_MODE': {
+      const { mode } = action.payload;
+      
+      // If already in this mode, do nothing
+      if (state.gameMode === mode) {
+        return state;
+      }
+      
+      // Switching to revelation mode increases ethical score and critical thinking
+      const ethicalBoost = mode === 'revelation' ? 10 : 0;
+      const criticalThinkingBoost = mode === 'revelation' ? 5 : 0;
+      
+      return {
+        ...state,
+        gameMode: mode,
+        ethicalScore: Math.min(100, state.ethicalScore + ethicalBoost),
+        criticalThinking: Math.min(100, state.criticalThinking + criticalThinkingBoost)
+      };
+    }
+    
+    case 'ACKNOWLEDGE_ENDING': {
+      const { endingId } = action.payload;
+      
+      // Update statistics if this ending wasn't already counted
+      const ending = state.gameEndings.find(e => e.id === endingId);
+      const endingAlreadyCounted = ending && ending.triggered;
+      
+      const updatedStats = endingAlreadyCounted 
+        ? state.ethicalStats 
+        : {
+            ...state.ethicalStats,
+            endingsUnlocked: state.ethicalStats.endingsUnlocked + 1
+          };
+      
+      return {
+        ...state,
+        gameEnded: false, // Allow gameplay to continue
+        activeEndingId: null,
+        ethicalStats: updatedStats,
+        gameEndings: state.gameEndings.map(ending => 
+          ending.id === endingId ? { ...ending, triggered: true } : ending
+        )
+      };
     }
     
     case 'RESET': {

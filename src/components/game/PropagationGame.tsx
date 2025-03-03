@@ -5,21 +5,29 @@ import GameControls from './GameControls';
 import ProgressionTab from './ProgressionTab';
 import UpgradesTab from './UpgradesTab';
 import TheoriesTab from './TheoriesTab';
-import { HistoricalEra } from './types';
+import EthicsTab from './EthicsTab';
+import GameEndingModal from './GameEndingModal';
+import NotificationSystem, { useNotifications } from './NotificationSystem';
+import { HistoricalEra, GameMode } from './types';
 
 // Tab types
-type TabType = 'resources' | 'progression' | 'upgrades' | 'theories';
+type TabType = 'resources' | 'progression' | 'upgrades' | 'theories' | 'ethics';
 
 /**
- * Main game component with all systems
+ * Main game component with all systems including ethics
  */
 const PropagationGame = () => {
   const [gameState, dispatch] = useReducer(gameReducer, initialGameState);
   const [activeTab, setActiveTab] = useState<TabType>('resources');
-  const [notificationMessage, setNotificationMessage] = useState<string | null>(null);
+  const { notifications, addNotification, dismissNotification } = useNotifications();
 
   // Get the current era object
   const currentEra = gameState.eras.find(era => era.id === gameState.currentEraId) as HistoricalEra;
+  
+  // Get the active ending if game has ended
+  const activeEnding = gameState.activeEndingId 
+    ? gameState.gameEndings.find(ending => ending.id === gameState.activeEndingId) 
+    : null;
 
   // Set up the tick system
   useEffect(() => {
@@ -39,19 +47,22 @@ const PropagationGame = () => {
   // Handle era unlocking
   const handleUnlockEra = (eraId: string) => {
     dispatch({ type: 'UNLOCK_ERA', payload: { eraId } });
-    showNotification(`Nouvelle ère débloquée: ${gameState.eras.find(e => e.id === eraId)?.name}`);
+    const eraName = gameState.eras.find(e => e.id === eraId)?.name;
+    addNotification(`Nouvelle ère débloquée: ${eraName}`, 'success');
   };
   
   // Handle era selection
   const handleSelectEra = (eraId: string) => {
     dispatch({ type: 'SELECT_ERA', payload: { eraId } });
+    const eraName = gameState.eras.find(e => e.id === eraId)?.name;
+    addNotification(`Ère sélectionnée: ${eraName}`, 'info');
   };
   
   // Handle upgrade purchase
   const handlePurchaseUpgrade = (upgradeId: string) => {
     dispatch({ type: 'PURCHASE_UPGRADE', payload: { upgradeId } });
     const upgradeName = gameState.upgrades.find(u => u.id === upgradeId)?.name;
-    showNotification(`Amélioration achetée: ${upgradeName}`);
+    addNotification(`Amélioration achetée: ${upgradeName}`, 'success');
   };
   
   // Handle theory propagation
@@ -65,16 +76,44 @@ const PropagationGame = () => {
     const isSuccessful = Math.random() < theory.successRate;
     
     if (isSuccessful) {
-      showNotification(`Théorie propagée avec succès: ${theory.name}`);
+      addNotification(`Théorie propagée avec succès: ${theory.name}`, 'success');
+      // Show ethical impact notification
+      if (theory.ethicalImpact < 0) {
+        addNotification(`Impact éthique: ${theory.ethicalImpact}`, 'ethical', 5000);
+      }
     } else {
-      showNotification(`Échec de la propagation: ${theory.name}`, 'error');
+      addNotification(`Échec de la propagation: ${theory.name}`, 'error');
     }
   };
   
-  // Show notification
-  const showNotification = (message: string, type: 'success' | 'error' = 'success') => {
-    setNotificationMessage(message);
-    setTimeout(() => setNotificationMessage(null), 3000);
+  // Handle ethical action
+  const handlePerformEthicalAction = (actionId: string) => {
+    const action = gameState.ethicalActions.find(a => a.id === actionId);
+    if (!action) return;
+    
+    dispatch({ type: 'PERFORM_ETHICAL_ACTION', payload: { actionId } });
+    
+    addNotification(`Action éthique réalisée: ${action.name}`, 'ethical');
+    addNotification(`Pensée critique +${action.criticalThinkingGain}`, 'info');
+  };
+  
+  // Handle game mode switch
+  const handleSwitchGameMode = (mode: GameMode) => {
+    if (gameState.gameMode === mode) return;
+    
+    dispatch({ type: 'SWITCH_GAME_MODE', payload: { mode } });
+    
+    if (mode === 'manipulation') {
+      addNotification('Mode Manipulation activé: exploitez les faiblesses des systèmes d\'information', 'warning');
+    } else {
+      addNotification('Mode Révélation activé: exposez les mécanismes de manipulation', 'ethical');
+    }
+  };
+  
+  // Handle game ending acknowledgement
+  const handleAcknowledgeEnding = (endingId: string) => {
+    dispatch({ type: 'ACKNOWLEDGE_ENDING', payload: { endingId } });
+    addNotification('Fin débloquée! Continuez à explorer d\'autres possibilités.', 'info', 5000);
   };
 
   return (
@@ -87,12 +126,20 @@ const PropagationGame = () => {
           Un Jeu Incrémental de Manipulation Sociale
         </h2>
         
-        {/* Notification */}
-        {notificationMessage && (
-          <div className="fixed top-4 right-4 bg-gray-800 border border-green-500 p-3 rounded-lg shadow-lg z-50 max-w-xs">
-            {notificationMessage}
-          </div>
+        {/* Game Ending Modal */}
+        {gameState.gameEnded && activeEnding && (
+          <GameEndingModal
+            ending={activeEnding}
+            stats={gameState.ethicalStats}
+            onAcknowledge={handleAcknowledgeEnding}
+          />
         )}
+        
+        {/* Notification System */}
+        <NotificationSystem 
+          notifications={notifications}
+          onDismiss={dismissNotification}
+        />
         
         {/* Current era display */}
         <div className="bg-gray-800 p-3 rounded-lg mb-4 text-center">
@@ -100,30 +147,56 @@ const PropagationGame = () => {
           <p className="text-lg font-semibold">{currentEra.name}</p>
         </div>
         
-        {/* Ethical score display */}
-        <div className="bg-gray-800 p-3 rounded-lg mb-4 flex justify-between items-center">
+        {/* Stats bar */}
+        <div className="bg-gray-800 p-3 rounded-lg mb-4 grid grid-cols-2 gap-4">
           <div>
-            <p className="text-sm text-gray-400">Score Éthique</p>
-            <p className={`text-lg font-semibold ${
-              gameState.ethicalScore >= 80 ? 'text-green-400' : 
-              gameState.ethicalScore >= 50 ? 'text-yellow-400' : 
-              gameState.ethicalScore >= 30 ? 'text-orange-400' : 
-              'text-red-400'
-            }`}>
-              {gameState.ethicalScore}
-            </p>
+            <div className="flex justify-between items-center">
+              <p className="text-sm text-gray-400">Score Éthique</p>
+              <p className={`text-sm font-semibold ${
+                gameState.ethicalScore >= 80 ? 'text-green-400' : 
+                gameState.ethicalScore >= 50 ? 'text-yellow-400' : 
+                gameState.ethicalScore >= 30 ? 'text-orange-400' : 
+                'text-red-400'
+              }`}>
+                {gameState.ethicalScore}/100
+              </p>
+            </div>
+            <div className="h-2 bg-gray-700 rounded-full overflow-hidden mt-1">
+              <div 
+                className={`h-full ${
+                  gameState.ethicalScore >= 80 ? 'bg-green-600' : 
+                  gameState.ethicalScore >= 50 ? 'bg-yellow-600' : 
+                  gameState.ethicalScore >= 30 ? 'bg-orange-600' : 
+                  'bg-red-600'
+                }`}
+                style={{ width: `${gameState.ethicalScore}%` }}
+              ></div>
+            </div>
           </div>
-          <div className="h-8 w-full max-w-xs bg-gray-700 rounded-full overflow-hidden">
-            <div 
-              className={`h-full ${
-                gameState.ethicalScore >= 80 ? 'bg-green-600' : 
-                gameState.ethicalScore >= 50 ? 'bg-yellow-600' : 
-                gameState.ethicalScore >= 30 ? 'bg-orange-600' : 
-                'bg-red-600'
-              }`}
-              style={{ width: `${gameState.ethicalScore}%` }}
-            ></div>
+          
+          <div>
+            <div className="flex justify-between items-center">
+              <p className="text-sm text-gray-400">Pensée Critique</p>
+              <p className="text-sm font-semibold text-blue-400">
+                {gameState.criticalThinking}/100
+              </p>
+            </div>
+            <div className="h-2 bg-gray-700 rounded-full overflow-hidden mt-1">
+              <div 
+                className="h-full bg-blue-600"
+                style={{ width: `${gameState.criticalThinking}%` }}
+              ></div>
+            </div>
           </div>
+        </div>
+        
+        {/* Game mode indicator */}
+        <div className={`mb-4 p-2 rounded-lg flex justify-center items-center ${
+          gameState.gameMode === 'manipulation' ? 'bg-red-900' : 'bg-green-900'
+        }`}>
+          <p className="text-sm font-medium">
+            Mode: {gameState.gameMode === 'manipulation' ? 'Manipulation' : 'Révélation'}
+          </p>
         </div>
         
         {/* Navigation tabs */}
@@ -151,6 +224,12 @@ const PropagationGame = () => {
             onClick={() => setActiveTab('theories')}
           >
             Théories
+          </button>
+          <button
+            className={`py-2 px-4 ${activeTab === 'ethics' ? 'border-b-2 border-green-500 text-green-300' : 'text-gray-400 hover:text-gray-200'}`}
+            onClick={() => setActiveTab('ethics')}
+          >
+            Éthique
           </button>
         </div>
         
@@ -215,9 +294,25 @@ const PropagationGame = () => {
           />
         )}
         
+        {activeTab === 'ethics' && (
+          <EthicsTab
+            ethicalScore={gameState.ethicalScore}
+            criticalThinking={gameState.criticalThinking}
+            ethicalActions={gameState.ethicalActions}
+            resources={gameState.resources}
+            gameMode={gameState.gameMode}
+            currentEraId={gameState.currentEraId}
+            educationalContent={gameState.educationalContent}
+            quotes={gameState.criticalThinkingQuotes}
+            stats={gameState.ethicalStats}
+            onPerformEthicalAction={handlePerformEthicalAction}
+            onSwitchGameMode={handleSwitchGameMode}
+          />
+        )}
+        
         {/* Educational note */}
         <div className="mt-8 p-3 bg-gray-800 rounded text-xs text-gray-400">
-          <p>Note éducative: Ce jeu vise à sensibiliser aux mécanismes de propagation de la désinformation et à développer l'esprit critique. Les "points éthiques" représentent l'intégrité de l'information que vous partagez. Réfléchissez aux conséquences de la propagation d'informations non vérifiées.</p>
+          <p>Note éducative: Ce jeu vise à sensibiliser aux mécanismes de propagation de la désinformation et à développer l'esprit critique. Les "points éthiques" représentent l'intégrité de l'information que vous partagez. La "pensée critique" représente la capacité collective à remettre en question les informations reçues. Le jeu propose deux façons de jouer: exploiter ces mécanismes ou les révéler. À vous de choisir votre chemin.</p>
         </div>
       </div>
     </div>
