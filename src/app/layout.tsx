@@ -1,9 +1,33 @@
 import './globals.css';
 import type { Metadata } from 'next';
 
+
 export const metadata: Metadata = {
-  title: 'Propagation - Un Jeu Incrémental de Manipulation Sociale',
-  description: 'Un jeu éducatif explorant les mécanismes de propagation des fausses croyances',
+  title: 'propagation - et si tu contrôlais l\'information ?',
+  description: 'un jeu sur l\'influence et ses zones d\'ombre. qui contrôle qui, vraiment ?',
+  openGraph: {
+    title: 'propagation - contrôle la narrative avant qu\'ils te contrôlent',
+    description: 'ce petit jeu incrémental cache peut-être plus qu\'il n\'y paraît... les règles sont pas stables ! fais tes propres recherches !',
+    images: [
+      {
+        url: '/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'propagation - un jeu sur l\'influence et l\'information',
+      }
+    ],
+    type: 'website',
+    locale: 'fr_FR',
+    url: 'https://propagation-game.vercel.app/',
+    siteName: 'propagation',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'propagation - le jeu qui pose des questions',
+    description: 'un jeu sur l\'information et le pouvoir. viens voir pourquoi tout le monde en parle... ou pas.',
+    images: ['/og-image.jpg'],
+  },
+  themeColor: '#1a1f2e',
 };
 
 export default function RootLayout({
