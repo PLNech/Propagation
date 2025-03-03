@@ -1,4 +1,4 @@
-import React, { useReducer, useEffect, useState, useRef } from 'react';
+import React, { useReducer, useEffect, useState, useRef, useCallback } from 'react';
 import { gameReducer, initialGameState } from './gameReducer';
 import ResourceDisplay from './ResourceDisplay';
 import GameControls from './GameControls';
@@ -9,7 +9,7 @@ import EthicsTab from './EthicsTab';
 import GameEndingModal from './GameEndingModal';
 import SaveManager from './SaveManager';
 import NotificationSystem, { useNotifications, NotificationType } from './NotificationSystem';
-import { HistoricalEra, GameMode, ConspiracyTheory, GameState } from './types';
+import { HistoricalEra, GameMode, GameState } from './types';
 import { 
   selectGaslightEffect, 
   shouldTriggerGaslight, 
@@ -41,6 +41,7 @@ const PropagationGame = () => {
   const interactionCount = useRef(0);
   const lastGaslightTime = useRef(0);
   const lastSaveTime = useRef(0);
+  const hasLoadedSave = useRef(false);
   
   // Référence à l'état du jeu pour les sauvegardes
   const gameStateRef = useRef(gameState);
@@ -66,6 +67,10 @@ const PropagationGame = () => {
   // Vérifier s'il y a une sauvegarde à charger
   useEffect(() => {
     const loadSavedGame = async () => {
+      if (hasLoadedSave.current) {
+        return;
+      }
+      
       const saveExists = hasSaveGame(true);
       
       if (saveExists.exists) {
@@ -73,12 +78,13 @@ const PropagationGame = () => {
         if (savedState) {
           dispatch({ type: 'LOAD_GAME', payload: { state: savedState } });
           addNotification('Partie précédente chargée automatiquement', 'info', 3000);
+          hasLoadedSave.current = true;
         }
       }
     };
     
     loadSavedGame();
-  }, []);
+  }, [addNotification]);
   
   // Configurer l'auto-sauvegarde
   useEffect(() => {
@@ -109,21 +115,9 @@ const PropagationGame = () => {
     };
   }, []);
 
-  // Set up the tick system with gaslighting checks
-  useEffect(() => {
-    const timer = setInterval(() => {
-      dispatch({ type: 'TICK', payload: { currentTime: Date.now() } });
-      
-      // Check for gaslighting effects with reduced frequency
-      checkForGaslightEffects();
-    }, gameState.tickInterval);
-    
-    // Clean up interval on component unmount
-    return () => clearInterval(timer);
-  }, [gameState.tickInterval]);
-  
+
   // Fonction pour vérifier et déclencher des effets de gaslighting
-  const checkForGaslightEffects = () => {
+  const checkForGaslightEffects = useCallback(() => {
     // N'exécute que si l'utilisateur a suffisamment interagi avec le jeu
     if (interactionCount.current < 5) return;
     
@@ -141,7 +135,20 @@ const PropagationGame = () => {
         lastGaslightTime.current = now;
       }
     }
-  };
+  }, [gameState]);
+  
+  // Set up the tick system with gaslighting checks
+  useEffect(() => {
+    const timer = setInterval(() => {
+      dispatch({ type: 'TICK', payload: { currentTime: Date.now() } });
+      
+      // Check for gaslighting effects with reduced frequency
+      checkForGaslightEffects();
+    }, gameState.tickInterval);
+    
+    // Clean up interval on component unmount
+    return () => clearInterval(timer);
+  }, [gameState.tickInterval, checkForGaslightEffects]);
   
   // Déclencher un effet de gaslighting
   const triggerGaslightEffect = (effect: GaslightEffect) => {
@@ -338,7 +345,7 @@ const PropagationGame = () => {
     
     // Check time since last tab change
     const now = Date.now();
-    const timeDiff = now - lastTabChangeTime.current;
+  // const timeDiff = now - lastTabChangeTime.current; TODO: Was unused, use or remove?
     lastTabChangeTime.current = now;
   };
   
@@ -508,7 +515,7 @@ const PropagationGame = () => {
             
             {/* Era benefits preview */}
             <div className="mt-8 p-4 bg-gray-800 rounded-lg">
-              <h3 className="text-lg font-semibold mb-2">Avantages de l'ère: {currentEra.name}</h3>
+              <h3 className="text-lg font-semibold mb-2">Avantages de l&apos;ère: {currentEra.name}</h3>
               <p className="text-sm text-gray-300 mb-3">{currentEra.description}</p>
               
               <div className="grid grid-cols-2 gap-2 text-sm">
@@ -580,8 +587,8 @@ const PropagationGame = () => {
         {/* Educational note subtler and more ironic */}
         <div className="mt-8 p-3 bg-gray-800 rounded text-xs text-gray-400">
           <p>
-            Ce jeu explore les mécanismes de diffusion de l'information et leurs conséquences. 
-            Toute ressemblance avec des techniques réellement utilisées n'est sans doute que pure coïncidence...
+            Ce jeu explore les mécanismes de diffusion de l&apos;information et leurs conséquences. 
+            Toute ressemblance avec des techniques réellement utilisées n&apos;est sans doute que pure coïncidence...
           </p>
         </div>
       </div>

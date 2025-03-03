@@ -27,7 +27,7 @@ const ProgressionTab: React.FC<ProgressionTabProps> = ({
       <div className="relative pb-12 mb-8">
         <div className="absolute h-1 w-full bg-gray-700 top-4"></div>
         <div className="flex justify-between relative">
-          {eras.map((era, index) => {
+          {eras.map((era) => {
             const isUnlocked = era.unlocked;
             const isActive = era.id === currentEraId;
             
@@ -114,7 +114,7 @@ const ProgressionTab: React.FC<ProgressionTabProps> = ({
                 </div>
                 
                 <div className="mt-4 p-3 bg-gray-800 rounded">
-                  <h4 className="font-semibold mb-2">Multiplicateurs d'ère:</h4>
+                  <h4 className="font-semibold mb-2">Multiplicateurs d&apos;ère:</h4>
                   <div className="grid grid-cols-2 gap-2">
                     {Object.entries(era.resourceMultipliers).map(([resource, multiplier]) => (
                       <div key={resource} className="flex justify-between">

@@ -61,6 +61,68 @@ const SaveManager: React.FC<SaveManagerProps> = ({
     setTimeout(() => setSaveStatus('idle'), 2000);
   };
 
+    // Add this function inside the SaveManager component
+  const handleDeleteSave = () => {
+    if (window.confirm('Êtes-vous sûr de vouloir supprimer cette sauvegarde? Cette action est irréversible.')) {
+        const success = deleteSaveGame(false);
+        
+        if (success) {
+        // Update save info
+        setManualSaveInfo({ exists: false });
+        setSaveStatus('idle');
+        
+        // Optional: Show a temporary status message
+        alert('Sauvegarde supprimée avec succès.');
+        } else {
+        setSaveStatus('error');
+        }
+    }
+  };
+
+  // Add this function for copying to clipboard
+const handleExportCopy = () => {
+    const saveData = exportSave();
+    
+    if (saveData) {
+      // Copy to clipboard
+      navigator.clipboard.writeText(saveData)
+        .then(() => {
+          alert('Sauvegarde copiée dans le presse-papier.');
+        })
+        .catch(() => {
+          alert('Erreur lors de la copie. Voici votre code de sauvegarde:\n\n' + saveData);
+        });
+    } else {
+      alert('Aucune sauvegarde disponible à exporter.');
+    }
+  };
+  
+  // Add this function for downloading as a file
+  const handleExportFile = () => {
+    const saveData = exportSave();
+    
+    if (saveData) {
+      // Create a blob and download link
+      const blob = new Blob([saveData], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      
+      // Create download link and trigger click
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `propagation_save_${new Date().toISOString().slice(0,10)}.txt`;
+      document.body.appendChild(link);
+      link.click();
+      
+      // Clean up
+      setTimeout(() => {
+        URL.revokeObjectURL(url);
+        document.body.removeChild(link);
+      }, 100);
+    } else {
+      alert('Aucune sauvegarde disponible à exporter.');
+    }
+  };
+
   // Charger le jeu
   const handleLoad = (useAutoSave = false) => {
     const loadedState = loadGame(useAutoSave);
@@ -169,6 +231,7 @@ const SaveManager: React.FC<SaveManagerProps> = ({
                     Aucune sauvegarde disponible
                   </p>
                 )}
+                
                 <div className="flex space-x-2">
                   <button
                     onClick={handleSave}
@@ -213,13 +276,20 @@ const SaveManager: React.FC<SaveManagerProps> = ({
               <div className="bg-gray-700 p-3 rounded">
                 <h3 className="font-medium mb-2">Import/Export</h3>
                 <div className="flex space-x-2 mb-2">
-                  <button
-                    onClick={handleExport}
+                    <button
+                    onClick={handleExportCopy}
                     className="bg-purple-600 hover:bg-purple-500 px-3 py-1 rounded text-sm"
                     disabled={!manualSaveInfo.exists}
-                  >
-                    Exporter
-                  </button>
+                    >
+                    Exporter [copier]
+                    </button>
+                    <button
+                    onClick={handleExportFile}
+                    className="bg-blue-600 hover:bg-blue-500 px-3 py-1 rounded text-sm"
+                    disabled={!manualSaveInfo.exists}
+                    >
+                    Exporter [fichier]
+                    </button>
                 </div>
                 <div className="mt-2">
                   <input

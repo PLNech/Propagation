@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { ConspiracyTheory } from './types';
 import TheoryCard from './TheoryCard';
 
@@ -76,10 +76,10 @@ const TheoriesTab: React.FC<TheoriesTabProps> = ({
       </div>
       
       <div className="bg-gray-800 p-4 rounded-lg mb-6">
-        <h3 className="text-lg font-semibold mb-2">La Zone Grise de l'Information</h3>
+        <h3 className="text-lg font-semibold mb-2">La Zone Grise de l&apos;Information</h3>
         <p className="text-sm text-gray-300">
           Propager des théories peut vous apporter des récompenses substantielles. Certaines sont peut-être vraies... qui sait? 
-          Après tout, l'histoire est écrite par les vainqueurs, et la vérité est souvent plus étrange que la fiction.
+          Après tout, l&apos;histoire est écrite par les vainqueurs, et la vérité est souvent plus étrange que la fiction.
         </p>
         <p className="text-sm text-gray-300 mt-2 italic">
           <span className="text-yellow-300">Note:</span> Des rumeurs circulent selon lesquelles jouer à ce jeu pourrait lui-même être une expérience sociale. 
@@ -108,7 +108,7 @@ const TheoriesTab: React.FC<TheoriesTabProps> = ({
         <>
           {propagatedTheories.length === 0 ? (
             <div className="text-center p-6 bg-gray-800 rounded-lg">
-              <p className="text-gray-400">Vous n'avez propagé aucune théorie dans cette ère.</p>
+              <p className="text-gray-400">Vous n&apos;avez propagé aucune théorie dans cette ère.</p>
               <p className="text-gray-300 text-sm mt-2 italic">Mais qui sait ce qui se passe dans les ères que vous ne surveillez pas?</p>
             </div>
           ) : (

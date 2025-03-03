@@ -34,7 +34,7 @@ const UpgradesTab: React.FC<UpgradesTabProps> = ({
       {unpurchasedUpgrades.length === 0 && purchasedUpgrades.length === 0 && (
         <div className="text-center p-6 bg-gray-800 rounded-lg">
           <p className="text-gray-400">Aucune amélioration disponible dans cette ère pour le moment.</p>
-          <p className="text-gray-500 text-sm mt-2">Débloquez de nouvelles ères ou achetez des prérequis pour accéder à plus d'améliorations.</p>
+          <p className="text-gray-500 text-sm mt-2">Débloquez de nouvelles ères ou achetez des prérequis pour accéder à plus d&apos;améliorations.</p>
         </div>
       )}
       

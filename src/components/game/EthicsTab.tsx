@@ -178,7 +178,7 @@ const EthicsTab: React.FC<EthicsTabProps> = ({
       {activeSection === 'actions' && (
         <div>
           <p className="text-gray-300 mb-4">
-            Sacrifiez des ressources pour des "principes" — comme c'est mignon. 
+            Sacrifiez des ressources pour des &quot;principes&quot; — comme c&apos;est mignon. 
             Mais peut-être que dans ce jeu comme dans la vie, le chemin difficile a ses propres récompenses...
           </p>
           
@@ -230,11 +230,11 @@ const EthicsTab: React.FC<EthicsTabProps> = ({
         <div>
           <p className="text-gray-300 mb-4">
             Voici les techniques que vous utilisez — ou que vous combattez, selon votre humeur du jour.
-            La frontière est si mince qu'on pourrait la franchir sans s'en apercevoir...
+            La frontière est si mince qu&apos;on pourrait la franchir sans s&apos;en apercevoir...
           </p>
           
           <div className="mb-6">
-            <h3 className="text-xl font-semibold mb-3">Techniques de l'Ère</h3>
+            <h3 className="text-xl font-semibold mb-3">Techniques de l&apos;Ère</h3>
             {currentEraContent.map(content => (
               <EducationalCard key={content.id} content={content} />
             ))}
@@ -243,7 +243,7 @@ const EthicsTab: React.FC<EthicsTabProps> = ({
           <div>
             <h3 className="text-xl font-semibold mb-3">Paroles des Sages</h3>
             <p className="text-sm text-gray-400 italic mb-3">
-              Ils étaient si confiants dans leurs vérités... Touchant, n'est-ce pas?
+              Ils étaient si confiants dans leurs vérités... Touchant, n&apos;est-ce pas?
             </p>
             {getRelevantQuotes().map(quote => (
               <QuoteCard key={quote.id} quote={quote} />
@@ -256,15 +256,15 @@ const EthicsTab: React.FC<EthicsTabProps> = ({
       {activeSection === 'stats' && (
         <div>
           <p className="text-gray-300 mb-4">
-            Les chiffres ne mentent pas... ou peut-être que si? Après tout, c'est vous qui les fabriquez.
-            Voici l'impact que vous prétendez avoir sur ce monde virtuel.
+            Les chiffres ne mentent pas... ou peut-être que si? Après tout, c&apos;est vous qui les fabriquez.
+            Voici l&apos;impact que vous prétendez avoir sur ce monde virtuel.
           </p>
           
           <div className="bg-gray-800 p-4 rounded-lg mb-6">
             <h3 className="text-xl font-semibold mb-3">Votre Héritage</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="bg-gray-700 p-3 rounded-lg">
-                <h4 className="font-medium mb-2 text-gray-300">Diffusion d'Information</h4>
+                <h4 className="font-medium mb-2 text-gray-300">Diffusion d&apos;Information</h4>
                 <p className="text-2xl font-bold">{stats.livesImpacted.toLocaleString()}</p>
                 <p className="text-xs text-gray-400">Esprits influencés (pour le meilleur ou le pire)</p>
               </div>
@@ -296,7 +296,7 @@ const EthicsTab: React.FC<EthicsTabProps> = ({
               <div className="bg-gray-700 p-3 rounded-lg">
                 <h4 className="font-medium mb-2 text-gray-300">Prix de la Conscience</h4>
                 <p className="text-2xl font-bold">{stats.influenceSacrificed.toFixed(0)}</p>
-                <p className="text-xs text-gray-400">Influence sacrifiée sur l'autel de l'éthique</p>
+                <p className="text-xs text-gray-400">Influence sacrifiée sur l&apos;autel de l&apos;éthique</p>
               </div>
             </div>
           </div>

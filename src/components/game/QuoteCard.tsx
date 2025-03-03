@@ -12,7 +12,7 @@ const QuoteCard: React.FC<QuoteCardProps> = ({ quote }) => {
   return (
     <div className="p-4 bg-gray-800 rounded-lg border-l-4 border-blue-500 mb-4">
       <blockquote className="text-gray-200 italic">
-        "{quote.quote}"
+        &quot;{quote.quote}&quot;
       </blockquote>
       <div className="mt-2 flex justify-between items-center">
         <p className="text-gray-400 text-sm">— {quote.author}</p>

@@ -91,7 +91,7 @@ const GameEndingModal: React.FC<GameEndingModalProps> = ({ ending, stats, onAckn
               Continuer à jouer
             </button>
             <p className="mt-2 text-xs text-gray-400">
-              Vous pouvez continuer à explorer le jeu et découvrir d'autres fins.
+              Vous pouvez continuer à explorer le jeu et découvrir d&apos;autres fins.
             </p>
           </div>
         </div>

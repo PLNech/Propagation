@@ -2,7 +2,6 @@ import {
   GameState, 
   GameAction, 
   GameResources, 
-  HistoricalEra, 
   Upgrade,
   GameMode,
   GameEnding 

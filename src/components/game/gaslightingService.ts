@@ -206,7 +206,7 @@ export const gaslightEffects: GaslightEffect[] = [
     weight: 2,
     cooldown: 120,
     intensity: 2,
-    condition: (state, level) => state.ethicalScore > 70
+    condition: (state, level) => level * 0 + state.ethicalScore > 70
   },
   
   // Effets brisant le quatrième mur
@@ -483,7 +483,7 @@ export const applyUIChange = (effect: GaslightEffect): void => {
   elements.forEach(element => {
     // Sauvegarder l'état initial
     const originalText = element.innerText;
-    const originalClassList = [...element.classList];
+    // const originalClassList = [...element.classList]; Was unused, maybe should be preserved?
     const originalColor = element.style.color;
     
     // Appliquer les changements

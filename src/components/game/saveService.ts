@@ -95,6 +95,7 @@ export const hasSaveGame = (checkAutoSave = false): { exists: boolean, timestamp
     const timestamp = timestampStr ? parseInt(timestampStr, 10) : undefined;
     return { exists: true, timestamp };
   } catch (error) {
+    console.log("Error: ", error);
     return { exists: false };
   }
 };
