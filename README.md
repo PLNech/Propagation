@@ -2,7 +2,7 @@
 
 <div align="center">
   
-  ![Propagation Game Logo](assets/og-image.jpg)
+  ![Propagation Game Logo](public/og-image.jpg)
   
   **An incremental game about information, manipulation, and critical thinking**
   
@@ -19,7 +19,7 @@
   ![Gameplay Screenshot](assets/screen2.png)
   *Manipulate resources in different historical eras*
   
-  ![Ethical Choices](assets/screen1.pngshot-placeholder2.jpg)
+  ![Ethical Choices](assets/screen2.jpg)
   *Choose between manipulation and revelation*
   
 </div>
