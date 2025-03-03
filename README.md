@@ -6,7 +6,7 @@
   
   **An incremental game about information, manipulation, and critical thinking**
   
-  [Play Now](https://propagation.vercel.app) | [Learn More](#about-propagation) | [Development Log](log.md)
+  [Play Now](https://propagation.vercel.app) | [Learn More](#about-propagation) | [Development Log](src/doc/log.md)
   
 </div>
 
