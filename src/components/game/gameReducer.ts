@@ -18,6 +18,10 @@ import {
   initialEthicalStats 
 } from './ethicalData';
 
+// Étendre le type GameAction pour inclure le chargement de sauvegardes
+type ExtendedGameAction = GameAction | 
+  { type: 'LOAD_GAME'; payload: { state: GameState } };
+
 /**
  * Calculates resource multipliers based on active era, purchased upgrades, and game mode
  * @param state Current game state
@@ -333,7 +337,7 @@ export const initialGameState: GameState = {
  * @param action Action to perform
  * @returns New game state
  */
-export const gameReducer = (state: GameState, action: GameAction): GameState => {
+export const gameReducer = (state: GameState, action: ExtendedGameAction): GameState => {
   switch (action.type) {
     case 'TICK': {
       const { currentTime } = action.payload;
@@ -656,6 +660,11 @@ export const gameReducer = (state: GameState, action: GameAction): GameState => 
           ending.id === endingId ? { ...ending, triggered: true } : ending
         )
       };
+    }
+    
+    case 'LOAD_GAME': {
+      // Remplacer l'état du jeu par celui chargé
+      return action.payload.state;
     }
     
     case 'RESET': {

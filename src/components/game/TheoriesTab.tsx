@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ConspiracyTheory } from './types';
 import TheoryCard from './TheoryCard';
 
@@ -21,6 +21,8 @@ const TheoriesTab: React.FC<TheoriesTabProps> = ({
   onPropagateTheory 
 }) => {
   const [showPropagated, setShowPropagated] = useState(false);
+  // Tracking de statut de propagation par théorie
+  const [propagationStatus, setPropagationStatus] = useState<Record<string, 'success' | 'failed' | null>>({});
   
   // Filter theories for current era
   const currentEraTheories = theories.filter(theory => theory.eraId === currentEraId);
@@ -37,6 +39,32 @@ const TheoriesTab: React.FC<TheoriesTabProps> = ({
     return 'text-red-400';
   };
 
+  // Gestionnaire de propagation avec tracking de statut
+  const handlePropagateTheory = (theoryId: string) => {
+    const theory = theories.find(t => t.id === theoryId);
+    if (!theory) return;
+    
+    // Déterminer succès ou échec
+    const isSuccessful = Math.random() < theory.successRate;
+    
+    // Mettre à jour le statut
+    setPropagationStatus(prev => ({
+      ...prev,
+      [theoryId]: isSuccessful ? 'success' : 'failed'
+    }));
+    
+    // Appeler la fonction de propagation du parent
+    onPropagateTheory(theoryId);
+    
+    // Effacer le statut après un délai
+    setTimeout(() => {
+      setPropagationStatus(prev => ({
+        ...prev,
+        [theoryId]: null
+      }));
+    }, 5000);
+  };
+
   return (
     <div className="mt-6">
       <div className="flex justify-between items-center mb-4">
@@ -48,14 +76,14 @@ const TheoriesTab: React.FC<TheoriesTabProps> = ({
       </div>
       
       <div className="bg-gray-800 p-4 rounded-lg mb-6">
-        <h3 className="text-lg font-semibold mb-2">À propos de la propagation de théories</h3>
+        <h3 className="text-lg font-semibold mb-2">La Zone Grise de l'Information</h3>
         <p className="text-sm text-gray-300">
-          Propager des théories du complot peut vous apporter des récompenses substantielles, mais comporte des risques. 
-          Chaque théorie a un taux de réussite qui détermine vos chances de gagner les récompenses. 
-          En cas d'échec, vous perdrez vos points de manipulation investis.
+          Propager des théories peut vous apporter des récompenses substantielles. Certaines sont peut-être vraies... qui sait? 
+          Après tout, l'histoire est écrite par les vainqueurs, et la vérité est souvent plus étrange que la fiction.
         </p>
-        <p className="text-sm text-gray-300 mt-2">
-          Attention: propager des théories infondées diminuera votre score éthique, ce qui pourrait avoir des conséquences à long terme.
+        <p className="text-sm text-gray-300 mt-2 italic">
+          <span className="text-yellow-300">Note:</span> Des rumeurs circulent selon lesquelles jouer à ce jeu pourrait lui-même être une expérience sociale. 
+          Les règles changent-elles quand vous ne regardez pas? Certains joueurs disent avoir remarqué des anomalies...
         </p>
       </div>
       
@@ -81,6 +109,7 @@ const TheoriesTab: React.FC<TheoriesTabProps> = ({
           {propagatedTheories.length === 0 ? (
             <div className="text-center p-6 bg-gray-800 rounded-lg">
               <p className="text-gray-400">Vous n'avez propagé aucune théorie dans cette ère.</p>
+              <p className="text-gray-300 text-sm mt-2 italic">Mais qui sait ce qui se passe dans les ères que vous ne surveillez pas?</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 gap-4">
@@ -89,7 +118,8 @@ const TheoriesTab: React.FC<TheoriesTabProps> = ({
                   key={theory.id}
                   theory={theory}
                   manipulationPoints={manipulationPoints}
-                  onPropagate={onPropagateTheory}
+                  onPropagate={handlePropagateTheory}
+                  propagationStatus={propagationStatus[theory.id]}
                 />
               ))}
             </div>
@@ -100,7 +130,7 @@ const TheoriesTab: React.FC<TheoriesTabProps> = ({
           {unpropagatedTheories.length === 0 ? (
             <div className="text-center p-6 bg-gray-800 rounded-lg">
               <p className="text-gray-400">Toutes les théories de cette ère ont été propagées.</p>
-              <p className="text-gray-500 text-sm mt-2">Explorez d'autres ères pour découvrir de nouvelles théories.</p>
+              <p className="text-gray-500 text-sm mt-2">Ou peut-être que de nouvelles théories apparaîtront quand vous ne regardez pas...</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 gap-4">
@@ -109,12 +139,20 @@ const TheoriesTab: React.FC<TheoriesTabProps> = ({
                   key={theory.id}
                   theory={theory}
                   manipulationPoints={manipulationPoints}
-                  onPropagate={onPropagateTheory}
+                  onPropagate={handlePropagateTheory}
+                  propagationStatus={propagationStatus[theory.id]}
                 />
               ))}
             </div>
           )}
         </>
+      )}
+      
+      {/* Easter egg message */}
+      {Math.random() > 0.9 && (
+        <div className="mt-8 text-xs text-gray-500 italic text-right">
+          {"// Est-ce que vous venez de voir cette interface glitcher? Étrange..."}
+        </div>
       )}
     </div>
   );

@@ -22,3 +22,196 @@ body {
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Styles pour les effets de gaslighting */
+
+/* Effet de tremblement léger pour les boutons */
+@keyframes gaslightWiggle {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(2px); }
+  50% { transform: translateX(-2px); }
+  75% { transform: translateX(2px); }
+  100% { transform: translateX(0); }
+}
+
+.gaslight-wiggle {
+  animation: gaslightWiggle 0.5s ease-in-out;
+}
+
+/* Effet de changement de couleur subtil */
+@keyframes gaslightColorShift {
+  0% { background-color: var(--original-color, #1f2937); }
+  50% { background-color: var(--shift-color, #1a1f2e); }
+  100% { background-color: var(--original-color, #1f2937); }
+}
+
+.gaslight-color-shift {
+  animation: gaslightColorShift 2s ease-in-out;
+  --original-color: #1f2937;
+  --shift-color: #1a1f2e;
+}
+
+/* Effet de flou temporaire */
+@keyframes gaslightBlur {
+  0% { filter: blur(0); }
+  50% { filter: blur(1px); }
+  100% { filter: blur(0); }
+}
+
+.gaslight-blur {
+  animation: gaslightBlur 2s ease-in-out;
+}
+
+/* Effet de clignotement subtil */
+@keyframes gaslightBlink {
+  0% { opacity: 1; }
+  49% { opacity: 1; }
+  50% { opacity: 0.9; }
+  51% { opacity: 1; }
+  100% { opacity: 1; }
+}
+
+.gaslight-blink {
+  animation: gaslightBlink 0.2s linear 2;
+}
+
+/* Effet de distortion de texte */
+@keyframes gaslightTextDistort {
+  0% { letter-spacing: normal; }
+  25% { letter-spacing: 0.5px; }
+  75% { letter-spacing: -0.5px; }
+  100% { letter-spacing: normal; }
+}
+
+.gaslight-text-distort {
+  animation: gaslightTextDistort 1s ease-in-out;
+}
+
+/* Effet de rotation légère */
+@keyframes gaslightRotate {
+  0% { transform: rotate(0deg); }
+  25% { transform: rotate(0.3deg); }
+  75% { transform: rotate(-0.3deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.gaslight-rotate {
+  animation: gaslightRotate 0.8s ease-in-out;
+}
+
+/* Effet d'échelle */
+@keyframes gaslightScale {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.01); }
+  100% { transform: scale(1); }
+}
+
+.gaslight-scale {
+  animation: gaslightScale 1s ease-in-out;
+}
+
+/* Combinaison d'effets pour les effets plus intenses */
+.gaslight-intense {
+  animation: 
+    gaslightWiggle 0.5s ease-in-out,
+    gaslightBlink 0.2s linear 2 0.5s,
+    gaslightTextDistort 1s ease-in-out 1s;
+}
+
+/* Effet de vignette sombre temporaire */
+.gaslight-vignette::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  background: radial-gradient(circle, transparent 60%, rgba(0, 0, 0, 0.3) 100%);
+  z-index: 9999;
+  animation: gaslightFadeIn 2s ease-in-out forwards;
+}
+
+@keyframes gaslightFadeIn {
+  0% { opacity: 0; }
+  50% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* Effet de moiré */
+@keyframes gaslightMoire {
+  0% { background-position: 0% 0%; }
+  50% { background-position: 100% 100%; }
+  100% { background-position: 0% 0%; }
+}
+
+.gaslight-moire {
+  position: relative;
+}
+
+.gaslight-moire::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: repeating-linear-gradient(
+    45deg,
+    rgba(0, 0, 0, 0.02) 0px,
+    rgba(0, 0, 0, 0.02) 1px,
+    transparent 1px,
+    transparent 2px
+  );
+  pointer-events: none;
+  opacity: 0.5;
+  animation: gaslightMoire 2s linear infinite;
+  z-index: 1;
+}
+
+/* Effet de glitch pour le texte */
+@keyframes gaslightTextGlitch {
+  0% {
+    clip-path: inset(0 0 0 0);
+  }
+  5% {
+    clip-path: inset(33% 0 66% 0);
+  }
+  10% {
+    clip-path: inset(66% 0 33% 0);
+  }
+  15% {
+    clip-path: inset(0 0 0 0);
+  }
+  100% {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+.gaslight-text-glitch {
+  position: relative;
+  animation: gaslightTextGlitch 2s ease-in-out;
+}
+
+.gaslight-text-glitch::before,
+.gaslight-text-glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: inherit;
+}
+
+.gaslight-text-glitch::before {
+  left: 2px;
+  text-shadow: -1px 0 #ff0000;
+  animation: gaslightTextGlitch 2s ease-in-out 0.05s;
+}
+
+.gaslight-text-glitch::after {
+  left: -2px;
+  text-shadow: 1px 0 #00ff00;
+  animation: gaslightTextGlitch 2s ease-in-out 0.1s;
+}

@@ -82,6 +82,22 @@ const EthicsTab: React.FC<EthicsTabProps> = ({
     return 'text-gray-400';
   };
 
+  // Messages ironiques aléatoires
+  const getRandomMessage = () => {
+    const messages = [
+      "Ah, l'éthique... cette relique d'une époque où on avait encore le temps d'y penser.",
+      "Si vous lisez ceci, vous êtes parmi les rares à se soucier encore de l'éthique. Félicitations?",
+      "Rappel: Les points d'éthique n'ont pas de valeur monétaire. Dommage.",
+      "Être éthique dans un monde qui ne l'est pas... quel acte de rébellion.",
+      "La pensée critique est le bug que personne n'a réussi à patcher.",
+      "Certains joueurs affirment que ce jeu serait plus facile en ignorant cet onglet. Étrange...",
+      "Cette section a-t-elle toujours existé? Vos souvenirs semblent flous à ce sujet...",
+      "Les données de cette section pourraient différer de ce que d'autres joueurs voient. Coïncidence?"
+    ];
+    
+    return messages[Math.floor(Math.random() * messages.length)];
+  };
+
   return (
     <div className="mt-6">
       <div className="flex justify-between items-center mb-4">
@@ -98,9 +114,14 @@ const EthicsTab: React.FC<EthicsTabProps> = ({
         </div>
       </div>
       
+      {/* Ironic message */}
+      <div className="bg-gray-800 p-3 rounded-lg mb-4 text-sm text-gray-400 italic">
+        {getRandomMessage()}
+      </div>
+      
       {/* Mode Switch */}
       <div className="bg-gray-800 p-4 rounded-lg mb-6">
-        <h3 className="text-lg font-semibold mb-3">Mode de Jeu</h3>
+        <h3 className="text-lg font-semibold mb-3">Choisissez votre camp</h3>
         <div className="flex">
           <button
             className={`flex-1 py-2 px-4 rounded-l-lg ${
@@ -125,8 +146,8 @@ const EthicsTab: React.FC<EthicsTabProps> = ({
         </div>
         <p className="mt-3 text-sm text-gray-300">
           {gameMode === 'manipulation' 
-            ? "En mode Manipulation, vous exploitez les faiblesses des systèmes d'information pour répandre votre influence."
-            : "En mode Révélation, vous exposez les mécanismes de manipulation et éduquez le public à la pensée critique."
+            ? "Qui se soucie de la vérité quand le pouvoir est à portée de main? Continuez à manipuler l'information, c'est tellement plus efficace..."
+            : "Ah, vous avez choisi le camp des idéalistes. Espérons que la vérité vous mènera quelque part, dans ce monde qui préfère les mensonges confortables."
           }
         </p>
       </div>
@@ -143,13 +164,13 @@ const EthicsTab: React.FC<EthicsTabProps> = ({
           className={`py-2 px-4 ${activeSection === 'education' ? 'border-b-2 border-blue-500 text-blue-300' : 'text-gray-400 hover:text-gray-200'}`}
           onClick={() => setActiveSection('education')}
         >
-          Éducation
+          Techniques
         </button>
         <button
           className={`py-2 px-4 ${activeSection === 'stats' ? 'border-b-2 border-purple-500 text-purple-300' : 'text-gray-400 hover:text-gray-200'}`}
           onClick={() => setActiveSection('stats')}
         >
-          Statistiques
+          Impact
         </button>
       </div>
       
@@ -157,14 +178,14 @@ const EthicsTab: React.FC<EthicsTabProps> = ({
       {activeSection === 'actions' && (
         <div>
           <p className="text-gray-300 mb-4">
-            Ces actions renforcent l'éthique et la pensée critique, mais nécessitent de sacrifier des ressources. 
-            Chaque action représente un choix en faveur de l'intégrité plutôt que de la manipulation.
+            Sacrifiez des ressources pour des "principes" — comme c'est mignon. 
+            Mais peut-être que dans ce jeu comme dans la vie, le chemin difficile a ses propres récompenses...
           </p>
           
           {currentEraActions.length === 0 && performedActions.length === 0 ? (
             <div className="text-center p-6 bg-gray-800 rounded-lg">
               <p className="text-gray-400">Aucune action éthique disponible dans cette ère pour le moment.</p>
-              <p className="text-gray-500 text-sm mt-2">Progressez davantage ou débloquez de nouvelles ères pour accéder à plus d'actions.</p>
+              <p className="text-gray-500 text-sm mt-2 italic">Étrange, il y en avait peut-être ici avant? Ou est-ce juste votre imagination...</p>
             </div>
           ) : (
             <>
@@ -208,19 +229,22 @@ const EthicsTab: React.FC<EthicsTabProps> = ({
       {activeSection === 'education' && (
         <div>
           <p className="text-gray-300 mb-4">
-            Ces informations expliquent les mécanismes de manipulation que vous utilisez ou contrez dans le jeu.
-            Comprendre ces mécanismes est la première étape pour s'en protéger dans le monde réel.
+            Voici les techniques que vous utilisez — ou que vous combattez, selon votre humeur du jour.
+            La frontière est si mince qu'on pourrait la franchir sans s'en apercevoir...
           </p>
           
           <div className="mb-6">
-            <h3 className="text-xl font-semibold mb-3">Techniques de Manipulation</h3>
+            <h3 className="text-xl font-semibold mb-3">Techniques de l'Ère</h3>
             {currentEraContent.map(content => (
               <EducationalCard key={content.id} content={content} />
             ))}
           </div>
           
           <div>
-            <h3 className="text-xl font-semibold mb-3">Citations sur la Pensée Critique</h3>
+            <h3 className="text-xl font-semibold mb-3">Paroles des Sages</h3>
+            <p className="text-sm text-gray-400 italic mb-3">
+              Ils étaient si confiants dans leurs vérités... Touchant, n'est-ce pas?
+            </p>
             {getRelevantQuotes().map(quote => (
               <QuoteCard key={quote.id} quote={quote} />
             ))}
@@ -232,27 +256,27 @@ const EthicsTab: React.FC<EthicsTabProps> = ({
       {activeSection === 'stats' && (
         <div>
           <p className="text-gray-300 mb-4">
-            Ces statistiques reflètent l'impact cumulatif de vos actions tout au long du jeu,
-            tant positives que négatives.
+            Les chiffres ne mentent pas... ou peut-être que si? Après tout, c'est vous qui les fabriquez.
+            Voici l'impact que vous prétendez avoir sur ce monde virtuel.
           </p>
           
           <div className="bg-gray-800 p-4 rounded-lg mb-6">
-            <h3 className="text-xl font-semibold mb-3">Impact Global</h3>
+            <h3 className="text-xl font-semibold mb-3">Votre Héritage</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="bg-gray-700 p-3 rounded-lg">
                 <h4 className="font-medium mb-2 text-gray-300">Diffusion d'Information</h4>
                 <p className="text-2xl font-bold">{stats.livesImpacted.toLocaleString()}</p>
-                <p className="text-xs text-gray-400">Personnes impactées par vos actions</p>
+                <p className="text-xs text-gray-400">Esprits influencés (pour le meilleur ou le pire)</p>
               </div>
               
               <div className="bg-gray-700 p-3 rounded-lg">
-                <h4 className="font-medium mb-2 text-gray-300">Fins Débloquées</h4>
+                <h4 className="font-medium mb-2 text-gray-300">Fins Découvertes</h4>
                 <p className="text-2xl font-bold">{stats.endingsUnlocked} / {5}</p>
-                <p className="text-xs text-gray-400">Trajectoires narratives découvertes</p>
+                <p className="text-xs text-gray-400">Réalités alternatives explorées</p>
               </div>
               
               <div className="bg-gray-700 p-3 rounded-lg">
-                <h4 className="font-medium mb-2 text-gray-300">Intégrité vs Manipulation</h4>
+                <h4 className="font-medium mb-2 text-gray-300">Vérité vs Mensonge</h4>
                 <div className="flex items-center">
                   <div className="flex-1 h-4 bg-gray-600 rounded-full overflow-hidden">
                     <div 
@@ -270,15 +294,15 @@ const EthicsTab: React.FC<EthicsTabProps> = ({
               </div>
               
               <div className="bg-gray-700 p-3 rounded-lg">
-                <h4 className="font-medium mb-2 text-gray-300">Sacrifice pour l'Éthique</h4>
+                <h4 className="font-medium mb-2 text-gray-300">Prix de la Conscience</h4>
                 <p className="text-2xl font-bold">{stats.influenceSacrificed.toFixed(0)}</p>
-                <p className="text-xs text-gray-400">Influence sacrifiée pour des actions éthiques</p>
+                <p className="text-xs text-gray-400">Influence sacrifiée sur l'autel de l'éthique</p>
               </div>
             </div>
           </div>
           
           <div className="bg-gray-800 p-4 rounded-lg">
-            <h3 className="text-xl font-semibold mb-3">Profil Éthique</h3>
+            <h3 className="text-xl font-semibold mb-3">Votre Profil</h3>
             <div className="mb-4">
               <div className="flex justify-between mb-1">
                 <span>Score Éthique</span>
@@ -295,6 +319,11 @@ const EthicsTab: React.FC<EthicsTabProps> = ({
                   style={{ width: `${ethicalScore}%` }}
                 ></div>
               </div>
+              <p className="text-xs text-gray-400 mt-1 italic">
+                {ethicalScore < 30 ? "La morale est un luxe que vous ne pouvez plus vous permettre." :
+                 ethicalScore < 60 ? "Assez d'éthique pour dormir la nuit, pas assez pour changer le monde." :
+                 "Votre conscience est presque aussi propre que vous le prétendez."}
+              </p>
             </div>
             
             <div>
@@ -308,8 +337,20 @@ const EthicsTab: React.FC<EthicsTabProps> = ({
                   style={{ width: `${criticalThinking}%` }}
                 ></div>
               </div>
+              <p className="text-xs text-gray-400 mt-1 italic">
+                {criticalThinking < 30 ? "Pourquoi réfléchir quand on peut simplement croire?" :
+                 criticalThinking < 60 ? "Vous commencez à voir les ficelles de la manipulation." :
+                 "Vous voyez à travers le jeu... ou est-ce le jeu qui vous voit?"}
+              </p>
             </div>
           </div>
+          
+          {/* Easter egg message with random chance */}
+          {Math.random() > 0.8 && (
+            <div className="mt-4 p-3 bg-gray-900 rounded text-xs text-gray-500 italic">
+              {"// Les statistiques ont-elles changé depuis la dernière fois que vous les avez regardées? Un bug... ou autre chose?"}
+            </div>
+          )}
         </div>
       )}
     </div>
