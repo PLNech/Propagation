@@ -16,10 +16,10 @@
 
 <div align="center">
   
-  ![Gameplay Screenshot](assets/screenshot-placeholder.jpg)
+  ![Gameplay Screenshot](assets/screen2.png)
   *Manipulate resources in different historical eras*
   
-  ![Ethical Choices](assets/screenshot-placeholder2.jpg)
+  ![Ethical Choices](assets/screen1.pngshot-placeholder2.jpg)
   *Choose between manipulation and revelation*
   
 </div>
