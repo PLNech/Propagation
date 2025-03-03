@@ -1,4 +1,4 @@
-import { HistoricalEra } from './types';
+import { HistoricalEra } from '@/types';
 
 /**
  * Data for all historical eras in the game

@@ -1,5 +1,5 @@
 import React from 'react';
-import { CriticalThinkingQuote } from './types';
+import { CriticalThinkingQuote } from '@/types';
 
 interface QuoteCardProps {
   quote: CriticalThinkingQuote;

@@ -6,7 +6,7 @@ import {
   CriticalThinkingQuote, 
   EthicalStats,
   GameMode 
-} from './types';
+} from '@/types';
 import EthicalActionCard from './EthicalActionCard';
 import EducationalCard from './EducationalCard';
 import QuoteCard from './QuoteCard';

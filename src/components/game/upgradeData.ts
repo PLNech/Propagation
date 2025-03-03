@@ -1,4 +1,4 @@
-import { Upgrade } from './types';
+import { Upgrade } from '@/types';
 
 /**
  * Data for all purchasable upgrades in the game

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { EducationalContent } from './types';
+import { EducationalContent } from '@/types';
 
 interface EducationalCardProps {
   content: EducationalContent;

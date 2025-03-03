@@ -1,5 +1,5 @@
 import React from 'react';
-import { GameResources } from './types';
+import { GameResources } from '@/types';
 
 interface ResourceDisplayProps {
   resources: GameResources;

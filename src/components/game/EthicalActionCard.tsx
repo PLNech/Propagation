@@ -1,5 +1,5 @@
 import React from 'react';
-import { EthicalAction, GameResources } from './types';
+import { EthicalAction, GameResources } from '@/types';
 
 interface EthicalActionCardProps {
   action: EthicalAction;

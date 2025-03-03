@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { GameState } from './types';
+import { GameState } from '@/types';
 import {
   saveGame,
   loadGame,
   hasSaveGame,
-  deleteSaveGame,
   exportSave,
   importSave
 } from './saveService';
@@ -61,23 +60,23 @@ const SaveManager: React.FC<SaveManagerProps> = ({
     setTimeout(() => setSaveStatus('idle'), 2000);
   };
 
-    // Add this function inside the SaveManager component
-  const handleDeleteSave = () => {
-    if (window.confirm('Êtes-vous sûr de vouloir supprimer cette sauvegarde? Cette action est irréversible.')) {
-        const success = deleteSaveGame(false);
+// TODO: Integrate save deletion?
+//   const handleDeleteSave = () => {
+//     if (window.confirm('Êtes-vous sûr de vouloir supprimer cette sauvegarde? Cette action est irréversible.')) {
+//         const success = deleteSaveGame(false);
         
-        if (success) {
-        // Update save info
-        setManualSaveInfo({ exists: false });
-        setSaveStatus('idle');
+//         if (success) {
+//         // Update save info
+//         setManualSaveInfo({ exists: false });
+//         setSaveStatus('idle');
         
-        // Optional: Show a temporary status message
-        alert('Sauvegarde supprimée avec succès.');
-        } else {
-        setSaveStatus('error');
-        }
-    }
-  };
+//         // Optional: Show a temporary status message
+//         alert('Sauvegarde supprimée avec succès.');
+//         } else {
+//         setSaveStatus('error');
+//         }
+//     }
+//   };
 
   // Add this function for copying to clipboard
 const handleExportCopy = () => {
@@ -139,24 +138,6 @@ const handleExportCopy = () => {
     
     // Réinitialiser le statut après un délai
     setTimeout(() => setSaveStatus('idle'), 2000);
-  };
-
-  // Exporter la sauvegarde
-  const handleExport = () => {
-    const saveData = exportSave();
-    
-    if (saveData) {
-      // Copier dans le presse-papier
-      navigator.clipboard.writeText(saveData)
-        .then(() => {
-          alert('Sauvegarde copiée dans le presse-papier.');
-        })
-        .catch(() => {
-          alert('Erreur lors de la copie. Voici votre code de sauvegarde:\n\n' + saveData);
-        });
-    } else {
-      alert('Aucune sauvegarde disponible à exporter.');
-    }
   };
 
   // Importer une sauvegarde

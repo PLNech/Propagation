@@ -1,4 +1,4 @@
-import { ConspiracyTheory } from './types';
+import { ConspiracyTheory } from '@/types';
 
 /**
  * Data for all conspiracy theories in the game
@@ -17,6 +17,7 @@ export const conspiracyTheories: ConspiracyTheory[] = [
       influence: 15
     },
     ethicalImpact: -2,
+    criticalThinkingImpact: -3, // Moderate negative impact on critical thinking
     propagated: false,
     visible: true
   },
@@ -33,6 +34,7 @@ export const conspiracyTheories: ConspiracyTheory[] = [
       manipulationPoints: 20
     },
     ethicalImpact: -4,
+    criticalThinkingImpact: -4, // Significant negative impact on critical thinking
     propagated: false,
     visible: true
   },
@@ -50,6 +52,7 @@ export const conspiracyTheories: ConspiracyTheory[] = [
       influence: 60
     },
     ethicalImpact: -5,
+    criticalThinkingImpact: -5, // Substantial negative impact on critical thinking
     propagated: false,
     visible: true
   },
@@ -66,6 +69,7 @@ export const conspiracyTheories: ConspiracyTheory[] = [
       manipulationPoints: 50
     },
     ethicalImpact: -6,
+    criticalThinkingImpact: -6, // Strong negative impact on critical thinking
     propagated: false,
     visible: true
   },
@@ -84,6 +88,7 @@ export const conspiracyTheories: ConspiracyTheory[] = [
       networks: 100
     },
     ethicalImpact: -7,
+    criticalThinkingImpact: -6, // Strong negative impact on critical thinking
     propagated: false,
     visible: true
   },
@@ -100,6 +105,7 @@ export const conspiracyTheories: ConspiracyTheory[] = [
       manipulationPoints: 150
     },
     ethicalImpact: -8,
+    criticalThinkingImpact: -7, // Severe negative impact on critical thinking
     propagated: false,
     visible: true
   },
@@ -118,6 +124,7 @@ export const conspiracyTheories: ConspiracyTheory[] = [
       networks: 250
     },
     ethicalImpact: -8,
+    criticalThinkingImpact: -8, // Very severe negative impact on critical thinking
     propagated: false,
     visible: true
   },
@@ -134,6 +141,7 @@ export const conspiracyTheories: ConspiracyTheory[] = [
       manipulationPoints: 400
     },
     ethicalImpact: -9,
+    criticalThinkingImpact: -9, // Extreme negative impact on critical thinking
     propagated: false,
     visible: true
   },
@@ -152,6 +160,7 @@ export const conspiracyTheories: ConspiracyTheory[] = [
       networks: 600
     },
     ethicalImpact: -7,
+    criticalThinkingImpact: -8, // Very severe negative impact on critical thinking
     propagated: false,
     visible: true
   },
@@ -169,6 +178,7 @@ export const conspiracyTheories: ConspiracyTheory[] = [
       manipulationPoints: 700
     },
     ethicalImpact: -10,
+    criticalThinkingImpact: -10, // Maximum negative impact on critical thinking
     propagated: false,
     visible: true
   },
@@ -186,6 +196,7 @@ export const conspiracyTheories: ConspiracyTheory[] = [
       manipulationPoints: 1000
     },
     ethicalImpact: -10,
+    criticalThinkingImpact: -10, // Maximum negative impact on critical thinking
     propagated: false,
     visible: true
   }

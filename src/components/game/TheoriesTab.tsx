@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ConspiracyTheory } from './types';
+import { ConspiracyTheory } from '@/types';
 import TheoryCard from './TheoryCard';
 
 interface TheoriesTabProps {

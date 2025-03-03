@@ -1,4 +1,4 @@
-import { GameState } from './types';
+import { GameState } from '@/types';
 
 /**
  * Types d'effets de gaslighting disponibles
@@ -20,7 +20,7 @@ export type GaslightEffectType =
 export interface GaslightEffect {
   id: string;
   type: GaslightEffectType;
-  message?: string;
+  message?: string | (() => string);
   uiChanges?: {
     targetId?: string;
     targetClass?: string;

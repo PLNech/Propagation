@@ -1,5 +1,5 @@
 import React from 'react';
-import { GameEnding, EthicalStats } from './types';
+import { GameEnding, EthicalStats } from '@/types';
 
 interface GameEndingModalProps {
   ending: GameEnding;

@@ -1,4 +1,4 @@
-import { GameState } from './types';
+import { GameState } from '@/types';
 
 const SAVE_KEY = 'propagation_save_data';
 const AUTO_SAVE_KEY = 'propagation_auto_save';

@@ -1,5 +1,5 @@
 import React from 'react';
-import { ConspiracyTheory } from './types';
+import { ConspiracyTheory } from '@/types';
 
 interface TheoryCardProps {
   theory: ConspiracyTheory;

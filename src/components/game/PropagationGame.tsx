@@ -9,7 +9,7 @@ import EthicsTab from './EthicsTab';
 import GameEndingModal from './GameEndingModal';
 import SaveManager from './SaveManager';
 import NotificationSystem, { useNotifications, NotificationType } from './NotificationSystem';
-import { HistoricalEra, GameMode, GameState } from './types';
+import { HistoricalEra, GameMode, GameState } from '@/types';
 import { 
   selectGaslightEffect, 
   shouldTriggerGaslight, 
@@ -116,42 +116,8 @@ const PropagationGame = () => {
   }, []);
 
 
-  // Fonction pour vérifier et déclencher des effets de gaslighting
-  const checkForGaslightEffects = useCallback(() => {
-    // N'exécute que si l'utilisateur a suffisamment interagi avec le jeu
-    if (interactionCount.current < 5) return;
-    
-    const now = Date.now();
-    
-    // Limiter la fréquence des effets (au moins 2 minutes entre chaque)
-    if (now - lastGaslightTime.current < 120000) return;
-    
-    // Vérifier si un effet doit être déclenché
-    if (shouldTriggerGaslight(interactionCount.current)) {
-      const effect = selectGaslightEffect(gameState, interactionCount.current);
-      
-      if (effect) {
-        triggerGaslightEffect(effect);
-        lastGaslightTime.current = now;
-      }
-    }
-  }, [gameState]);
-  
-  // Set up the tick system with gaslighting checks
-  useEffect(() => {
-    const timer = setInterval(() => {
-      dispatch({ type: 'TICK', payload: { currentTime: Date.now() } });
-      
-      // Check for gaslighting effects with reduced frequency
-      checkForGaslightEffects();
-    }, gameState.tickInterval);
-    
-    // Clean up interval on component unmount
-    return () => clearInterval(timer);
-  }, [gameState.tickInterval, checkForGaslightEffects]);
-  
   // Déclencher un effet de gaslighting
-  const triggerGaslightEffect = (effect: GaslightEffect) => {
+  const triggerGaslightEffect = useCallback((effect: GaslightEffect) => {
     switch (effect.type) {
       case 'notification':
         // Simple notification
@@ -186,8 +152,42 @@ const PropagationGame = () => {
         }
         break;
     }
-  };
+  }, [addNotification]);
 
+  // Fonction pour vérifier et déclencher des effets de gaslighting
+  const checkForGaslightEffects = useCallback(() => {
+    // N'exécute que si l'utilisateur a suffisamment interagi avec le jeu
+    if (interactionCount.current < 5) return;
+    
+    const now = Date.now();
+    
+    // Limiter la fréquence des effets (au moins 2 minutes entre chaque)
+    if (now - lastGaslightTime.current < 120000) return;
+    
+    // Vérifier si un effet doit être déclenché
+    if (shouldTriggerGaslight(interactionCount.current)) {
+      const effect = selectGaslightEffect(gameState, interactionCount.current);
+      
+      if (effect) {
+        triggerGaslightEffect(effect);
+        lastGaslightTime.current = now;
+      }
+    }
+  }, [gameState, triggerGaslightEffect]);
+  
+  // Set up the tick system with gaslighting checks
+  useEffect(() => {
+    const timer = setInterval(() => {
+      dispatch({ type: 'TICK', payload: { currentTime: Date.now() } });
+      
+      // Check for gaslighting effects with reduced frequency
+      checkForGaslightEffects();
+    }, gameState.tickInterval);
+    
+    // Clean up interval on component unmount
+    return () => clearInterval(timer);
+  }, [gameState.tickInterval, checkForGaslightEffects]);
+  
   // Handle the manipulate button click
   const handleManipulate = () => {
     dispatch({ type: 'MANIPULATE' });

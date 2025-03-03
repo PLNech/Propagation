@@ -1,5 +1,5 @@
 import React from 'react';
-import { HistoricalEra } from './types';
+import { HistoricalEra } from '@/types';
 
 interface ProgressionTabProps {
   eras: HistoricalEra[];

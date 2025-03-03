@@ -5,7 +5,7 @@ import {
   Upgrade,
   GameMode,
   GameEnding 
-} from './types';
+} from '@/types';
 import { historicalEras } from './eraData';
 import { upgrades } from './upgradeData';
 import { conspiracyTheories } from './conspiracyData';

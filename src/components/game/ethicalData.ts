@@ -4,7 +4,7 @@ import {
     CriticalThinkingQuote, 
     GameEnding, 
     EthicalStats 
-  } from './types';
+  } from '@/types';
   
   /**
    * Data for all ethical actions in the game
