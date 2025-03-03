@@ -2,7 +2,7 @@
 
 <div align="center">
   
-  ![Propagation Game Logo](assets/logo-placeholder.png)
+  ![Propagation Game Logo](assets/og-image.jpg)
   
   **An incremental game about information, manipulation, and critical thinking**
   
