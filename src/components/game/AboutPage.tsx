@@ -193,25 +193,25 @@ const AboutPage: React.FC<{ onClose: () => void }> = ({ onClose }) => {
             {activeTab === 'about' && (
               <>
                 <section>
-                  <h3 className="text-xl font-semibold mb-3 text-purple-300">L'approche maïeutique</h3>
+                  <h3 className="text-xl font-semibold mb-3 text-purple-300">L&apos;approche maïeutique</h3>
                   <p className="text-gray-300 mb-4">
-                    <i>Propagation</i> emploie une philosophie éducative maïeutique — au lieu de vous dire quoi penser, il crée des conditions pour que vous découvriez des idées par l'expérience.
+                    <i>Propagation</i> emploie une philosophie éducative maïeutique — au lieu de vous dire quoi penser, il crée des conditions pour que vous découvriez des idées par l&apos;expérience.
                   </p>
                   <p className="text-gray-300 mb-4">
                     Comme la <a href="https://fr.wikipedia.org/wiki/Maïeutique" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline">méthode socratique</a> qui aide à accoucher de ses propres réalisations, <i>Propagation</i> ne prêche pas contre la désinformation. Au lieu de cela, il vous met aux commandes de sa création, vous fait expérimenter ses effets et confronter les conséquences.
                   </p>
                   <p className="text-gray-300">
-                    Les systèmes du jeu sont conçus pour déclencher des moments de réflexion : "Suis-je manipulé par un jeu sur la manipulation ?" ou "Pourquoi propager cette théorie du complot est-il si efficace mais troublant ?"
+                    Les systèmes du jeu sont conçus pour déclencher des moments de réflexion : &apos;Suis-je manipulé par un jeu sur la manipulation ?&apos; ou &apos;Pourquoi propager cette théorie du complot est-il si efficace mais troublant ?&apos;
                   </p>
                 </section>
                 
                 <section>
                   <h3 className="text-xl font-semibold mb-3 text-yellow-300">Objectif éducatif</h3>
                   <p className="text-gray-300 mb-4">
-                    Ce jeu vise à sensibiliser aux mécanismes de propagation de la désinformation et à développer l'esprit critique des joueurs. En vous plaçant dans la position de celui qui manipule, vous comprenez mieux comment fonctionne la manipulation.
+                    Ce jeu vise à sensibiliser aux mécanismes de propagation de la désinformation et à développer l&apos;esprit critique des joueurs. En vous plaçant dans la position de celui qui manipule, vous comprenez mieux comment fonctionne la manipulation.
                   </p>
                   <p className="text-gray-300">
-                    Les choix éthiques du jeu vous confrontent à des dilemmes réels : est-il justifiable de manipuler pour une "bonne cause" ? Comment équilibrer efficacité et intégrité ? Ces questions n'ont pas de réponses simples, mais y réfléchir développe votre résistance aux manipulations du monde réel.
+                    Les choix éthiques du jeu vous confrontent à des dilemmes réels : est-il justifiable de manipuler pour une &apos;bonne cause&apos; ? Comment équilibrer efficacité et intégrité ? Ces questions n&apos;ont pas de réponses simples, mais y réfléchir développe votre résistance aux manipulations du monde réel.
                   </p>
                 </section>
                 
@@ -222,10 +222,10 @@ const AboutPage: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                   </p>
                   <ul className="list-disc list-inside text-gray-300 mb-4 space-y-2">
                     <li>La <span className="text-blue-300">direction humaine</span> a fourni la vision créative, les garde-fous éthiques et le contexte réel</li>
-                    <li>L'<span className="text-purple-300">implémentation IA</span> a livré l'architecture technique, la génération de contenu et la conception du système</li>
+                    <li>L&apos;<span className="text-purple-300">implémentation IA</span> a livré l&apos;architecture technique, la génération de contenu et la conception du système</li>
                   </ul>
                   <p className="text-gray-300">
-                    Ce projet a évolué grâce à un dialogue significatif — des cycles itératifs de définition d'objectifs humains, propositions de l'IA, raffinement collaboratif et réflexion éthique.
+                    Ce projet a évolué grâce à un dialogue significatif — des cycles itératifs de définition d&apos;objectifs humains, propositions de l&apos;IA, raffinement collaboratif et réflexion éthique.
                   </p>
                 </section>
               </>
@@ -359,7 +359,7 @@ const AboutPage: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                         >
                           Overcoming Bias
                         </a>
-                        <p className="text-gray-400 text-xs">Blog sur l'amélioration des croyances humaines, fondé par Robin Hanson et Eliezer Yudkowsky</p>
+                        <p className="text-gray-400 text-xs">Blog sur l&apos;amélioration des croyances humaines, fondé par Robin Hanson et Eliezer Yudkowsky</p>
                       </li>
                       <li className="text-sm">
                         <a 
@@ -377,7 +377,7 @@ const AboutPage: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                   
                   <p className="text-xs text-gray-400 italic mt-4">
                     Note: Ces ressources sont fournies à titre éducatif. 
-                    Le jeu <i>Propagation</i> ne prétend pas être une source définitive d'information 
+                    Le jeu <i>Propagation</i> ne prétend pas être une source définitive d&apos;information 
                     sur ces sujets complexes, mais plutôt une invitation à la réflexion critique.
                   </p>
                 </section>
@@ -387,7 +387,7 @@ const AboutPage: React.FC<{ onClose: () => void }> = ({ onClose }) => {
             
             <div className="mt-8 pt-6 border-t border-gray-600 text-center">
               <p className="text-gray-400">
-                <i>"Rappelle-toi : remets tout en question — y compris ce jeu."</i>
+                <i>&apos;Rappelle-toi : remets tout en question — y compris ce jeu.&apos;</i>
               </p>
             </div>
           </div>

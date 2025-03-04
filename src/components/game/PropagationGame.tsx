@@ -55,7 +55,7 @@ const PropagationGame = () => {
   // Référence à l'état du jeu pour les sauvegardes
   const gameStateRef = useRef(gameState);
  
-  const getState = () => gameStateRef.current;
+  // const getState = () => gameStateRef.current;
   
   // Mettre à jour la référence quand l'état change
   useEffect(() => {
@@ -79,7 +79,6 @@ const PropagationGame = () => {
   useEffect(() => {
     const getState = () => gameStateRef.current;
     window.__SECRET_DOM_DO_NOT_USE_OR_YOU_WILL_BE_FIRED = createDebugHelper(dispatch, getState);
-    // eslint-disable-next-line no-console
     console.log("Debug helper loaded. Access via window.__SECRET_DOM_DO_NOT_USE_OR_YOU_WILL_BE_FIRED");
   }, []);
   

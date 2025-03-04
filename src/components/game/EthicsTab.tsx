@@ -138,7 +138,11 @@ const EthicsTab: React.FC<EthicsTabProps> = ({
   
     }, 10000); // Intervalle entre les messages
   
-    return () => clearInterval(intervalRef.current);
+   return () => {        
+      if (intervalRef.current !== null) {
+        clearInterval(intervalRef.current);
+      }
+    }
   }, []);
     
   return (

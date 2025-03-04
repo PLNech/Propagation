@@ -726,7 +726,7 @@ export const gameReducer = (state: GameState, action: ExtendedGameAction): GameS
       }
       
       // Apply consequences
-      let updatedResources = { ...state.resources };
+      const updatedResources = { ...state.resources };
       let updatedEthicalScore = state.ethicalScore;
       let updatedCriticalThinking = state.criticalThinking;
       
