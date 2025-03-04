@@ -5,6 +5,13 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'propagation - et si tu contrôlais l\'information ?',
   description: 'un jeu sur l\'influence et ses zones d\'ombre. qui contrôle qui, vraiment ?',
+  icons: {
+    icon: [
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon.ico", sizes: "48x48" },
+    ],
+  },
   openGraph: {
     title: 'propagation - contrôle la narrative avant qu\'ils te contrôlent',
     description: 'ce petit jeu incrémental cache peut-être plus qu\'il n\'y paraît... les règles sont pas stables ! fais tes propres recherches !',
@@ -18,7 +25,7 @@ export const metadata: Metadata = {
     ],
     type: 'website',
     locale: 'fr_FR',
-    url: 'https://propagation-game.vercel.app/',
+    url: 'https://propagation.vercel.app/',
     siteName: 'propagation',
   },
   twitter: {
