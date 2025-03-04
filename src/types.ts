@@ -138,6 +138,40 @@ export interface EthicalStats {
 }
 
 /**
+ * Option for a scenario choice
+ */
+export interface ScenarioChoice {
+  id: string;
+  text: string;
+  description: string; // Describes the reasoning/approach
+  type: 'manipulation' | 'moderate' | 'ethical'; // Type of approach
+  consequences: {
+    resources?: Partial<Record<keyof GameResources, number>>; // Resource gains/losses
+    ethicalScore?: number; // Ethical score impact
+    criticalThinking?: number; // Critical thinking impact
+  };
+}
+
+/**
+ * Historical scenario with ethical dilemma
+ */
+export interface Scenario {
+  id: string;
+  title: string;
+  description: string;
+  eraId: string; // The era this scenario belongs to
+  historicalContext?: string; // Optional historical background
+  choices: ScenarioChoice[];
+  completed: boolean;
+  selectedChoiceId?: string; // ID of the choice made by the player
+  imageType?: 'ancient' | 'medieval' | 'industrial' | 'modern' | 'digital'; // Visual theme for the scenario
+  triggerCondition?: {
+    type: 'propagateTheory' | 'ethicalAction' | 'upgradesPurchased' | 'resourceThreshold';
+    value: number | string; // Threshold value or specific ID
+  };
+}
+
+/**
  * Available game modes
  */
 export type GameMode = 'manipulation' | 'revelation';
@@ -159,10 +193,14 @@ export interface GameState {
   criticalThinkingQuotes: CriticalThinkingQuote[];
   gameEndings: GameEnding[];
   ethicalStats: EthicalStats;
+  scenarios: Scenario[];
+  activeScenarioId: string | null;
+  completedScenarios: string[]; // IDs of completed scenarios
   gameEnded: boolean; // If a game ending has been triggered
   activeEndingId: string | null; // ID of the active ending, if any
   lastTick: number;      // Timestamp of the last update
   tickInterval: number;  // Time between updates in milliseconds
+  
 }
 
 /**
@@ -179,6 +217,9 @@ export type GameAction =
   | { type: 'PURCHASE_UPGRADE'; payload: { upgradeId: string } }  // Purchase an upgrade
   | { type: 'PROPAGATE_THEORY'; payload: { theoryId: string } }  // Propagate a conspiracy theory
   | { type: 'PERFORM_ETHICAL_ACTION'; payload: { actionId: string } }  // Perform an ethical action
+  | { type: 'TRIGGER_SCENARIO'; payload: { scenarioId: string } }
+  | { type: 'MAKE_SCENARIO_CHOICE'; payload: { scenarioId: string, choiceId: string } }
+  | { type: 'DISMISS_SCENARIO'; payload: { scenarioId: string } }
   | { type: 'SWITCH_GAME_MODE'; payload: { mode: GameMode } }  // Switch between game modes
   | { type: 'ACKNOWLEDGE_ENDING'; payload: { endingId: string } }  // Acknowledge a game ending
   | { type: 'LOAD_GAME'; payload: { state: GameState } } // Load a saved game

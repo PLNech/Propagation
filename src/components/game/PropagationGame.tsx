@@ -8,6 +8,8 @@ import ProgressionTab from './ProgressionTab';
 import UpgradesTab from './UpgradesTab';
 import TheoriesTab from './TheoriesTab';
 import EthicsTab from './EthicsTab';
+import ScenarioModal from './ScenarioModal';
+import ScenariosTab from './ScenariosTab';
 import GameEndingModal from './GameEndingModal';
 import SaveManager from './SaveManager';
 import NotificationSystem, { useNotifications, NotificationType } from './NotificationSystem';
@@ -30,7 +32,7 @@ import AboutPage from './AboutPage';
 import { createDebugHelper } from './debugHelper';
 
 // Tab types
-type TabType = 'resources' | 'progression' | 'upgrades' | 'theories' | 'ethics';
+type TabType = 'resources' | 'progression' | 'upgrades' | 'theories' | 'ethics' | 'scenarios';
 
 /**
  * Main game component with all systems including enhanced gaslighting and save/load
@@ -436,6 +438,63 @@ const PropagationGame = () => {
     setShowAbout(false);
   };
 
+
+  const handleMakeScenarioChoice = (scenarioId: string, choiceId: string) => {
+    dispatch({ type: 'MAKE_SCENARIO_CHOICE', payload: { scenarioId, choiceId } });
+    
+    // Add to interaction count for gaslighting system
+    interactionCount.current += 3;
+    
+    // Show a notification with the choice theme
+    const scenario = gameState.scenarios.find(s => s.id === scenarioId);
+    const choice = scenario?.choices.find(c => c.id === choiceId);
+    
+    if (scenario && choice) {
+      let notificationType: NotificationType = 'info';
+      let message = `Vous avez fait un choix dans "${scenario.title}"`;
+      
+      // Different message and notification type based on choice type
+      switch (choice.type) {
+        case 'manipulation':
+          message = `Vous avez choisi la manipulation pure dans "${scenario.title}". La fin justifie les moyens...`;
+          notificationType = 'error';
+          break;
+        case 'moderate':
+          message = `Vous avez choisi une approche modérée dans "${scenario.title}". Un compromis pragmatique.`;
+          notificationType = 'warning';
+          break;
+        case 'ethical':
+          message = `Vous avez pris position pour l'éthique dans "${scenario.title}". Une voie plus difficile mais plus noble.`;
+          notificationType = 'ethical';
+          break;
+      }
+      
+      addNotification(message, notificationType, 4000);
+    }
+  };
+
+  const handleDismissScenario = () => {
+    if (gameState.activeScenarioId) {
+      dispatch({ type: 'DISMISS_SCENARIO', payload: { scenarioId: gameState.activeScenarioId } });
+    }
+  };
+
+  const handleViewScenario = (scenarioId: string) => {
+    // If the scenario is completed, just show its details
+    // If it's not completed, trigger it if not already active
+    const scenario = gameState.scenarios.find(s => s.id === scenarioId);
+    
+    if (!scenario) return;
+    
+    if (!scenario.completed && !gameState.completedScenarios.includes(scenarioId)) {
+      dispatch({ type: 'TRIGGER_SCENARIO', payload: { scenarioId } });
+    }
+    
+    // If already completed, maybe show a modal with the story and the choice made
+    // This could be implemented later as an enhancement
+  };
+
+
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100 p-4 flex flex-col items-center">
       <div className="max-w-3xl w-full">
@@ -579,6 +638,12 @@ const PropagationGame = () => {
           >
             Éthique
           </button>
+            <button
+              className={`py-2 px-4 ${activeTab === 'scenarios' ? 'border-b-2 border-amber-500 text-amber-300' : 'text-gray-400 hover:text-gray-200'}`}
+              onClick={() => handleTabChange('scenarios')}
+            >
+              Scénarios
+          </button>
         </div>
         
         {/* Content based on active tab */}
@@ -668,6 +733,16 @@ const PropagationGame = () => {
             onSwitchGameMode={handleSwitchGameMode}
           />
         )}
+
+        {activeTab === 'scenarios' && (
+          <ScenariosTab
+            scenarios={gameState.scenarios}
+            completedScenarios={gameState.completedScenarios}
+            currentEraId={gameState.currentEraId}
+            activeScenarioId={gameState.activeScenarioId}
+            onViewScenario={handleViewScenario}
+          />
+        )}
         
         {/* Educational note with link to About page */}
         <div className="mt-8 p-3 bg-gray-800 rounded text-xs text-gray-400">
@@ -683,6 +758,13 @@ const PropagationGame = () => {
           </p>
         </div>
       </div>
+      {gameState.activeScenarioId && (
+        <ScenarioModal
+          scenario={gameState.scenarios.find(s => s.id === gameState.activeScenarioId)!}
+          onMakeChoice={handleMakeScenarioChoice}
+          onDismiss={handleDismissScenario}
+        />
+      )}
     </div>
   );
 };

@@ -9,6 +9,7 @@ import {
 import { historicalEras } from './eraData';
 import { upgrades } from './upgradeData';
 import { conspiracyTheories } from './conspiracyData';
+import { scenarios } from './scenarioData';
 import { 
   ethicalActions, 
   educationalContent, 
@@ -212,7 +213,7 @@ const checkGameEndings = (state: GameState): GameEnding | null => {
   if (state.gameEnded && state.activeEndingId !== null) {
     return null;
   }
-
+  
   // Find the first ending with met conditions
   const triggeredEnding = state.gameEndings.find(ending => {
     // Skip endings that have already been triggered
@@ -329,6 +330,9 @@ export const initialGameState: GameState = {
   criticalThinkingQuotes: criticalThinkingQuotes,
   gameEndings: gameEndings,
   ethicalStats: initialEthicalStats,
+  scenarios: scenarios,
+  activeScenarioId: null,
+  completedScenarios: [],
   gameEnded: false,
   activeEndingId: null,
   lastTick: Date.now(),
@@ -389,6 +393,33 @@ export const gameReducer = (state: GameState, action: ExtendedGameAction): GameS
         ending.id === activeEndingId ? { ...ending, triggered: true } : ending
       )
       : state.gameEndings;
+
+
+    // Check for resource threshold scenario triggers
+    if (!state.activeScenarioId) {
+      const resourceThresholdScenario = state.scenarios.find(s => 
+        !s.completed && 
+        !state.completedScenarios.includes(s.id) &&
+        s.triggerCondition?.type === 'resourceThreshold' &&
+        typeof s.triggerCondition.value === 'number' &&
+        state.resources.influence >= s.triggerCondition.value
+      );
+      
+      if (resourceThresholdScenario) {
+        return {
+          ...state,
+          lastTick: currentTime,
+          resources: updatedResources,
+          upgrades: updatedUpgrades,
+          ethicalActions: updatedEthicalActions,
+          ethicalStats: updatedStats,
+          gameEndings: updatedEndings,
+          gameEnded,
+          activeEndingId,
+          activeScenarioId: resourceThresholdScenario.id
+        };
+      }
+    }
       
       return {
         ...state,
@@ -510,6 +541,24 @@ export const gameReducer = (state: GameState, action: ExtendedGameAction): GameS
       
       // Update upgrade visibility based on new purchases
       const updatedUpgrades = updateUpgradeVisibility(updatedState);
+
+
+      // Check if any scenario should be triggered by this upgrade
+      const triggerableScenario = state.scenarios.find(s => 
+        !s.completed && 
+        !state.completedScenarios.includes(s.id) &&
+        s.triggerCondition?.type === 'upgradesPurchased' &&
+        s.triggerCondition.value === upgradeId
+      );
+
+      // If a scenario should be triggered, set it as active
+      if (triggerableScenario) {
+        return {
+          ...updatedState,
+          upgrades: updatedUpgrades,
+          activeScenarioId: triggerableScenario.id
+        };
+      }
       
       return {
         ...updatedState,
@@ -555,6 +604,30 @@ export const gameReducer = (state: GameState, action: ExtendedGameAction): GameS
       if (isSuccessful) {
         // Add rewards if successful
         const resourcesWithRewards = addRewards(updatedResources, theoryToPropagate.rewards);
+
+
+      // Check if any scenario should be triggered by this theory
+      const triggerableScenario = state.scenarios.find(s => 
+        !s.completed && 
+        !state.completedScenarios.includes(s.id) &&
+        s.triggerCondition?.type === 'propagateTheory' &&
+        s.triggerCondition.value === theoryId
+      );
+      
+      // If a scenario should be triggered, set it as active
+      if (triggerableScenario) {
+        return {
+          ...state,
+          resources: resourcesWithRewards,
+          ethicalScore: newEthicalScore,
+          criticalThinking: newCriticalThinking,
+          ethicalStats: updatedStats,
+          conspiracyTheories: state.conspiracyTheories.map(theory => 
+            theory.id === theoryId ? { ...theory, propagated: true } : theory
+          ),
+          activeScenarioId: triggerableScenario.id
+        };
+      }
         
         return {
           ...state,
@@ -620,6 +693,94 @@ export const gameReducer = (state: GameState, action: ExtendedGameAction): GameS
         )
       };
     }
+    
+    
+    case 'TRIGGER_SCENARIO': {
+      const { scenarioId } = action.payload;
+      const scenario = state.scenarios.find(s => s.id === scenarioId);
+      
+      // If scenario doesn't exist or is already completed, do nothing
+      if (!scenario || scenario.completed || state.completedScenarios.includes(scenarioId)) {
+        return state;
+      }
+      
+      return {
+        ...state,
+        activeScenarioId: scenarioId
+      };
+    }
+    
+    case 'MAKE_SCENARIO_CHOICE': {
+      const { scenarioId, choiceId } = action.payload;
+      const scenario = state.scenarios.find(s => s.id === scenarioId);
+      
+      // If scenario doesn't exist or is already completed, do nothing
+      if (!scenario || scenario.completed || state.completedScenarios.includes(scenarioId)) {
+        return state;
+      }
+      
+      // Find the selected choice
+      const choice = scenario.choices.find(c => c.id === choiceId);
+      if (!choice) {
+        return state;
+      }
+      
+      // Apply consequences
+      let updatedResources = { ...state.resources };
+      let updatedEthicalScore = state.ethicalScore;
+      let updatedCriticalThinking = state.criticalThinking;
+      
+      // Apply resource changes
+      if (choice.consequences.resources) {
+        Object.entries(choice.consequences.resources).forEach(([resource, value]) => {
+          if (resource in updatedResources) {
+            updatedResources[resource as keyof GameResources] += value || 0;
+          }
+        });
+      }
+      
+      // Apply ethical score change
+      if (choice.consequences.ethicalScore) {
+        updatedEthicalScore = Math.max(0, Math.min(100, updatedEthicalScore + choice.consequences.ethicalScore));
+      }
+      
+      // Apply critical thinking change
+      if (choice.consequences.criticalThinking) {
+        updatedCriticalThinking = Math.max(0, Math.min(100, updatedCriticalThinking + choice.consequences.criticalThinking));
+      }
+      
+      // Update the scenario as completed with the choice made
+      const updatedScenarios = state.scenarios.map(s => 
+        s.id === scenarioId 
+        ? { ...s, completed: true, selectedChoiceId: choiceId } 
+        : s
+      );
+      
+      return {
+        ...state,
+        resources: updatedResources,
+        ethicalScore: updatedEthicalScore,
+        criticalThinking: updatedCriticalThinking,
+        scenarios: updatedScenarios,
+        completedScenarios: [...state.completedScenarios, scenarioId],
+        activeScenarioId: null
+      };
+    }
+    
+    case 'DISMISS_SCENARIO': {
+      const { scenarioId } = action.payload;
+      
+      // Only dismiss if it's the active scenario
+      if (state.activeScenarioId !== scenarioId) {
+        return state;
+      }
+      
+      return {
+        ...state,
+        activeScenarioId: null
+      };
+    }
+    
     case 'NETWORKING': {
       // Check if player has enough manipulation points
       if (state.resources.manipulationPoints < 2) {
@@ -726,10 +887,19 @@ export const gameReducer = (state: GameState, action: ExtendedGameAction): GameS
     }
     
     case 'LOAD_GAME': {
-      // Remplacer l'état du jeu par celui chargé
-      return action.payload.state;
-    }
-    
+      const loadedState = action.payload.state;
+      
+      if (!loadedState.scenarios) {
+        return {
+          ...loadedState,
+          scenarios: scenarios,
+          activeScenarioId: null,
+          completedScenarios: []
+        };
+      }
+      
+      return loadedState;
+    }    
     case 'RESET': {
       // Reset game to initial state
       return initialGameState;

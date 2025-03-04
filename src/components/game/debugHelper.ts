@@ -315,6 +315,73 @@ export const createDebugHelper = (dispatch, getState) => {
         
         console.log("Simulated intense gaslighting effect for 5 seconds");
       },
+
+
+      // Method to trigger a specific scenario
+      triggerScenario: (scenarioId) => {
+        const state = getState();
+        if (!state.scenarios) {
+          console.error("Scenarios not initialized in game state");
+          return;
+        }
+        
+        const scenario = state.scenarios.find(s => s.id === scenarioId);
+        if (!scenario) {
+          console.error(`Scenario with ID "${scenarioId}" not found`);
+          return;
+        }
+        
+        dispatch({
+          type: 'TRIGGER_SCENARIO',
+          payload: { scenarioId }
+        });
+        console.log(`Triggered scenario: ${scenario.title}`);
+      },
+
+      // Method to list all available scenarios
+      listScenarios: () => {
+        const state = getState();
+        if (!state.scenarios) {
+          console.error("Scenarios not initialized in game state");
+          return;
+        }
+        
+        console.group("Available Scenarios");
+        state.scenarios.forEach(s => {
+          const status = s.completed ? "Completed" :
+                        state.completedScenarios.includes(s.id) ? "Completed" :
+                        state.activeScenarioId === s.id ? "Active" : "Available";
+          
+          console.log(`${s.id}: ${s.title} [${status}] (Era: ${s.eraId})`);
+        });
+        console.groupEnd();
+        
+        return state.scenarios;
+      },
+
+      // Method to check scenarios related to the current era
+      currentEraScenarios: () => {
+        const state = getState();
+        if (!state.scenarios) {
+          console.error("Scenarios not initialized in game state");
+          return;
+        }
+        
+        const currentEra = state.currentEraId;
+        const eraScenarios = state.scenarios.filter(s => s.eraId === currentEra);
+        
+        console.group(`Scenarios for ${currentEra}`);
+        eraScenarios.forEach(s => {
+          const status = s.completed ? "Completed" :
+                        state.completedScenarios.includes(s.id) ? "Completed" :
+                        state.activeScenarioId === s.id ? "Active" : "Available";
+          
+          console.log(`${s.id}: ${s.title} [${status}]`);
+        });
+        console.groupEnd();
+        
+        return eraScenarios;
+      },
       
       // Toggle development mode (extra console messages)
       toggleDevMode: () => {
