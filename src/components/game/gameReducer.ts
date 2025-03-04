@@ -208,13 +208,18 @@ const updateEthicalActionsAvailability = (state: GameState) => {
 * @returns GameEnding that has been triggered, or null if none
 */
 const checkGameEndings = (state: GameState): GameEnding | null => {
-  // Only check if game has not ended yet
-  if (state.gameEnded) {
+  // Only check if game has not ended yet or if no active ending is being displayed
+  if (state.gameEnded && state.activeEndingId !== null) {
     return null;
   }
-  
+
   // Find the first ending with met conditions
   const triggeredEnding = state.gameEndings.find(ending => {
+    // Skip endings that have already been triggered
+    if (ending.triggered) {
+      return false;
+    }
+    
     // Check all required conditions
     const ethicalScoreMet = state.ethicalScore >= ending.condition.ethicalScore;
     const criticalThinkingMet = state.criticalThinking >= ending.condition.criticalThinking;
@@ -615,13 +620,6 @@ export const gameReducer = (state: GameState, action: ExtendedGameAction): GameS
         )
       };
     }
-    // Add these new action types to the GameAction type in types.ts:
-    // | { type: 'NETWORKING'; }  // Generate networks 
-    // | { type: 'CREDIBILITY'; }  // Generate credibility
-    // | { type: 'INFLUENCE'; }  // Generate influence
-    
-    // Then add these case handlers to the gameReducer switch statement:
-    
     case 'NETWORKING': {
       // Check if player has enough manipulation points
       if (state.resources.manipulationPoints < 2) {
