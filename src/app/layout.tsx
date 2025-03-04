@@ -1,6 +1,6 @@
 import './globals.css';
 import type { Metadata } from 'next';
-
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 export const metadata: Metadata = {
   title: 'propagation - et si tu contrôlais l\'information ?',
@@ -46,6 +46,7 @@ export default function RootLayout({
     <html lang="fr">
       <body className="bg-gray-900">
         {children}
+        <SpeedInsights/>
       </body>
     </html>
   );
