@@ -24,6 +24,7 @@
     hasSaveGame
   } from './saveService';
 import TutorialModal from './TutorialModal';
+import { createDebugHelper } from './debugHelper';
 
   // Tab types
   type TabType = 'resources' | 'progression' | 'upgrades' | 'theories' | 'ethics';
@@ -47,6 +48,8 @@ import TutorialModal from './TutorialModal';
     
     // Référence à l'état du jeu pour les sauvegardes
     const gameStateRef = useRef(gameState);
+   
+    const getState = () => gameStateRef.current;
     
     // Mettre à jour la référence quand l'état change
     useEffect(() => {
@@ -61,9 +64,17 @@ import TutorialModal from './TutorialModal';
       ? gameState.gameEndings.find(ending => ending.id === gameState.activeEndingId) 
       : null;
 
-    // Initialiser les styles de gaslighting
+    // Initialiser les styles de gaslighting 
     useEffect(() => {
       initializeGaslightingStyles();
+    }, []);
+
+    // Debug helper - separate useEffect for cleaner organization
+    useEffect(() => {
+      const getState = () => gameStateRef.current;
+      window.__SECRET_DOM_DO_NOT_USE_OR_YOU_WILL_BE_FIRED = createDebugHelper(dispatch, getState);
+      // eslint-disable-next-line no-console
+      console.log("Debug helper loaded. Access via window.__SECRET_DOM_DO_NOT_USE_OR_YOU_WILL_BE_FIRED");
     }, []);
     
     // Vérifier s'il y a une sauvegarde à charger
