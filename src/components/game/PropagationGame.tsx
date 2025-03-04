@@ -70,6 +70,7 @@ import TutorialModal from './TutorialModal';
     useEffect(() => {
       const loadSavedGame = async () => {
         if (hasLoadedSave.current) {
+          setShowTutorial(false);
           return;
         }
         
@@ -81,6 +82,7 @@ import TutorialModal from './TutorialModal';
             dispatch({ type: 'LOAD_GAME', payload: { state: savedState } });
             addNotification('Partie précédente chargée automatiquement', 'info', 3000);
             hasLoadedSave.current = true;
+            setShowTutorial(false);
           }
         }
       };
