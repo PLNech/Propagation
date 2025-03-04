@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { 
   EthicalAction, 
   GameResources, 
@@ -25,6 +25,38 @@ interface EthicsTabProps {
   onSwitchGameMode: (mode: GameMode) => void;
 }
 
+  // Messages ironiques aléatoires
+  const getRandomMessage = () => {
+    const messages = [
+      "Ah, l'éthique... cette relique d'une époque où on avait encore le temps d'y penser.",
+      "Si vous lisez ceci, vous êtes parmi les rares à se soucier encore de l'éthique. Félicitations?",
+      "Rappel: Les points d'éthique n'ont pas de valeur monétaire. Dommage.",
+      "Être éthique dans un monde qui ne l'est pas... quel acte de rébellion.",
+      "La pensée critique est le bug que personne n'a réussi à patcher.",
+      "Certains joueurs affirment que ce jeu serait plus facile en ignorant cet onglet. Étrange...",
+      "Cette section a-t-elle toujours existé? Vos souvenirs semblent flous à ce sujet...",
+      "Les données de cette section pourraient différer de ce que d'autres joueurs voient. Coïncidence?",
+      "L'éthique ? Ah oui, ce truc qui fait perdre du temps à ceux qui veulent gagner.",
+      "Les leaders charismatiques ont une éthique. Ils savent juste quand l'ignorer.",
+      "Vous êtes persuadé d'être une bonne personne ? Intéressant. Continuez.",
+      "Choisissez bien vos valeurs. Après tout, elles définiront la manière dont vous expliquerez vos choix.",
+      "La morale évolue avec le temps... ou avec les opportunités.",
+      "Agir avec éthique, c'est bien. Faire croire aux autres qu'on agit avec éthique, c'est mieux.",
+      "La bonne nouvelle ? Il y aura toujours pire que vous. Dormez tranquille.",
+      "La pensée critique est un muscle. Heureusement, peu de gens lui font faire des reps.",
+      "Le doute est une vertu… jusqu’à ce que vous le remettiez en question.",
+      "On dit que la vérité libère. Mais pas toutes.",
+      "Penser par soi-même est un art. Suivre la foule est une science.",
+      "Les faits ne se soucient pas de votre opinion. Dommage que ça soit réciproque.",
+      "Chaque mensonge bien raconté a un public prêt à y croire.",
+      "Seuls les naïfs croient qu'ils ne sont jamais manipulés. Vous êtes naïf ?"
+    ];
+    
+    return messages[Math.floor(Math.random() * messages.length)];
+  };
+
+
+
 /**
  * Tab component for ethics, educational content, and critical thinking
  */
@@ -42,7 +74,12 @@ const EthicsTab: React.FC<EthicsTabProps> = ({
   onSwitchGameMode
 }) => {
   const [activeSection, setActiveSection] = useState<'actions' | 'education' | 'stats'>('actions');
-  
+  const [showGlitch, setShowGlitch] = useState(false);
+  const [fadeIn, setFadeIn] = useState(false);
+
+  const [randomMessage, setRandomMessage] = useState(getRandomMessage());
+  const intervalRef = useRef<NodeJS.Timeout | null>(null); // Stocker l'ID de l'intervalle
+
   // Filter actions for current era
   const currentEraActions = ethicalActions.filter(
     action => action.eraId === currentEraId && !action.performed
@@ -82,22 +119,28 @@ const EthicsTab: React.FC<EthicsTabProps> = ({
     return 'text-gray-400';
   };
 
-  // Messages ironiques aléatoires
-  const getRandomMessage = () => {
-    const messages = [
-      "Ah, l'éthique... cette relique d'une époque où on avait encore le temps d'y penser.",
-      "Si vous lisez ceci, vous êtes parmi les rares à se soucier encore de l'éthique. Félicitations?",
-      "Rappel: Les points d'éthique n'ont pas de valeur monétaire. Dommage.",
-      "Être éthique dans un monde qui ne l'est pas... quel acte de rébellion.",
-      "La pensée critique est le bug que personne n'a réussi à patcher.",
-      "Certains joueurs affirment que ce jeu serait plus facile en ignorant cet onglet. Étrange...",
-      "Cette section a-t-elle toujours existé? Vos souvenirs semblent flous à ce sujet...",
-      "Les données de cette section pourraient différer de ce que d'autres joueurs voient. Coïncidence?"
-    ];
+  // Random message glitch + fade effect
+  useEffect(() => {
+    if (intervalRef.current) return;
+  
+    intervalRef.current = setInterval(() => {
+      setShowGlitch(true); // Début du glitch (disparition)
+  
+      setTimeout(() => {
+        setShowGlitch(false); // Fin du glitch
+        setRandomMessage(getRandomMessage()); // Changer le message
+        setFadeIn(true); // Activer l’effet de fondu
+  
+        setTimeout(() => {
+          setFadeIn(false); // Retirer l’effet après animation
+        }, 1500); // Durée de fade-in
+      }, 3000); // Temps de disparition glitch
+  
+    }, 10000); // Intervalle entre les messages
+  
+    return () => clearInterval(intervalRef.current);
+  }, []);
     
-    return messages[Math.floor(Math.random() * messages.length)];
-  };
-
   return (
     <div className="mt-6">
       <div className="flex justify-between items-center mb-4">
@@ -116,7 +159,9 @@ const EthicsTab: React.FC<EthicsTabProps> = ({
       
       {/* Ironic message */}
       <div className="bg-gray-800 p-3 rounded-lg mb-4 text-sm text-gray-400 italic">
-        {getRandomMessage()}
+        <span className={`${showGlitch ? "glitch-fade-out" : ""} ${fadeIn ? "fade-in" : ""}`}>
+          {randomMessage}
+        </span>
       </div>
       
       {/* Mode Switch */}
