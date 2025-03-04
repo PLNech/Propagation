@@ -579,29 +579,6 @@ import TutorialModal from './TutorialModal';
                   </div>
                 </>
               )}
-              {/* Era benefits preview */}
-              <div className="mt-8 p-4 bg-gray-800 rounded-lg">
-                <h3 className="text-lg font-semibold mb-2">Avantages de l&apos;ère: {currentEra.name}</h3>
-                <p className="text-sm text-gray-300 mb-3">{currentEra.description}</p>
-                
-                <div className="grid grid-cols-2 gap-2 text-sm">
-                  {Object.entries(currentEra.resourceMultipliers).map(([resource, multiplier]) => (
-                    <div key={resource} className="flex justify-between items-center">
-                      <span>{resource}:</span>
-                      <span className="text-blue-300">
-                        x{multiplier}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-                
-                <button 
-                  onClick={() => handleTabChange('progression')}
-                  className="mt-3 w-full py-1 text-sm bg-purple-800 hover:bg-purple-700 rounded"
-                >
-                  Voir toutes les ères
-                </button>
-              </div>
             </>
           )}
           
