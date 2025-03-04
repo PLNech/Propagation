@@ -19,13 +19,13 @@ import {
 
 // Étendre le type GameAction pour inclure le chargement de sauvegardes
 type ExtendedGameAction = GameAction | 
-  { type: 'LOAD_GAME'; payload: { state: GameState } };
+{ type: 'LOAD_GAME'; payload: { state: GameState } };
 
 /**
- * Calculates resource multipliers based on active era, purchased upgrades, and game mode
- * @param state Current game state
- * @returns Record of multipliers for each resource
- */
+* Calculates resource multipliers based on active era, purchased upgrades, and game mode
+* @param state Current game state
+* @returns Record of multipliers for each resource
+*/
 const calculateResourceMultipliers = (state: GameState): Record<keyof GameResources, number> => {
   // Start with base multipliers
   const multipliers: Record<keyof GameResources, number> = {
@@ -47,12 +47,12 @@ const calculateResourceMultipliers = (state: GameState): Record<keyof GameResour
   
   // Apply multipliers from purchased upgrades
   state.upgrades
-    .filter(upgrade => upgrade.purchased && upgrade.effect.type === 'multiplier')
-    .forEach(upgrade => {
-      if (upgrade.effect.target in multipliers) {
-        multipliers[upgrade.effect.target as keyof GameResources] *= upgrade.effect.value;
-      }
-    });
+  .filter(upgrade => upgrade.purchased && upgrade.effect.type === 'multiplier')
+  .forEach(upgrade => {
+    if (upgrade.effect.target in multipliers) {
+      multipliers[upgrade.effect.target as keyof GameResources] *= upgrade.effect.value;
+    }
+  });
   
   // Apply game mode modifiers
   if (state.gameMode === 'revelation') {
@@ -73,37 +73,37 @@ const calculateResourceMultipliers = (state: GameState): Record<keyof GameResour
 };
 
 /**
- * Calculate passive resource generation from purchased upgrades
- * @param state Current game state
- * @returns Record of passive generation values for each resource
- */
+* Calculate passive resource generation from purchased upgrades
+* @param state Current game state
+* @returns Record of passive generation values for each resource
+*/
 const calculatePassiveGeneration = (state: GameState): Partial<Record<keyof GameResources, number>> => {
   const passiveGen: Partial<Record<keyof GameResources, number>> = {};
   
   // Get passive generation from upgrades
   state.upgrades
-    .filter(upgrade => upgrade.purchased && upgrade.effect.type === 'passive')
-    .forEach(upgrade => {
-      const target = upgrade.effect.target as keyof GameResources;
-      if (!passiveGen[target]) {
-        passiveGen[target] = 0;
-      }
-      passiveGen[target]! += upgrade.effect.value;
-    });
+  .filter(upgrade => upgrade.purchased && upgrade.effect.type === 'passive')
+  .forEach(upgrade => {
+    const target = upgrade.effect.target as keyof GameResources;
+    if (!passiveGen[target]) {
+      passiveGen[target] = 0;
+    }
+    passiveGen[target]! += upgrade.effect.value;
+  });
   
   return passiveGen;
 };
 
 /**
- * Calculates updated resources based on time passed, active era, upgrades, and game mode
- * @param resources Current game resources
- * @param deltaTime Time passed since last update in milliseconds
- * @param multipliers Resource multipliers
- * @param passiveGen Passive generation values
- * @param criticalThinking Critical thinking level (affects resource generation in revelation mode)
- * @param gameMode Current game mode
- * @returns Updated resources
- */
+* Calculates updated resources based on time passed, active era, upgrades, and game mode
+* @param resources Current game resources
+* @param deltaTime Time passed since last update in milliseconds
+* @param multipliers Resource multipliers
+* @param passiveGen Passive generation values
+* @param criticalThinking Critical thinking level (affects resource generation in revelation mode)
+* @param gameMode Current game mode
+* @returns Updated resources
+*/
 const calculateResourcesUpdate = (
   resources: GameResources, 
   deltaTime: number,
@@ -142,10 +142,10 @@ const calculateResourcesUpdate = (
 };
 
 /**
- * Updates the visibility of upgrades based on prerequisites
- * @param state Current game state
- * @returns Updated upgrades array
- */
+* Updates the visibility of upgrades based on prerequisites
+* @param state Current game state
+* @returns Updated upgrades array
+*/
 const updateUpgradeVisibility = (state: GameState): Upgrade[] => {
   return state.upgrades.map(upgrade => {
     // If already visible or not from current era, keep current visibility
@@ -155,10 +155,10 @@ const updateUpgradeVisibility = (state: GameState): Upgrade[] => {
     
     // Check if all prerequisites are purchased
     const prerequisitesMet = upgrade.prerequisiteUpgradeIds.length === 0 || 
-      upgrade.prerequisiteUpgradeIds.every(prereqId => {
-        const prereq = state.upgrades.find(u => u.id === prereqId);
-        return prereq && prereq.purchased;
-      });
+    upgrade.prerequisiteUpgradeIds.every(prereqId => {
+      const prereq = state.upgrades.find(u => u.id === prereqId);
+      return prereq && prereq.purchased;
+    });
     
     return {
       ...upgrade,
@@ -168,10 +168,10 @@ const updateUpgradeVisibility = (state: GameState): Upgrade[] => {
 };
 
 /**
- * Updates the ethical actions availability based on conditions
- * @param state Current game state
- * @returns Updated ethical actions array
- */
+* Updates the ethical actions availability based on conditions
+* @param state Current game state
+* @returns Updated ethical actions array
+*/
 const updateEthicalActionsAvailability = (state: GameState) => {
   return state.ethicalActions.map(action => {
     // If no unlock condition or already performed, keep current state
@@ -183,15 +183,15 @@ const updateEthicalActionsAvailability = (state: GameState) => {
     
     switch (action.unlockCondition.type) {
       case 'ethicalScore':
-        conditionMet = state.ethicalScore >= action.unlockCondition.value;
-        break;
+      conditionMet = state.ethicalScore >= action.unlockCondition.value;
+      break;
       case 'criticalThinking':
-        conditionMet = state.criticalThinking >= action.unlockCondition.value;
-        break;
+      conditionMet = state.criticalThinking >= action.unlockCondition.value;
+      break;
       case 'propagatedTheories':
-        const propagatedCount = state.conspiracyTheories.filter(theory => theory.propagated).length;
-        conditionMet = propagatedCount >= action.unlockCondition.value;
-        break;
+      const propagatedCount = state.conspiracyTheories.filter(theory => theory.propagated).length;
+      conditionMet = propagatedCount >= action.unlockCondition.value;
+      break;
     }
     
     return {
@@ -203,10 +203,10 @@ const updateEthicalActionsAvailability = (state: GameState) => {
 };
 
 /**
- * Checks if any game ending conditions are met
- * @param state Current game state
- * @returns GameEnding that has been triggered, or null if none
- */
+* Checks if any game ending conditions are met
+* @param state Current game state
+* @returns GameEnding that has been triggered, or null if none
+*/
 const checkGameEndings = (state: GameState): GameEnding | null => {
   // Only check if game has not ended yet
   if (state.gameEnded) {
@@ -230,11 +230,11 @@ const checkGameEndings = (state: GameState): GameEnding | null => {
 };
 
 /**
- * Checks if player can afford a purchase
- * @param resources Current resources
- * @param cost Cost to check against
- * @returns True if player can afford the cost
- */
+* Checks if player can afford a purchase
+* @param resources Current resources
+* @param cost Cost to check against
+* @returns True if player can afford the cost
+*/
 const canAfford = (
   resources: GameResources, 
   cost: Partial<Record<keyof GameResources, number>>
@@ -245,11 +245,11 @@ const canAfford = (
 };
 
 /**
- * Spend resources for a purchase
- * @param resources Current resources
- * @param cost Resources to spend
- * @returns Updated resources after spending
- */
+* Spend resources for a purchase
+* @param resources Current resources
+* @param cost Resources to spend
+* @returns Updated resources after spending
+*/
 const spendResources = (
   resources: GameResources,
   cost: Partial<Record<keyof GameResources, number>>
@@ -266,11 +266,11 @@ const spendResources = (
 };
 
 /**
- * Add rewards to resources
- * @param resources Current resources
- * @param rewards Resources to add
- * @returns Updated resources after adding rewards
- */
+* Add rewards to resources
+* @param resources Current resources
+* @param rewards Resources to add
+* @returns Updated resources after adding rewards
+*/
 const addRewards = (
   resources: GameResources,
   rewards: Partial<Record<keyof GameResources, number>>
@@ -287,11 +287,11 @@ const addRewards = (
 };
 
 /**
- * Calculate the number of lives impacted based on influence and networks
- * @param influence Current influence value
- * @param networks Current networks value
- * @returns Estimated number of lives impacted
- */
+* Calculate the number of lives impacted based on influence and networks
+* @param influence Current influence value
+* @param networks Current networks value
+* @returns Estimated number of lives impacted
+*/
 const calculateLivesImpacted = (influence: number, networks: number): number => {
   // Simple formula: influence * networks * 10 
   // This gives a sense of scale while keeping numbers manageable
@@ -299,8 +299,8 @@ const calculateLivesImpacted = (influence: number, networks: number): number => 
 };
 
 /**
- * Initial game state with resources, eras, upgrades, theories and ethical system
- */
+* Initial game state with resources, eras, upgrades, theories and ethical system
+*/
 export const initialGameState: GameState = {
   resources: {
     credibility: 0,
@@ -331,11 +331,11 @@ export const initialGameState: GameState = {
 };
 
 /**
- * Game state reducer to handle all game actions
- * @param state Current game state
- * @param action Action to perform
- * @returns New game state
- */
+* Game state reducer to handle all game actions
+* @param state Current game state
+* @param action Action to perform
+* @returns New game state
+*/
 export const gameReducer = (state: GameState, action: ExtendedGameAction): GameState => {
   switch (action.type) {
     case 'TICK': {
@@ -380,10 +380,10 @@ export const gameReducer = (state: GameState, action: ExtendedGameAction): GameS
       
       // Update endings if one was triggered
       const updatedEndings = gameEnded 
-        ? state.gameEndings.map(ending => 
-            ending.id === activeEndingId ? { ...ending, triggered: true } : ending
-          )
-        : state.gameEndings;
+      ? state.gameEndings.map(ending => 
+        ending.id === activeEndingId ? { ...ending, triggered: true } : ending
+      )
+      : state.gameEndings;
       
       return {
         ...state,
@@ -491,8 +491,8 @@ export const gameReducer = (state: GameState, action: ExtendedGameAction): GameS
       
       // In revelation mode, purchasing upgrades can increase critical thinking
       const updatedCriticalThinking = state.gameMode === 'revelation'
-        ? Math.min(100, state.criticalThinking + 1)
-        : state.criticalThinking;
+      ? Math.min(100, state.criticalThinking + 1)
+      : state.criticalThinking;
       
       const updatedState = {
         ...state,
@@ -615,6 +615,72 @@ export const gameReducer = (state: GameState, action: ExtendedGameAction): GameS
         )
       };
     }
+    // Add these new action types to the GameAction type in types.ts:
+    // | { type: 'NETWORKING'; }  // Generate networks 
+    // | { type: 'CREDIBILITY'; }  // Generate credibility
+    // | { type: 'INFLUENCE'; }  // Generate influence
+    
+    // Then add these case handlers to the gameReducer switch statement:
+    
+    case 'NETWORKING': {
+      // Check if player has enough manipulation points
+      if (state.resources.manipulationPoints < 2) {
+        return state;
+      }
+      
+      // Calculate multipliers
+      const multipliers = calculateResourceMultipliers(state);
+      
+      // Spend manipulation points and generate networks
+      return {
+        ...state,
+        resources: {
+          ...state.resources,
+          manipulationPoints: state.resources.manipulationPoints - 2,
+          networks: state.resources.networks + 1 * multipliers.networks,
+        },
+      };
+    }
+    
+    case 'CREDIBILITY': {
+      // Check if player has enough manipulation points
+      if (state.resources.manipulationPoints < 3) {
+        return state;
+      }
+      
+      // Calculate multipliers
+      const multipliers = calculateResourceMultipliers(state);
+      
+      // Spend manipulation points and generate credibility
+      return {
+        ...state,
+        resources: {
+          ...state.resources,
+          manipulationPoints: state.resources.manipulationPoints - 3,
+          credibility: state.resources.credibility + 1.5 * multipliers.credibility,
+        },
+      };
+    }
+    
+    case 'INFLUENCE': {
+      // Check if player has enough manipulation points
+      if (state.resources.manipulationPoints < 5) {
+        return state;
+      }
+      
+      // Calculate multipliers
+      const multipliers = calculateResourceMultipliers(state);
+      
+      // Spend manipulation points and generate influence
+      return {
+        ...state,
+        resources: {
+          ...state.resources,
+          manipulationPoints: state.resources.manipulationPoints - 5,
+          influence: state.resources.influence + 2 * multipliers.influence,
+        },
+      };
+    }
     
     case 'SWITCH_GAME_MODE': {
       const { mode } = action.payload;
@@ -644,11 +710,11 @@ export const gameReducer = (state: GameState, action: ExtendedGameAction): GameS
       const endingAlreadyCounted = ending && ending.triggered;
       
       const updatedStats = endingAlreadyCounted 
-        ? state.ethicalStats 
-        : {
-            ...state.ethicalStats,
-            endingsUnlocked: state.ethicalStats.endingsUnlocked + 1
-          };
+      ? state.ethicalStats 
+      : {
+        ...state.ethicalStats,
+        endingsUnlocked: state.ethicalStats.endingsUnlocked + 1
+      };
       
       return {
         ...state,
@@ -672,6 +738,6 @@ export const gameReducer = (state: GameState, action: ExtendedGameAction): GameS
     }
     
     default:
-      return state;
+    return state;
   }
 };

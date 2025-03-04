@@ -171,6 +171,9 @@ export interface GameState {
 export type GameAction = 
   | { type: 'TICK'; payload: { currentTime: number } }  // Regular game update
   | { type: 'MANIPULATE'; }  // Player initiated action
+  | { type: 'NETWORKING'; }  // Generate networks
+  | { type: 'CREDIBILITY'; }  // Generate credibility
+  | { type: 'INFLUENCE'; }  // Generate influence
   | { type: 'UNLOCK_ERA'; payload: { eraId: string } }  // Unlock a new era
   | { type: 'SELECT_ERA'; payload: { eraId: string } }  // Select an era as current
   | { type: 'PURCHASE_UPGRADE'; payload: { upgradeId: string } }  // Purchase an upgrade
@@ -178,4 +181,5 @@ export type GameAction =
   | { type: 'PERFORM_ETHICAL_ACTION'; payload: { actionId: string } }  // Perform an ethical action
   | { type: 'SWITCH_GAME_MODE'; payload: { mode: GameMode } }  // Switch between game modes
   | { type: 'ACKNOWLEDGE_ENDING'; payload: { endingId: string } }  // Acknowledge a game ending
+  | { type: 'LOAD_GAME'; payload: { state: GameState } } // Load a saved game
   | { type: 'RESET'; };      // Reset the game

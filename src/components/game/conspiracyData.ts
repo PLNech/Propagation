@@ -22,6 +22,22 @@ export const conspiracyTheories: ConspiracyTheory[] = [
     visible: true
   },
   {
+    id: "behistunInscription",
+    name: "L'Inscription de Behistun",
+    description: "Inspiré de l'inscription réelle de Darius I (515 av. J.-C.), propager l'idée que les hiéroglyphes cachent un message sur une race supérieure ayant gouverné l'humanité.",
+    eraId: "antiquity",
+    cost: 45,
+    successRate: 0.75,
+    rewards: {
+      credibility: 35,
+      influence: 30
+    },
+    ethicalImpact: -3,
+    criticalThinkingImpact: -4,
+    propagated: false,
+    visible: true
+  },
+  {
     id: "hiddenTemples",
     name: "Temples Cachés",
     description: "Des temples secrets contiennent des connaissances ésotériques qui pourraient bouleverser notre compréhension de l'histoire.",
@@ -53,6 +69,22 @@ export const conspiracyTheories: ConspiracyTheory[] = [
     },
     ethicalImpact: -5,
     criticalThinkingImpact: -5, // Substantial negative impact on critical thinking
+    propagated: false,
+    visible: true
+  },
+  {
+    id: "irishWars",
+    name: "La Guerre des Étrangers",
+    description: "Basé sur 'La Guerre des Irlandais contre les Étrangers' (12e siècle), propager l'idée que certains dirigeants actuels sont des descendants directs de légitimes souverains déchus.",
+    eraId: "middleAges",
+    cost: 120,
+    successRate: 0.65,
+    rewards: {
+      credibility: 80,
+      influence: 70
+    },
+    ethicalImpact: -5,
+    criticalThinkingImpact: -6,
     propagated: false,
     visible: true
   },
@@ -93,6 +125,23 @@ export const conspiracyTheories: ConspiracyTheory[] = [
     visible: true
   },
   {
+    id: "commonSenseFalsehood",
+    name: "Le Sens Commun Manipulé",
+    description: "Inspiré du pamphlet 'Common Sense' (1776) de Thomas Paine, propager l'idée que des événements historiques majeurs ont été entièrement fabriqués pour manipuler l'opinion publique.",
+    eraId: "industrial",
+    cost: 300,
+    successRate: 0.7,
+    rewards: {
+      credibility: 170,
+      influence: 200,
+      networks: 150
+    },
+    ethicalImpact: -7,
+    criticalThinkingImpact: -7,
+    propagated: false,
+    visible: true
+  },
+  {
     id: "secretSocieties",
     name: "Sociétés Secrètes",
     description: "Un réseau mondial de sociétés secrètes contrôle les gouvernements et dirige l'économie mondiale dans l'ombre.",
@@ -129,6 +178,23 @@ export const conspiracyTheories: ConspiracyTheory[] = [
     visible: true
   },
   {
+    id: "manufacturedConsent",
+    name: "Consentement Fabriqué",
+    description: "Inspiré de 'Manufacturing Consent' (1988) de Chomsky, suggérer que tous les médias sont contrôlés par une entité unique qui fabrique l'opinion publique.",
+    eraId: "coldWar",
+    cost: 600,
+    successRate: 0.55,
+    rewards: {
+      credibility: 400,
+      influence: 500,
+      networks: 300
+    },
+    ethicalImpact: -8,
+    criticalThinkingImpact: -8,
+    propagated: false,
+    visible: true
+  },
+  {
     id: "alienContacts",
     name: "Contacts Extraterrestres",
     description: "Les gouvernements ont établi des contacts avec des civilisations extraterrestres et dissimulent cette vérité au public.",
@@ -161,6 +227,23 @@ export const conspiracyTheories: ConspiracyTheory[] = [
     },
     ethicalImpact: -7,
     criticalThinkingImpact: -8, // Very severe negative impact on critical thinking
+    propagated: false,
+    visible: true
+  },
+  {
+    id: "thinkingFlawed",
+    name: "La Pensée Lente Manipulée",
+    description: "Inspiré de 'Thinking, Fast and Slow' (2011) de Kahneman, propager l'idée que nos processus de pensée ont été délibérément compromis par des expériences sociétales.",
+    eraId: "digital",
+    cost: 1200,
+    successRate: 0.6,
+    rewards: {
+      credibility: 900,
+      influence: 1000,
+      networks: 700
+    },
+    ethicalImpact: -9,
+    criticalThinkingImpact: -9,
     propagated: false,
     visible: true
   },

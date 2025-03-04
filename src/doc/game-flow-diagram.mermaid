@@ -1,0 +1,79 @@
+flowchart TD
+    Start[Nouveau Joueur] --> Tutorial[Tutoriel]
+    Tutorial --> EarlyGame[Début de Partie]
+    
+    %% Resource Generation
+    EarlyGame --> Manipulate[Bouton Manipuler]
+    Manipulate --> ManipulationPoints[Points de Manipulation]
+    
+    ManipulationPoints --> Networking[Action: Réseautage\n2 pts → +1 Réseaux]
+    ManipulationPoints --> Credibility[Action: Crédibilité\n3 pts → +1.5 Crédibilité]
+    ManipulationPoints --> Influence[Action: Influence\n5 pts → +2 Influence]
+    
+    Networking --> Networks[Réseaux]
+    Credibility --> CredibilityRes[Crédibilité]
+    Influence --> InfluenceRes[Influence]
+    
+    %% Era Progression
+    InfluenceRes --> Antiquity[Ère: Antiquité\nDébloquée par défaut]
+    Antiquity --> MiddleAges[Ère: Moyen Âge\nCoût: 50 Influence]
+    MiddleAges --> Industrial[Ère: Industrielle\nCoût: 200 Influence]
+    Industrial --> ColdWar[Ère: Guerre Froide\nCoût: 800 Influence]
+    ColdWar --> Digital[Ère: Numérique\nCoût: 3000 Influence]
+    
+    %% Feature Unlocks
+    Antiquity --- Storytelling[Amélioration:\nNarration Captivante]
+    Antiquity --- AncientTheories[Théories:\nAnciens Astronomes]
+    Antiquity --- ArthashastraTactics[Amélioration:\nTactiques de l'Arthashastra]
+    
+    MiddleAges --- ReligiousAuthority[Amélioration:\nAutorité Religieuse]
+    MiddleAges --- IrishWarsHistoriography[Amélioration:\nHistoriographie Sélective]
+    
+    Industrial --- CommonSenseApproach[Amélioration:\nApproche 'Sens Commun']
+    Industrial --- FederalistTechniques[Amélioration:\nTechniques Fédéralistes]
+    
+    ColdWar --- BernaysMethods[Amélioration:\nMéthodes Bernays]
+    ColdWar --- ManufacturedConsent[Amélioration:\nConsentement Fabriqué]
+    
+    Digital --- CognitiveBiasExploitation[Amélioration:\nExploitation des Biais Cognitifs]
+    Digital --- AIGeneration[Amélioration:\nGénération par IA]
+    
+    %% Ethical Choices
+    ManipulationPoints --> PropagateTheories[Propager des Théories\nGain rapide d'influence\nImpact éthique négatif]
+    InfluenceRes --> EthicalActions[Actions Éthiques\nSacrifice d'influence\nGain éthique]
+    
+    PropagateTheories --> LowEthics[Score Éthique Bas]
+    EthicalActions --> HighEthics[Score Éthique Élevé]
+    
+    %% Game Modes
+    LowEthics --> ManipulationMode[Mode Manipulation]
+    HighEthics --> RevelationMode[Mode Révélation]
+    
+    %% Endgames
+    ManipulationMode --> MasterManipulator[Fin:\nMaître Manipulateur\nInfluence: 5000+\nÉthique: <30]
+    ManipulationMode --> ShadowPuppeteer[Fin:\nMarionnettiste de l'Ombre\nInfluence: 3000+\nÉthique: <40]
+    
+    RevelationMode --> TruthSeeker[Fin:\nChercheur de Vérité\nInfluence: 1000+\nÉthique: 80+\nPensée Critique: 70+]
+    RevelationMode --> Enlightener[Fin:\nÉveilleur de Consciences\nInfluence: 2000+\nÉthique: 90+\nPensée Critique: 90+]
+    RevelationMode --> RationalistLeader[Fin:\nLeader Rationaliste\nInfluence: 3000+\nÉthique: 85+\nPensée Critique: 95+]
+    
+    ManipulationMode --> Compromiser{Compromis}
+    RevelationMode --> Compromiser
+    
+    Compromiser --> EthicalCompromiser[Fin:\nÉquilibriste Éthique\nInfluence: 2000+\nÉthique: 50+\nPensée Critique: 40+]
+    
+    %% Visual styles
+    classDef default fill:#1f2937,stroke:#475569,color:#e2e8f0
+    classDef start fill:#1e3a8a,stroke:#3b82f6,color:white
+    classDef resources fill:#065f46,stroke:#10b981,color:white
+    classDef eras fill:#4c1d95,stroke:#8b5cf6,color:white
+    classDef actions fill:#9f1239,stroke:#f43f5e,color:white
+    classDef ethics fill:#1e40af,stroke:#3b82f6,color:white
+    classDef endings fill:#7e22ce,stroke:#a855f7,color:white
+    
+    class Start,Tutorial start
+    class ManipulationPoints,Networks,CredibilityRes,InfluenceRes resources
+    class Antiquity,MiddleAges,Industrial,ColdWar,Digital eras
+    class Manipulate,Networking,Credibility,Influence,PropagateTheories,EthicalActions actions
+    class LowEthics,HighEthics,ManipulationMode,RevelationMode ethics
+    class MasterManipulator,ShadowPuppeteer,TruthSeeker,Enlightener,RationalistLeader,EthicalCompromiser endings

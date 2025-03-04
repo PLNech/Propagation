@@ -1,5 +1,6 @@
 import React from 'react';
 import { HistoricalEra } from '@/types';
+import HistoricalContext from './HistoricalContext';
 
 interface ProgressionTabProps {
   eras: HistoricalEra[];
@@ -52,7 +53,10 @@ const ProgressionTab: React.FC<ProgressionTabProps> = ({
           })}
         </div>
       </div>
-      
+      <div className="mb-8">
+        {/* Add the historical context for the current era */}
+        <HistoricalContext era={eras.find(era => era.id === currentEraId) as HistoricalEra} />
+      </div>  
       <div className="space-y-6">
         {eras.map((era) => (
           <div 
