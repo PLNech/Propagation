@@ -12,7 +12,6 @@ import { Achievement, AchievementReward } from '@/types';
  */
 export const checkAchievements = (state: GameState): string[] => {
   const newlyUnlocked: string[] = [];
-  console.log(state);
   
   // Get unlocked and locked achievements
   const lockedAchievements = state.achievementState.achievements.filter(a => !a.unlocked);

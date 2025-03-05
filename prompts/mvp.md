@@ -149,7 +149,7 @@ Objectif éducatif: Les scénarios permettent d'illustrer des cas concrets de ma
 
 Prompt 6: Système d'accomplissements et sauvegarde
 
-Finalisons "Propagation" avec un système d'accomplissements et des fonctionnalités de sauvegarde:
+Finalisons "Propagation" avec un système d'accomplissements qui fait rire et donne envie de partager ses succès à ses potes.
 
 1. Implémente un système d'accomplissements:
    - Accomplissements pour diverses actions (débloquer des ères, atteindre certains seuils de ressources...)
@@ -157,27 +157,11 @@ Finalisons "Propagation" avec un système d'accomplissements et des fonctionnali
    - Notifications lors du déblocage d'accomplissements
    - Tableau récapitulatif des accomplissements
 
-2. Ajoute un système de sauvegarde complet:
-   - Sauvegarde automatique (toutes les minutes)
-   - Boutons pour sauvegarder/charger manuellement
-   - Option de réinitialisation
-   - Affichage de la date de dernière sauvegarde
-
-3. Peaufine l'interface utilisateur:
+2. Peaufine l'interface utilisateur:
    - Ajoute des notifications pour les événements importants
    - Crée un système de statistiques détaillées
    - Améliore la réactivité et l'ergonomie
    - Assure la compatibilité mobile
-
-4. Implémente des tests pour assurer la stabilité:
-   - Tests de base pour les fonctions principales
-   - Vérification de la sauvegarde/chargement
-   - Validation des calculs de ressources
-
-Aspects techniques:
-- Utilise localStorage pour la sauvegarde
-- Assure-toi que la sérialisation/désérialisation fonctionne correctement
-- Optimise les performances pour éviter les ralentissements
 
 N'oublie pas d'ajouter une section "À propos" expliquant l'objectif éducatif du jeu et précisant qu'il s'agit d'une fiction visant à développer l'esprit critique.
 
@@ -236,3 +220,9 @@ Artifacts
 
 Content
 
+
+-- TODO LATER
+3. Implémente des tests pour assurer la stabilité:
+   - Tests de base pour les fonctions principales
+   - Vérification de la sauvegarde/chargement
+   - Validation des calculs de ressources
