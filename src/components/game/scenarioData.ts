@@ -391,7 +391,7 @@ export const scenarios: Scenario[] = [
     ],
     completed: false,
     triggerCondition: {
-      type: "upgradePurchased",
+      type: "upgradesPurchased",
       value: "massBroadcasting"
     }
   },

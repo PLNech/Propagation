@@ -7,8 +7,13 @@
  * Then add the line to expose it to window at the end of the useEffect(() => {}, []) that runs once on mount
  */
 
-// Create the debug helper with various functions
-export const createDebugHelper = (dispatch, getState) => {
+import { GameState, GameAction, HistoricalEra, Upgrade } from '@/types';
+
+export const createDebugHelper = (
+  dispatch: React.Dispatch<GameAction>,
+  getState: () => GameState
+) => {
+
     return {
       // Resource manipulation functions
       giveCredibility: (amount = 100) => {
@@ -165,7 +170,7 @@ export const createDebugHelper = (dispatch, getState) => {
       },
       
       // Game mode manipulation
-      setGameMode: (mode) => {
+      setGameMode: (mode: string) => {
         if (mode !== 'manipulation' && mode !== 'revelation') {
           console.error('Invalid mode. Use "manipulation" or "revelation"');
           return;
@@ -185,7 +190,7 @@ export const createDebugHelper = (dispatch, getState) => {
       },
       
       // Testing endings
-      triggerEnding: (endingId) => {
+      triggerEnding: (endingId: string) => {
         const state = getState();
         const ending = state.gameEndings.find(e => e.id === endingId);
         
@@ -235,7 +240,7 @@ export const createDebugHelper = (dispatch, getState) => {
       
       getEraProgress: () => {
         const state = getState();
-        const unlockedEras = state.eras.filter(era => era.unlocked).length;
+        const unlockedEras = state.eras.filter((era: HistoricalEra) => era.unlocked).length;
         const totalEras = state.eras.length;
         console.log(`Era progress: ${unlockedEras}/${totalEras} (${Math.round(unlockedEras/totalEras*100)}%)`);
         return { unlockedEras, totalEras, percentage: unlockedEras/totalEras };
@@ -243,7 +248,7 @@ export const createDebugHelper = (dispatch, getState) => {
       
       getUpgradesProgress: () => {
         const state = getState();
-        const purchasedUpgrades = state.upgrades.filter(upgrade => upgrade.purchased).length;
+        const purchasedUpgrades = state.upgrades.filter((upgrade: Upgrade) => upgrade.purchased).length;
         const totalUpgrades = state.upgrades.length;
         console.log(`Upgrades progress: ${purchasedUpgrades}/${totalUpgrades} (${Math.round(purchasedUpgrades/totalUpgrades*100)}%)`);
         return { purchasedUpgrades, totalUpgrades, percentage: purchasedUpgrades/totalUpgrades };
@@ -318,7 +323,7 @@ export const createDebugHelper = (dispatch, getState) => {
 
 
       // Method to trigger a specific scenario
-      triggerScenario: (scenarioId) => {
+      triggerScenario: (scenarioId: string) => {
         const state = getState();
         if (!state.scenarios) {
           console.error("Scenarios not initialized in game state");
@@ -383,24 +388,25 @@ export const createDebugHelper = (dispatch, getState) => {
         return eraScenarios;
       },
       
-      // Toggle development mode (extra console messages)
-      toggleDevMode: () => {
-        const state = getState();
-        const devMode = !state.devMode; // Toggle current state
+      // TODO: GUI DEVMODE LEVERAGING DEBUGHELPER
+      // // Toggle development mode (extra console messages)
+      // toggleDevMode: () => {
+      //   const state = getState();
+      //   const devMode = !state.devMode; // Toggle current state
         
-        dispatch({
-          type: 'LOAD_GAME',
-          payload: {
-            state: {
-              ...state,
-              devMode: devMode
-            }
-          }
-        });
+      //   dispatch({
+      //     type: 'LOAD_GAME',
+      //     payload: {
+      //       state: {
+      //         ...state,
+      //         devMode: devMode
+      //       }
+      //     }
+      //   });
         
-        console.log(`Development mode ${devMode ? 'enabled' : 'disabled'}`);
-        return devMode;
-      },
+      //   console.log(`Development mode ${devMode ? 'enabled' : 'disabled'}`);
+      //   return devMode;
+      // },
       
       // Help function to list all available commands
       help: () => {

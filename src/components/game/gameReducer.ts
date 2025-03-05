@@ -10,6 +10,8 @@ import { historicalEras } from './eraData';
 import { upgrades } from './upgradeData';
 import { conspiracyTheories } from './conspiracyData';
 import { scenarios } from './scenarioData';
+import { initialAchievementState } from './achievementData';
+import { checkAchievements, applyAchievementReward } from './achievementService';
 import { 
   ethicalActions, 
   educationalContent, 
@@ -337,6 +339,18 @@ export const initialGameState: GameState = {
   activeEndingId: null,
   lastTick: Date.now(),
   tickInterval: 1000, // 1 second tick rate
+  achievementState: initialAchievementState,
+  resourceMultipliers: {
+    credibility: 1,
+    influence: 1,
+    networks: 1,
+    manipulationPoints: 1
+  },
+  stats: {
+    manipulateClicks: 0,
+    hasSharedAchievement: false,
+    hasClickedGaslightEffect: false
+  }
 };
 
 /**
@@ -435,13 +449,14 @@ export const gameReducer = (state: GameState, action: ExtendedGameAction): GameS
     }
     
     case 'MANIPULATE': {
+      let result: GameState;
       // Different behavior based on game mode
       if (state.gameMode === 'manipulation') {
         // In manipulation mode, generate manipulation points
         const multipliers = calculateResourceMultipliers(state);
         
         // Increment manipulation points with active multiplier
-        return {
+        result = {
           ...state,
           resources: {
             ...state.resources,
@@ -450,12 +465,36 @@ export const gameReducer = (state: GameState, action: ExtendedGameAction): GameS
         };
       } else {
         // In revelation mode, gain ethics and critical thinking instead
-        return {
+        result = {
           ...state,
           ethicalScore: Math.min(100, state.ethicalScore + 0.5),
           criticalThinking: Math.min(100, state.criticalThinking + 0.2),
         };
       }
+      // Additionally, track manipulate clicks
+      const updatedStats = {
+        ...state.stats,
+        manipulateClicks: (state.stats?.manipulateClicks || 0) + 1
+      };
+      
+      result = {
+        ...result,
+        // your existing updates
+        stats: {...updatedStats, 
+          hasClickedGaslightEffect: state.stats?.hasClickedGaslightEffect || false,
+          hasSharedAchievement: state.stats?.hasSharedAchievement || false
+        }
+      };
+      
+      // Check for achievements after updating
+      const newlyUnlocked = checkAchievements(result);
+      if (newlyUnlocked.length > 0) {
+        // If any achievements unlocked, dispatch a CHECK_ACHIEVEMENTS action
+        // This would typically be done through middleware or a useEffect in the UI
+        // In a functional approach, we'd need to check achievements after each action
+      }
+      
+      return result;
     }
     
     case 'UNLOCK_ERA': {
@@ -493,7 +532,7 @@ export const gameReducer = (state: GameState, action: ExtendedGameAction): GameS
       
       // After changing era, update upgrade visibility and ethical actions
       const updatedState = {
-        ...state,
+        ...state as GameState,
         currentEraId: eraId
       };
       
@@ -780,6 +819,158 @@ export const gameReducer = (state: GameState, action: ExtendedGameAction): GameS
         activeScenarioId: null
       };
     }
+
+
+    case 'CHECK_ACHIEVEMENTS': {
+      // Check for newly unlocked achievements
+      const newlyUnlocked = checkAchievements(state);
+      
+      if (newlyUnlocked.length === 0) {
+        return state;
+      }
+      
+      // Update achievements
+      let updatedState = { ...state };
+      
+      // For each newly unlocked achievement
+      newlyUnlocked.forEach(achievementId => {
+        const achievement = state.achievementState.achievements.find(a => a.id === achievementId);
+        
+        if (achievement) {
+          // Mark as unlocked with timestamp
+          const updatedAchievement = {
+            ...achievement,
+            unlocked: true,
+            unlockedAt: Date.now()
+          };
+          
+          // Update achievement in state
+          updatedState.achievementState = {
+            ...updatedState.achievementState,
+            achievements: updatedState.achievementState.achievements.map(a => 
+              a.id === achievementId ? updatedAchievement : a
+            ),
+            totalUnlocked: updatedState.achievementState.totalUnlocked + 1,
+            newUnlocked: [...updatedState.achievementState.newUnlocked, achievementId]
+          };
+          
+          // Apply reward if any
+          if (updatedAchievement.reward) {
+            updatedState = applyAchievementReward(updatedAchievement.reward, updatedState);
+          }
+          
+          // Special case: if this is the first achievement, immediately check for the 'first_achievement' achievement
+          if (updatedState.achievementState.totalUnlocked === 1 && achievementId !== 'first_achievement') {
+            const firstAchievement = updatedState.achievementState.achievements.find(a => a.id === 'first_achievement');
+            
+            if (firstAchievement && !firstAchievement.unlocked) {
+              // Unlocak the meta achievement
+              const updatedFirstAchievement = {
+                ...firstAchievement,
+                unlocked: true,
+                unlockedAt: Date.now()
+              };
+              
+              updatedState.achievementState = {
+                ...updatedState.achievementState,
+                achievements: updatedState.achievementState.achievements.map(a => 
+                  a.id === 'first_achievement' ? updatedFirstAchievement : a
+                ),
+                totalUnlocked: updatedState.achievementState.totalUnlocked + 1,
+                newUnlocked: [...updatedState.achievementState.newUnlocked, 'first_achievement']
+              };
+            }
+          }
+        }
+      });
+      
+      return updatedState;
+    }
+
+    case 'UNLOCK_ACHIEVEMENT': {
+      const { achievementId } = action.payload;
+      const achievement = state.achievementState.achievements.find(a => a.id === achievementId);
+      
+      if (!achievement || achievement.unlocked) {
+        return state;
+      }
+      
+      // Update the achievement
+      const updatedAchievement = {
+        ...achievement,
+        unlocked: true,
+        unlockedAt: Date.now()
+      };
+      
+      let updatedState = {
+        ...state,
+        achievementState: {
+          ...state.achievementState,
+          achievements: state.achievementState.achievements.map(a => 
+            a.id === achievementId ? updatedAchievement : a
+          ),
+          totalUnlocked: state.achievementState.totalUnlocked + 1,
+          newUnlocked: [...state.achievementState.newUnlocked, achievementId]
+        }
+      };
+      
+      // Apply reward if any
+      if (updatedAchievement.reward) {
+        updatedState = applyAchievementReward(updatedAchievement.reward, updatedState);
+      }
+      
+      return updatedState;
+    }
+
+    case 'VIEW_ACHIEVEMENT': {
+      const { achievementId } = action.payload;
+      
+      return {
+        ...state,
+        achievementState: {
+          ...state.achievementState,
+          selectedAchievementId: achievementId,
+          showAchievementModal: true
+        }
+      };
+    }
+
+    case 'DISMISS_ACHIEVEMENT_NOTIFICATION': {
+      const { achievementId } = action.payload;
+      
+      return {
+        ...state,
+        achievementState: {
+          ...state.achievementState,
+          newUnlocked: state.achievementState.newUnlocked.filter(id => id !== achievementId)
+        }
+      };
+    }
+
+    case 'SHARE_ACHIEVEMENT': {
+      // Update stats to mark that player has shared an achievement
+      return {
+        ...state,
+        stats: {
+          ...state.stats,
+          manipulateClicks: state.stats?.manipulateClicks || 0,
+          hasSharedAchievement: true,
+          hasClickedGaslightEffect: state.stats?.hasClickedGaslightEffect || false
+        }
+      };
+    }
+
+    case 'CLICK_GASLIGHT_EFFECT': {
+      // Update stats to mark that player has clicked a gaslight effect
+      return {
+        ...state,
+        stats: {
+          ...state.stats,
+          manipulateClicks: state.stats?.manipulateClicks || 0,
+          hasClickedGaslightEffect: true,
+          hasSharedAchievement: state.stats?.hasSharedAchievement || false        }
+      };
+    }
     
     case 'NETWORKING': {
       // Check if player has enough manipulation points
@@ -857,7 +1048,14 @@ export const gameReducer = (state: GameState, action: ExtendedGameAction): GameS
         ...state,
         gameMode: mode,
         ethicalScore: Math.min(100, state.ethicalScore + ethicalBoost),
-        criticalThinking: Math.min(100, state.criticalThinking + criticalThinkingBoost)
+        criticalThinking: Math.min(100, state.criticalThinking + criticalThinkingBoost),
+        stats: {
+          ...state.stats,
+          manipulateClicks: state.stats?.manipulateClicks || 0,
+          previousGameMode: state.gameMode,
+          hasSharedAchievement: state.stats?.hasSharedAchievement || false,
+          hasClickedGaslightEffect: state.stats?.hasClickedGaslightEffect || false
+        }
       };
     }
     
@@ -888,14 +1086,17 @@ export const gameReducer = (state: GameState, action: ExtendedGameAction): GameS
     
     case 'LOAD_GAME': {
       const loadedState = action.payload.state;
+      console.log("Loading gameState:", loadedState);
       
-      if (!loadedState.scenarios) {
-        return {
+      if (!loadedState.scenarios || !loadedState.achievementState) {
+        const patched = {
           ...loadedState,
           scenarios: scenarios,
           activeScenarioId: null,
-          completedScenarios: []
+          completedScenarios: [],
+          achievementState: initialAchievementState,
         };
+        return patched;
       }
       
       return loadedState;

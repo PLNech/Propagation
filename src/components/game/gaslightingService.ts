@@ -36,6 +36,75 @@ export interface GaslightEffect {
   lastTriggered?: number; // Timestamp de dernière occurrence
 }
 
+
+/**
+ * Achievement hints for gaslighting effects
+ */
+const achievementHints = [
+  {
+    achievementId: 'reverse_manipulation',
+    hints: [
+      "As-tu remarqué que le bouton 'Manipuler' change parfois? Je me demande ce qui se passerait si on cliquait dessus... beaucoup.",
+      "Plus tu manipules, plus le jeu te manipule en retour. C'est peut-être un accomplissement caché?",
+      "1000 clics pour voir la vérité. Es-tu prêt à aller jusque-là?"
+    ]
+  },
+  {
+    achievementId: 'schrodingers_ethics',
+    hints: [
+      "Être parfaitement conscient du mal qu'on fait... quelle ironie, n'est-ce pas?",
+      "100% de clarté, 0% de morale. Une coïncidence improbable, ou un exploit à réaliser?",
+      "Ils disent qu'il est impossible d'avoir une pensée critique parfaite et une éthique nulle simultanément. Prouve-leur le contraire."
+    ]
+  },
+  {
+    achievementId: 'what_now',
+    hints: [
+      "Tu as tout débloqué? Vraiment tout? 10,000 de chaque ressource serait impressionnant...",
+      "Le sommet de la montagne est atteint quand toutes les ressources dépassent 10,000. Et ensuite?",
+      "Accumuler 10,000 de chaque ressource pourrait révéler un accomplissement étrange..."
+    ]
+  },
+  {
+    achievementId: 'meta_ethics',
+    hints: [
+      "Comprendre l'éthique est une chose. Débloquer tous ses accomplissements en est une autre.",
+      "Il y a une méta-récompense pour ceux qui maîtrisent tous les aspects éthiques du jeu.",
+      "Collectionne tous les accomplissements éthiques, et un secret te sera révélé."
+    ]
+  }
+];
+
+/**
+ * Get a random achievement hint for gaslighting
+ * @param state Current game state
+ * @returns Hint message or null
+ */
+export const getAchievementHint = (state: GameState): string | null => {
+  // Get locked secret achievements
+  const lockedSecretAchievements = state.achievementState.achievements
+    .filter(a => a.isSecret && !a.unlocked)
+    .map(a => a.id);
+  
+  if (lockedSecretAchievements.length === 0) {
+    return null;
+  }
+  
+  // Randomly select a locked secret achievement
+  const randomAchievementId = lockedSecretAchievements[Math.floor(Math.random() * lockedSecretAchievements.length)];
+  
+  // Find hints for this achievement
+  const achievementHint = achievementHints.find(h => h.achievementId === randomAchievementId);
+  
+  if (!achievementHint || !achievementHint.hints.length) {
+    return null;
+  }
+  
+  // Return a random hint
+  return achievementHint.hints[Math.floor(Math.random() * achievementHint.hints.length)];
+};
+
+
 /**
  * Base d'effets de gaslighting
  */
@@ -349,8 +418,11 @@ export const gaslightEffects: GaslightEffect[] = [
     cooldown: 720,
     intensity: 3,
     condition: (state, level) => level > 40
-  }
+  },
+
 ];
+
+
 
 /**
  * Sélectionne un effet de gaslighting basé sur l'état du jeu et le niveau d'interaction
@@ -366,6 +438,95 @@ export const selectGaslightEffect = (
   if (interactionLevel < 5) return null;
   
   const now = Date.now();
+  
+  // Fonction pour vérifier si un joueur est proche d'un achievement secret
+  const isCloseToSecretAchievement = (id: string): boolean => {
+    // Vérifier que l'achievement existe, est secret, et n'est pas déjà débloqué
+    const achievement = state.achievementState?.achievements.find(a => a.id === id);
+    if (!achievement || !achievement.isSecret || achievement.unlocked) {
+      return false;
+    }
+    
+    // Vérifier la proximité selon le type d'achievement
+    switch (id) {
+      case 'reverse_manipulation':
+        // Vérifier les clics de manipulation
+        return (state.stats?.manipulateClicks || 0) >= 800 && (state.stats?.manipulateClicks || 0) < 1000;
+        
+      case 'schrodingers_ethics':
+        // Vérifier si proche de la combinaison critique
+        return (
+          (state.criticalThinking >= 90 && state.ethicalScore <= 10) ||
+          (state.criticalThinking >= 80 && state.ethicalScore === 0)
+        );
+        
+      case 'what_now':
+        // Vérifier si proche de "finir" le jeu
+        const allErasUnlocked = state.eras.every(era => era.unlocked);
+        const highResources = 
+          state.resources.credibility >= 8000 ||
+          state.resources.influence >= 8000 ||
+          state.resources.networks >= 8000 ||
+          state.resources.manipulationPoints >= 8000;
+        return allErasUnlocked && highResources;
+      
+      case 'meta_ethics':
+        // Vérifier si proche de débloquer tous les achievements éthiques
+        if (!state.achievementState?.achievements) return false;
+        const ethicsAchievements = state.achievementState.achievements.filter(
+          a => a.category === 'ethics' && a.id !== 'meta_ethics'
+        );
+        const unlockedCount = ethicsAchievements.filter(a => a.unlocked).length;
+        // Si le joueur a débloqué presque tous les achievements éthiques
+        return unlockedCount >= ethicsAchievements.length - 1;
+        
+      default:
+        return false;
+    }
+  };
+  
+  // Vérifier si le joueur est proche d'un achievement secret
+  // et dans ce cas, prioritiser un indice correspondant
+  if (state.achievementState?.achievements) {
+    for (const hint of achievementHints) {
+      if (isCloseToSecretAchievement(hint.achievementId)) {
+        // Trouver un effet de gaslighting qui correspond
+        const achievementHintEffect = gaslightEffects.find(e => 
+          e.id === 'achievement_hint' || 
+          e.id.includes(hint.achievementId)
+        );
+        
+        if (achievementHintEffect) {
+          // Vérifier le cooldown spécifique pour cet effet
+          const lastTriggered = achievementHintEffect.lastTriggered || 0;
+          const cooldownMs = achievementHintEffect.cooldown * 60 * 1000;
+          
+          // N'envoyer l'indice que si le cooldown est terminé
+          if (now - lastTriggered > cooldownMs) {
+            // Créer une version modifiée avec le message d'indice spécifique
+            const customHintEffect = {
+              ...achievementHintEffect,
+              message: hint.hints[Math.floor(Math.random() * hint.hints.length)],
+              lastTriggered: now
+            };
+            
+            // Mettre à jour le timestamp de dernière utilisation
+            const index = gaslightEffects.findIndex(e => e.id === achievementHintEffect.id);
+            if (index !== -1) {
+              gaslightEffects[index] = {
+                ...gaslightEffects[index],
+                lastTriggered: now
+              };
+            }
+            
+            return customHintEffect;
+          }
+        }
+      }
+    }
+  }
+  
+  // Continuer avec la logique normale si aucun indice d'achievement n'a été sélectionné
   
   // Filtrer les effets disponibles (pas en cooldown et conditions remplies)
   const availableEffects = gaslightEffects.filter(effect => {
@@ -418,7 +579,6 @@ export const selectGaslightEffect = (
   // Fallback au premier effet disponible
   return availableEffects[0];
 };
-
 /**
  * Décide si un effet de gaslighting doit être déclenché
  * @param interactionLevel Niveau d'interaction du joueur (0-100)
@@ -485,7 +645,23 @@ export const applyUIChange = (effect: GaslightEffect): void => {
     const originalText = element.innerText;
     // const originalClassList = [...element.classList]; Was unused, maybe should be preserved?
     const originalColor = element.style.color;
+
     
+    // Add achievement tracking - make element clickable to detect gaslight
+    const originalClickHandler = element.onclick;
+    element.setAttribute('data-gaslight', 'true');
+    element.style.cursor = 'pointer';
+    element.onclick = (e) => {
+      // Call the game's gaslight click handler
+      if (window.handleGaslightClick) {
+        window.handleGaslightClick();
+      }
+      
+      // Call original handler if any
+      if (originalClickHandler) {
+        originalClickHandler.call(element, e);
+      }
+    };
     // Appliquer les changements
     if (cssClass) element.classList.add(cssClass);
     if (tempText) element.innerText = tempText;
@@ -496,6 +672,11 @@ export const applyUIChange = (effect: GaslightEffect): void => {
       if (cssClass) element.classList.remove(cssClass);
       if (tempText) element.innerText = originalText;
       if (color) element.style.color = originalColor;
+
+      // Remove achievement tracking
+      element.removeAttribute('data-gaslight');
+      element.style.cursor = '';
+      element.onclick = originalClickHandler || null;
     }, duration);
   });
 };

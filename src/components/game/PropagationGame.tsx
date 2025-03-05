@@ -10,6 +10,8 @@ import TheoriesTab from './TheoriesTab';
 import EthicsTab from './EthicsTab';
 import ScenarioModal from './ScenarioModal';
 import ScenariosTab from './ScenariosTab';
+import AchievementsTab from './AchievementsTab';
+import AchievementNotification from './AchievementNotification';
 import GameEndingModal from './GameEndingModal';
 import SaveManager from './SaveManager';
 import NotificationSystem, { useNotifications, NotificationType } from './NotificationSystem';
@@ -32,7 +34,7 @@ import AboutPage from './AboutPage';
 import { createDebugHelper } from './debugHelper';
 
 // Tab types
-type TabType = 'resources' | 'progression' | 'upgrades' | 'theories' | 'ethics' | 'scenarios';
+type TabType = 'resources' | 'progression' | 'upgrades' | 'theories' | 'ethics' | 'scenarios' | 'achievements';
 
 /**
  * Main game component with all systems including enhanced gaslighting and save/load
@@ -51,10 +53,10 @@ const PropagationGame = () => {
   const lastGaslightTime = useRef(0);
   const lastSaveTime = useRef(0);
   const hasLoadedSave = useRef(false);
-  
-  // Référence à l'état du jeu pour les sauvegardes
+    // Référence à l'état du jeu pour les sauvegardes
   const gameStateRef = useRef(gameState);
- 
+  const lastActionRef = useRef("NONE");
+  
   // const getState = () => gameStateRef.current;
   
   // Mettre à jour la référence quand l'état change
@@ -70,9 +72,16 @@ const PropagationGame = () => {
     ? gameState.gameEndings.find(ending => ending.id === gameState.activeEndingId) 
     : null;
 
-  // Initialiser les styles de gaslighting 
+  // Initialise gaslight
   useEffect(() => {
     initializeGaslightingStyles();
+    // Expose the gaslight click handler to window for integration with the gaslighting service
+    window.handleGaslightClick = handleGaslightClick;
+    
+    return () => {
+      // Cleanup
+      delete window.handleGaslightClick;
+    };
   }, []);
 
   // Debug helper - separate useEffect for cleaner organization
@@ -134,6 +143,23 @@ const PropagationGame = () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, []);
+
+
+  useEffect(() => {
+    // Check achievements when relevant state changes
+    if (lastActionRef.current) {
+      dispatch({ type: 'CHECK_ACHIEVEMENTS' });
+    }
+  }, [
+    gameState.resources, 
+    gameState.ethicalScore, 
+    gameState.criticalThinking,
+    gameState.ethicalStats.theoriesPropagated,
+    gameState.ethicalStats.ethicalActionsPerformed,
+    gameState.currentEraId,
+    gameState.stats?.manipulateClicks
+  ]);
+
 
 
   // Déclencher un effet de gaslighting
@@ -212,6 +238,7 @@ const PropagationGame = () => {
   const handleManipulate = () => {
     dispatch({ type: 'MANIPULATE' });
     interactionCount.current += 1;
+    lastActionRef.current = 'MANIPULATE';
     
     // Rare manipulation effect (gaslighting)
     if (Math.random() > 0.99 && interactionCount.current > 20) {
@@ -493,6 +520,12 @@ const PropagationGame = () => {
     // This could be implemented later as an enhancement
   };
 
+  const handleGaslightClick = () => {
+    dispatch({ type: 'CLICK_GASLIGHT_EFFECT' });
+    lastActionRef.current = 'CLICK_GASLIGHT_EFFECT';
+  };
+
+
 
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100 p-4 flex flex-col items-center">
@@ -643,6 +676,12 @@ const PropagationGame = () => {
             >
               Scénarios
           </button>
+          <button
+            className={`py-2 px-4 ${activeTab === 'achievements' ? 'border-b-2 border-yellow-500 text-yellow-300' : 'text-gray-400 hover:text-gray-200'}`}
+            onClick={() => handleTabChange('achievements')}
+          >
+            Accomplissements
+          </button>
         </div>
         
         {/* Content based on active tab */}
@@ -742,6 +781,53 @@ const PropagationGame = () => {
             onViewScenario={handleViewScenario}
           />
         )}
+
+        {activeTab === 'achievements' && (
+          <AchievementsTab
+            achievements={gameState.achievementState.achievements}
+            totalUnlocked={gameState.achievementState.totalUnlocked}
+            onAchievementClick={(achievementId) => dispatch({ type: 'VIEW_ACHIEVEMENT', payload: { achievementId } })}
+            onShareAchievement={(achievement) => {
+              // Open share dialog (simplified for this example)
+              try {
+                navigator.share({
+                  title: 'Propagation - Accomplissement débloqué !',
+                  text: achievement.shareText,
+                  url: window.location.href,
+                });
+              } catch (error) {
+                console.log("Can't share via navigator:", error);
+                // Fallback for browsers that don't support the Web Share API
+                window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(achievement.shareText)}&url=${encodeURIComponent(window.location.href)}`, '_blank');
+              }
+              
+              // Mark as shared
+              dispatch({ type: 'SHARE_ACHIEVEMENT', payload: { achievementId: achievement.id } });
+            }}
+          />
+        )}
+
+
+        {gameState.achievementState.newUnlocked.length > 0 && (
+          <div>
+            {gameState.achievementState.newUnlocked.map(achievementId => {
+              const achievement = gameState.achievementState.achievements.find(a => a.id === achievementId);
+              if (!achievement) return null;
+              
+              return (
+                <AchievementNotification
+                  key={achievementId}
+                  achievement={achievement}
+                  onDismiss={() => dispatch({ 
+                    type: 'DISMISS_ACHIEVEMENT_NOTIFICATION', 
+                    payload: { achievementId } 
+                  })}
+                />
+              );
+            })}
+          </div>
+        )}
+
         
         {/* Educational note with link to About page */}
         <div className="mt-8 p-3 bg-gray-800 rounded text-xs text-gray-400">

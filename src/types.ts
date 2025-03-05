@@ -1,6 +1,6 @@
 /**
- * Game resources that can be accumulated
- */
+* Game resources that can be accumulated
+*/
 export interface GameResources {
   credibility: number;    // Represents how believable your messages are
   influence: number;      // Represents your reach and impact
@@ -9,8 +9,8 @@ export interface GameResources {
 }
 
 /**
- * Manipulation technique within an era
- */
+* Manipulation technique within an era
+*/
 export interface ManipulationTechnique {
   id: string;
   name: string;
@@ -22,8 +22,8 @@ export interface ManipulationTechnique {
 }
 
 /**
- * Historical era with specific manipulation techniques
- */
+* Historical era with specific manipulation techniques
+*/
 export interface HistoricalEra {
   id: string;
   name: string; 
@@ -35,8 +35,8 @@ export interface HistoricalEra {
 }
 
 /**
- * Purchasable upgrade to enhance player capabilities
- */
+* Purchasable upgrade to enhance player capabilities
+*/
 export interface Upgrade {
   id: string;
   name: string;
@@ -54,8 +54,8 @@ export interface Upgrade {
 }
 
 /**
- * Conspiracy theory that can be propagated
- */
+* Conspiracy theory that can be propagated
+*/
 export interface ConspiracyTheory {
   id: string;
   name: string;
@@ -71,8 +71,8 @@ export interface ConspiracyTheory {
 }
 
 /**
- * Ethical action that can be performed
- */
+* Ethical action that can be performed
+*/
 export interface EthicalAction {
   id: string;
   name: string;
@@ -89,8 +89,8 @@ export interface EthicalAction {
 }
 
 /**
- * Educational content about manipulation techniques
- */
+* Educational content about manipulation techniques
+*/
 export interface EducationalContent {
   id: string;
   title: string;
@@ -100,8 +100,8 @@ export interface EducationalContent {
 }
 
 /**
- * Inspirational quotes about critical thinking
- */
+* Inspirational quotes about critical thinking
+*/
 export interface CriticalThinkingQuote {
   id: string;
   quote: string;
@@ -110,8 +110,8 @@ export interface CriticalThinkingQuote {
 }
 
 /**
- * Game ending based on player choices
- */
+* Game ending based on player choices
+*/
 export interface GameEnding {
   id: string;
   title: string;
@@ -126,8 +126,8 @@ export interface GameEnding {
 }
 
 /**
- * Statistics tracking ethical impact
- */
+* Statistics tracking ethical impact
+*/
 export interface EthicalStats {
   theoriesPropagated: number;
   ethicalActionsPerformed: number;
@@ -138,8 +138,8 @@ export interface EthicalStats {
 }
 
 /**
- * Option for a scenario choice
- */
+* Option for a scenario choice
+*/
 export interface ScenarioChoice {
   id: string;
   text: string;
@@ -153,8 +153,8 @@ export interface ScenarioChoice {
 }
 
 /**
- * Historical scenario with ethical dilemma
- */
+* Historical scenario with ethical dilemma
+*/
 export interface Scenario {
   id: string;
   title: string;
@@ -172,13 +172,13 @@ export interface Scenario {
 }
 
 /**
- * Available game modes
- */
+* Available game modes
+*/
 export type GameMode = 'manipulation' | 'revelation';
 
 /**
- * Main game state
- */
+* Main game state
+*/
 export interface GameState {
   resources: GameResources;
   eras: HistoricalEra[];
@@ -200,27 +200,123 @@ export interface GameState {
   activeEndingId: string | null; // ID of the active ending, if any
   lastTick: number;      // Timestamp of the last update
   tickInterval: number;  // Time between updates in milliseconds
-  
+  achievementState: AchievementState;
+  resourceMultipliers?: Partial<Record<keyof GameResources, number>>;
+  stats?: {
+    manipulateClicks: number;
+    previousGameMode?: GameMode;
+    hasSharedAchievement: boolean;
+    hasClickedGaslightEffect: boolean;
+    lastTabVisited?: string;
+  };
 }
 
 /**
- * Actions that can modify the game state
- */
+* Actions that can modify the game state
+*/
 export type GameAction = 
-  | { type: 'TICK'; payload: { currentTime: number } }  // Regular game update
-  | { type: 'MANIPULATE'; }  // Player initiated action
-  | { type: 'NETWORKING'; }  // Generate networks
-  | { type: 'CREDIBILITY'; }  // Generate credibility
-  | { type: 'INFLUENCE'; }  // Generate influence
-  | { type: 'UNLOCK_ERA'; payload: { eraId: string } }  // Unlock a new era
-  | { type: 'SELECT_ERA'; payload: { eraId: string } }  // Select an era as current
-  | { type: 'PURCHASE_UPGRADE'; payload: { upgradeId: string } }  // Purchase an upgrade
-  | { type: 'PROPAGATE_THEORY'; payload: { theoryId: string } }  // Propagate a conspiracy theory
-  | { type: 'PERFORM_ETHICAL_ACTION'; payload: { actionId: string } }  // Perform an ethical action
-  | { type: 'TRIGGER_SCENARIO'; payload: { scenarioId: string } }
-  | { type: 'MAKE_SCENARIO_CHOICE'; payload: { scenarioId: string, choiceId: string } }
-  | { type: 'DISMISS_SCENARIO'; payload: { scenarioId: string } }
-  | { type: 'SWITCH_GAME_MODE'; payload: { mode: GameMode } }  // Switch between game modes
-  | { type: 'ACKNOWLEDGE_ENDING'; payload: { endingId: string } }  // Acknowledge a game ending
-  | { type: 'LOAD_GAME'; payload: { state: GameState } } // Load a saved game
-  | { type: 'RESET'; };      // Reset the game
+| { type: 'TICK'; payload: { currentTime: number } }  // Regular game update
+| { type: 'MANIPULATE'; }  // Player initiated action
+| { type: 'NETWORKING'; }  // Generate networks
+| { type: 'CREDIBILITY'; }  // Generate credibility
+| { type: 'INFLUENCE'; }  // Generate influence
+| { type: 'UNLOCK_ERA'; payload: { eraId: string } }  // Unlock a new era
+| { type: 'SELECT_ERA'; payload: { eraId: string } }  // Select an era as current
+| { type: 'PURCHASE_UPGRADE'; payload: { upgradeId: string } }  // Purchase an upgrade
+| { type: 'PROPAGATE_THEORY'; payload: { theoryId: string } }  // Propagate a conspiracy theory
+| { type: 'PERFORM_ETHICAL_ACTION'; payload: { actionId: string } }  // Perform an ethical action
+// Scenarios
+| { type: 'TRIGGER_SCENARIO'; payload: { scenarioId: string } }
+| { type: 'MAKE_SCENARIO_CHOICE'; payload: { scenarioId: string, choiceId: string } }
+| { type: 'DISMISS_SCENARIO'; payload: { scenarioId: string } }
+// Achievements
+| { type: 'UNLOCK_ACHIEVEMENT'; payload: { achievementId: string } }
+| { type: 'VIEW_ACHIEVEMENT'; payload: { achievementId: string } }
+| { type: 'DISMISS_ACHIEVEMENT_NOTIFICATION'; payload: { achievementId: string } }
+| { type: 'SHARE_ACHIEVEMENT'; payload: { achievementId: string } }
+| { type: 'CHECK_ACHIEVEMENTS'; }
+| { type: 'CLICK_GASLIGHT_EFFECT'; }
+// Utils
+| { type: 'SWITCH_GAME_MODE'; payload: { mode: GameMode } }  // Switch between game modes
+| { type: 'ACKNOWLEDGE_ENDING'; payload: { endingId: string } }  // Acknowledge a game ending
+| { type: 'LOAD_GAME'; payload: { state: GameState } } // Load a saved game
+| { type: 'RESET'; };      // Reset the game
+
+
+/**
+* Achievement categories
+*/
+export type AchievementCategory = 
+| 'progression'  // Era progression, upgrades
+| 'resources'    // Resource accumulation 
+| 'ethics'       // Ethical choices and critical thinking
+| 'manipulation' // Manipulation techniques and theories
+| 'meta'         // Meta-achievements (4th wall, game mechanics)
+| 'secret';      // Hidden achievements
+
+/**
+* Rarity levels for achievements
+*/
+export type AchievementRarity = 
+| 'common'     // Easy to obtain
+| 'uncommon'   // Requires some effort
+| 'rare'       // Challenging to obtain
+| 'epic'       // Difficult, requiring dedication
+| 'legendary'; // Very difficult to obtain
+
+/**
+* Reward types for completing achievements
+*/
+export interface AchievementReward {
+  type: 'resource_multiplier' | 'resource_bonus' | 'unlock_feature' | 'special_effect';
+  target?: keyof GameResources | string;
+  value?: number;
+  description: string;
+}
+
+/**
+* Achievement data structure
+*/
+export interface Achievement {
+  id: string;
+  name: string;
+  description: string;
+  category: AchievementCategory;
+  rarity: AchievementRarity;
+  isSecret: boolean;        // If true, not shown until unlocked
+  hint?: string;            // Optional hint for secret achievements
+  unlocked: boolean;        // If the achievement has been unlocked
+  unlockedAt?: number;      // Timestamp when it was unlocked
+  condition: {
+    type: 'progression' | 'resource_threshold' | 'action_count' | 'special_action' | 'ethical_score' | 'specific_combination';
+    target?: string;        // Target resource or action type
+    threshold?: number;     // Required threshold value
+    count?: number;         // Required count of actions
+    compare?: 'greater' | 'lesser' | 'equal'; // Comparison operation
+    customCheck?: (state: GameState) => boolean; // Custom checking function
+  };
+  reward?: AchievementReward; // Optional reward
+  icon: string;              // Icon used in UI (can be emoji)
+  color: string;             // Color theme (tailwind color class)
+  shareText: string;         // Text shown when sharing the achievement
+}
+
+/**
+* Achievement section in game state
+*/
+export interface AchievementState {
+  achievements: Achievement[];
+  totalUnlocked: number;
+  totalAchievements: number; 
+  newUnlocked: string[];    // IDs of newly unlocked achievements (for notifications)
+  showAchievementModal: boolean;
+  selectedAchievementId: string | null;
+}
+
+// Extend Window interface for gaslight-achievements integration
+declare global {
+  interface Window {
+    handleGaslightClick?: () => void;
+    __SECRET_DOM_DO_NOT_USE_OR_YOU_WILL_BE_FIRED: ReturnType<typeof import('./components/game/debugHelper').createDebugHelper>;
+  }
+}
