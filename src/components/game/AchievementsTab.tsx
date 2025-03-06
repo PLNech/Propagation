@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
 import { Achievement, AchievementCategory } from '@/types';
-import AchievementCard from './AchievementCard';
-import AchievementDetailModal from './AchievementDetailModal';
 
 interface AchievementsTabProps {
   achievements: Achievement[];
@@ -11,189 +9,236 @@ interface AchievementsTabProps {
 }
 
 /**
- * Tab component for displaying all achievements organized by category
+ * Displays all achievements with improved visual hierarchy and filtering
  */
-const AchievementsTab: React.FC<AchievementsTabProps> = ({ 
-  achievements, 
+const AchievementsTab: React.FC<AchievementsTabProps> = ({
+  achievements,
   totalUnlocked,
   onAchievementClick,
   onShareAchievement
 }) => {
-  const [filter, setFilter] = useState<'all' | 'unlocked' | 'locked'>('all');
-  const [categoryFilter, setCategoryFilter] = useState<AchievementCategory | 'all'>('all');
-  const [selectedAchievement, setSelectedAchievement] = useState<Achievement | null>(null);
+  const [activeCategory, setActiveCategory] = useState<AchievementCategory | 'all'>('all');
+  const [showUnlocked, setShowUnlocked] = useState<boolean | null>(null); // null = show all
   
-  // Filter achievements based on current filters
-  const filteredAchievements = achievements
-    .filter(achievement => {
-      if (filter === 'unlocked') return achievement.unlocked;
-      if (filter === 'locked') return !achievement.unlocked;
-      return true;
-    })
-    .filter(achievement => {
-      if (categoryFilter === 'all') return true;
-      return achievement.category === categoryFilter;
-    })
-    .filter(achievement => {
-      // Don't show secret achievements that aren't unlocked yet
-      return !(achievement.isSecret && !achievement.unlocked);
-    });
+  // Categories for filtering
+  const categories: { id: AchievementCategory | 'all'; label: string }[] = [
+    { id: 'all', label: 'Tous' },
+    { id: 'progression', label: 'Progression' },
+    { id: 'resources', label: 'Ressources' },
+    { id: 'ethics', label: 'Éthique' },
+    { id: 'manipulation', label: 'Manipulation' },
+    { id: 'meta', label: 'Méta' },
+    { id: 'secret', label: 'Secrets' }
+  ];
   
-  // Group achievements by category
-  const achievementsByCategory = filteredAchievements.reduce((acc, achievement) => {
-    const category = achievement.category;
-    if (!acc[category]) {
-      acc[category] = [];
-    }
-    acc[category].push(achievement);
-    return acc;
-  }, {} as Record<AchievementCategory, Achievement[]>);
-  
-  // Calculate completion percentage
-  const completionPercentage = Math.round((totalUnlocked / achievements.length) * 100);
-  
-  // Get achievement counts by category
-  const getCategoryCounts = () => {
-    const counts: Record<AchievementCategory | 'all', { total: number, unlocked: number }> = {
-      all: { total: 0, unlocked: 0 },
-      progression: { total: 0, unlocked: 0 },
-      resources: { total: 0, unlocked: 0 },
-      ethics: { total: 0, unlocked: 0 },
-      manipulation: { total: 0, unlocked: 0 },
-      meta: { total: 0, unlocked: 0 },
-      secret: { total: 0, unlocked: 0 }
-    };
+  // Filter achievements by selected category and locked/unlocked state
+  const filteredAchievements = achievements.filter(achievement => {
+    const categoryMatch = activeCategory === 'all' || achievement.category === activeCategory;
+    const lockStateMatch = showUnlocked === null || achievement.unlocked === showUnlocked;
     
-    achievements.forEach(achievement => {
-      counts.all.total++;
-      counts[achievement.category].total++;
-      
-      if (achievement.unlocked) {
-        counts.all.unlocked++;
-        counts[achievement.category].unlocked++;
-      }
-    });
-    
-    return counts;
-  };
-  
-  const categoryCounts = getCategoryCounts();
-  
-  // Handle achievement click
-  const handleAchievementClick = (id: string) => {
-    const achievement = achievements.find(a => a.id === id);
-    if (achievement) {
-      setSelectedAchievement(achievement);
+    // Don't show secret achievements that aren't unlocked unless explicitly filtering for secrets
+    if (achievement.isSecret && !achievement.unlocked && activeCategory !== 'secret') {
+      return false;
     }
-    onAchievementClick(id);
-  };
-  
-  // Close achievement detail modal
-  const handleCloseModal = () => {
-    setSelectedAchievement(null);
-  };
+    
+    return categoryMatch && lockStateMatch;
+  });
   
   return (
-    <div className="mt-6">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold">Succès</h2>
-        <div className="text-sm text-gray-400">
-          <span className="font-bold text-yellow-400">{totalUnlocked}</span> / {achievements.length} débloqués
+    <div className="mt-4">
+      {/* Progress header */}
+      <div className="mb-6 bg-gray-800 p-4 rounded-lg">
+        <h2 className="text-xl font-bold mb-2">Accomplissements</h2>
+        <div className="flex items-center mb-2">
+          <div className="flex-1">
+            <div className="h-2 bg-gray-700 rounded-full overflow-hidden">
+              <div 
+                className="h-full bg-purple-600"
+                style={{ width: `${(totalUnlocked / achievements.length) * 100}%` }}
+              ></div>
+            </div>
+          </div>
+          <div className="ml-4 text-sm font-medium">
+            <span className="text-purple-400">{totalUnlocked}</span>
+            <span className="text-gray-400"> / {achievements.length}</span>
+          </div>
         </div>
-      </div>
-      
-      {/* Progress bar */}
-      <div className="mb-6">
-        <div className="flex justify-between items-center mb-1 text-sm">
-          <span>Progression</span>
-          <span>{completionPercentage}%</span>
-        </div>
-        <div className="h-4 bg-gray-700 rounded-full overflow-hidden">
-          <div 
-            className="h-full bg-yellow-600"
-            style={{ width: `${completionPercentage}%` }}
-          ></div>
-        </div>
+        <p className="text-sm text-gray-400">
+          Vos succès racontent votre histoire de manipulation et révélation.
+        </p>
       </div>
       
       {/* Filters */}
-      <div className="mb-6 flex flex-wrap">
-        <div className="mr-4 mb-2">
-          <span className="text-sm text-gray-400 mr-2">Statut:</span>
-          <div className="inline-flex rounded-md shadow-sm">
+      <div className="mb-4 flex flex-wrap gap-2">
+        <div className="bg-gray-800 p-2 rounded-lg flex flex-wrap gap-2">
+          {categories.map(category => (
             <button
-              onClick={() => setFilter('all')}
-              className={`px-3 py-1 text-sm rounded-l-md ${filter === 'all' ? 'bg-purple-700 text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'}`}
+              key={category.id}
+              onClick={() => setActiveCategory(category.id)}
+              className={`px-3 py-1 text-sm rounded-md transition-colors ${
+                activeCategory === category.id
+                  ? 'bg-purple-700 text-white'
+                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+              }`}
             >
-              Tous
+              {category.label}
             </button>
-            <button
-              onClick={() => setFilter('unlocked')}
-              className={`px-3 py-1 text-sm ${filter === 'unlocked' ? 'bg-purple-700 text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'}`}
-            >
-              Débloqués
-            </button>
-            <button
-              onClick={() => setFilter('locked')}
-              className={`px-3 py-1 text-sm rounded-r-md ${filter === 'locked' ? 'bg-purple-700 text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'}`}
-            >
-              Verrouillés
-            </button>
-          </div>
+          ))}
         </div>
         
-        <div>
-          <span className="text-sm text-gray-400 mr-2">Catégorie:</span>
-          <select
-            value={categoryFilter}
-            onChange={(e) => setCategoryFilter(e.target.value as AchievementCategory | 'all')}
-            className="bg-gray-700 text-gray-300 rounded-md px-3 py-1 text-sm"
+        <div className="bg-gray-800 p-2 rounded-lg flex gap-2 ml-auto">
+          <button
+            onClick={() => setShowUnlocked(null)}
+            className={`px-3 py-1 text-sm rounded-md transition-colors ${
+              showUnlocked === null
+                ? 'bg-purple-700 text-white'
+                : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+            }`}
           >
-            <option value="all">Toutes ({categoryCounts.all.unlocked}/{categoryCounts.all.total})</option>
-            <option value="progression">Progression ({categoryCounts.progression.unlocked}/{categoryCounts.progression.total})</option>
-            <option value="resources">Ressources ({categoryCounts.resources.unlocked}/{categoryCounts.resources.total})</option>
-            <option value="ethics">Éthique ({categoryCounts.ethics.unlocked}/{categoryCounts.ethics.total})</option>
-            <option value="manipulation">Manipulation ({categoryCounts.manipulation.unlocked}/{categoryCounts.manipulation.total})</option>
-            <option value="meta">Méta ({categoryCounts.meta.unlocked}/{categoryCounts.meta.total})</option>
-            <option value="secret">Secrets ({categoryCounts.secret.unlocked}/{categoryCounts.secret.total})</option>
-          </select>
+            Tous
+          </button>
+          <button
+            onClick={() => setShowUnlocked(true)}
+            className={`px-3 py-1 text-sm rounded-md transition-colors ${
+              showUnlocked === true
+                ? 'bg-green-700 text-white'
+                : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+            }`}
+          >
+            Débloqués
+          </button>
+          <button
+            onClick={() => setShowUnlocked(false)}
+            className={`px-3 py-1 text-sm rounded-md transition-colors ${
+              showUnlocked === false
+                ? 'bg-red-700 text-white'
+                : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+            }`}
+          >
+            Verrouillés
+          </button>
         </div>
       </div>
       
-      {/* Achievement categories */}
-      {Object.entries(achievementsByCategory).length > 0 ? (
-        Object.entries(achievementsByCategory).map(([category, categoryAchievements]) => (
-          <div key={category} className="mb-8">
-            <h3 className="text-lg font-semibold mb-3 capitalize">
-              {category === 'meta' ? 'Méta' : category}
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {Array.isArray(categoryAchievements) && categoryAchievements.map((achievement: Achievement) => (
-                <AchievementCard
-                  key={achievement.id}
-                  achievement={achievement}
-                  onClick={handleAchievementClick}
-                />
-              ))}
+      {/* Achievement grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {filteredAchievements.length > 0 ? (
+          filteredAchievements.map(achievement => (
+            <div
+              key={achievement.id}
+              className={`achievement-card p-4 rounded-lg cursor-pointer ${
+                achievement.unlocked 
+                  ? achievement.color 
+                  : 'bg-gray-800 border border-gray-700'
+              }`}
+              onClick={() => onAchievementClick(achievement.id)}
+            >
+              <div className="flex items-start">
+                <div className="text-3xl mr-3">{achievement.unlocked ? achievement.icon : '?'}</div>
+                <div className="flex-1">
+                  <div className="flex items-start justify-between">
+                    <h3 className={`font-bold ${achievement.unlocked ? '' : 'text-gray-400'}`}>
+                      {achievement.unlocked || !achievement.isSecret 
+                        ? achievement.name 
+                        : 'Accomplissement secret'}
+                    </h3>
+                    <div className="ml-2">
+                      <span className={`text-xs px-2 py-0.5 rounded ${getRarityBadgeColor(achievement.rarity)}`}>
+                        {getRarityLabel(achievement.rarity)}
+                      </span>
+                    </div>
+                  </div>
+                  
+                  <p className={`text-sm mt-1 ${achievement.unlocked ? '' : 'text-gray-500'}`}>
+                    {achievement.unlocked || !achievement.isSecret
+                      ? achievement.description
+                      : achievement.hint || 'Accomplissement mystérieux à découvrir...'}
+                  </p>
+                  
+                  {achievement.unlocked && achievement.reward && (
+                    <div className="mt-2 reward-tag">
+                      <span className="text-sm text-white">
+                        {achievement.reward.description}
+                      </span>
+                    </div>
+                  )}
+                  
+                  {achievement.unlocked && (
+                    <div className="mt-3 flex justify-between items-center">
+                      <span className="text-xs text-gray-300">
+                        {getTimeAgo(achievement.unlockedAt || 0)}
+                      </span>
+                      
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onShareAchievement(achievement);
+                        }}
+                        className="text-xs px-2 py-1 bg-gray-900 bg-opacity-30 hover:bg-opacity-40 rounded"
+                      >
+                        Partager
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
+          ))
+        ) : (
+          <div className="col-span-2 text-center p-8 bg-gray-800 rounded-lg">
+            <p className="text-gray-400">Aucun accomplissement ne correspond à vos filtres.</p>
           </div>
-        ))
-      ) : (
-        <div className="text-center py-8">
-          <p className="text-gray-400">Aucun accomplissement ne correspond à vos filtres.</p>
-        </div>
-      )}
-      
-      {/* Achievement detail modal */}
-      {selectedAchievement && (
-        <AchievementDetailModal
-          achievement={selectedAchievement}
-          onClose={handleCloseModal}
-          onShare={onShareAchievement}
-        />
-      )}
+        )}
+      </div>
     </div>
   );
+};
+
+// Helper functions
+const getRarityBadgeColor = (rarity: string): string => {
+  switch (rarity) {
+    case 'common': return 'bg-gray-600 text-white';
+    case 'uncommon': return 'bg-green-600 text-white';
+    case 'rare': return 'bg-blue-600 text-white';
+    case 'epic': return 'bg-purple-600 text-white';
+    case 'legendary': return 'bg-yellow-500 text-black font-bold';
+    default: return 'bg-gray-600 text-white';
+  }
+};
+
+const getRarityLabel = (rarity: string): string => {
+  switch (rarity) {
+    case 'common': return 'Commun';
+    case 'uncommon': return 'Peu commun';
+    case 'rare': return 'Rare';
+    case 'epic': return 'Épique';
+    case 'legendary': return 'Légendaire';
+    default: return rarity;
+  }
+};
+
+const getTimeAgo = (timestamp: number): string => {
+  if (!timestamp) return '';
+  
+  const now = Date.now();
+  const seconds = Math.floor((now - timestamp) / 1000);
+  
+  if (seconds < 60) return 'à l\'instant';
+  
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `il y a ${minutes} min`;
+  
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `il y a ${hours} h`;
+  
+  const days = Math.floor(hours / 24);
+  if (days < 30) return `il y a ${days} j`;
+  
+  const months = Math.floor(days / 30);
+  if (months < 12) return `il y a ${months} mois`;
+  
+  const years = Math.floor(months / 12);
+  return `il y a ${years} ans`;
 };
 
 export default AchievementsTab;

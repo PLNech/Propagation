@@ -11,7 +11,7 @@ import EthicsTab from './EthicsTab';
 import ScenarioModal from './ScenarioModal';
 import ScenariosTab from './ScenariosTab';
 import AchievementsTab from './AchievementsTab';
-import AchievementNotification from './AchievementNotification';
+import AchievementNotificationManager from './AchievementNotificationManager';
 import GameEndingModal from './GameEndingModal';
 import SaveManager from './SaveManager';
 import NotificationSystem, { useNotifications, NotificationType } from './NotificationSystem';
@@ -822,25 +822,15 @@ const PropagationGame = () => {
           />
         )}
 
-
         {gameState.achievementState.newUnlocked.length > 0 && (
-          <div>
-            {gameState.achievementState.newUnlocked.map(achievementId => {
-              const achievement = gameState.achievementState.achievements.find(a => a.id === achievementId);
-              if (!achievement) return null;
-              
-              return (
-                <AchievementNotification
-                  key={achievementId}
-                  achievement={achievement}
-                  onDismiss={() => dispatch({ 
-                    type: 'DISMISS_ACHIEVEMENT_NOTIFICATION', 
-                    payload: { achievementId } 
-                  })}
-                />
-              );
+          <AchievementNotificationManager
+            newlyUnlocked={gameState.achievementState.newUnlocked}
+            achievements={gameState.achievementState.achievements}
+            onDismiss={(achievementId) => dispatch({ 
+              type: 'DISMISS_ACHIEVEMENT_NOTIFICATION', 
+              payload: { achievementId } 
             })}
-          </div>
+          />
         )}
 
         

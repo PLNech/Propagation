@@ -1,120 +1,89 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Achievement } from '@/types';
 
 interface AchievementNotificationProps {
   achievement: Achievement;
   onDismiss: () => void;
+  autoDismissDelay?: number; // Time in ms before auto-dismissing
 }
 
-// Global variable to track the last time the sound was played
-let lastSoundTimestamp = 0;
-
 /**
- * Component to display a notification when an achievement is unlocked
+ * Displays a notification when an achievement is unlocked
+ * with improved readability and auto-dismiss functionality
  */
 const AchievementNotification: React.FC<AchievementNotificationProps> = ({ 
   achievement, 
-  onDismiss 
+  onDismiss,
+  autoDismissDelay = 5000 // Default to 5 seconds
 }) => {
-  const [animateOut, setAnimateOut] = useState(false);
-  
-  // Auto-dismiss after 5 seconds
+  // Auto-dismiss after specified delay
   useEffect(() => {
     const timer = setTimeout(() => {
-      setAnimateOut(true);
-      
-      // Wait for animation to complete before dismissing
-      setTimeout(onDismiss, 500);
-    }, 5000);
+      onDismiss();
+    }, autoDismissDelay);
     
     return () => clearTimeout(timer);
-  }, [onDismiss]);
+  }, [onDismiss, autoDismissDelay]);
   
-  // Handle manual dismiss
-  const handleDismiss = () => {
-    setAnimateOut(true);
-    setTimeout(onDismiss, 500);
+  // Function to generate contrasting text color based on background
+  const getTextColor = (bgColor: string): string => {
+    // For common Tailwind color classes, return appropriate text color
+    if (bgColor.includes('green')) return 'text-white font-bold';
+    if (bgColor.includes('blue')) return 'text-white font-bold';
+    if (bgColor.includes('red')) return 'text-white font-bold';
+    if (bgColor.includes('purple')) return 'text-white font-bold';
+    if (bgColor.includes('indigo')) return 'text-white font-bold';
+    if (bgColor.includes('yellow')) return 'text-gray-900 font-bold';
+    if (bgColor.includes('amber')) return 'text-gray-900 font-bold';
+    if (bgColor.includes('orange')) return 'text-gray-900 font-bold';
+    
+    // Default contrasting colors
+    return bgColor.includes('bg-gray-900') ? 'text-white font-bold' : 'text-gray-900 font-bold';
   };
   
-
-// Play sound effect when notification appears, but only once every 5 seconds
-useEffect(() => {
-    // Get current timestamp
-    const currentTime = Date.now();
-    
-    // Check if at least 5000ms (5s) have passed since the last sound played
-    if (currentTime - lastSoundTimestamp >= 5000) {
-      try {
-        const audio = new Audio('/achievement.mp3'); // TODO Add a sound :)
-        audio.volume = 0.5;
-        audio.play();
-        
-        // Update the timestamp after playing the sound
-        lastSoundTimestamp = currentTime;
-      } catch (error) {
-        // Fallback for browsers that block autoplay or if audio doesn't exist
-        console.log('Could not play achievement sound:', error);
-      }
-    } else {
-      // Optionally log that sound was skipped due to throttling
-      console.log('Sound throttled - less than 5s since last play');
-    }
-  }, []);
-    
   return (
-    <div 
-      className={`fixed bottom-4 right-4 z-50 max-w-sm w-full transition-all duration-500 
-        ${animateOut ? 'translate-x-full opacity-0' : 'translate-x-0 opacity-100'}`}
-    >
-      <div className={`${achievement.color} rounded-lg shadow-lg p-4 border-2 border-yellow-500`}>
-        <div className="flex items-start">
-          <div className="text-4xl mr-3 animate-pulse">{achievement.icon}</div>
-          <div className="flex-1">
-            <div className="flex justify-between items-start">
-              <div>
-                <h3 className="font-bold">Accomplissement débloqué !</h3>
-                <h4 className="text-lg font-semibold">{achievement.name}</h4>
-              </div>
-              <button 
-                onClick={handleDismiss}
-                className="text-gray-600 hover:text-gray-800"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-                </svg>
-              </button>
-            </div>
-            <p className="text-sm mt-1">{achievement.description}</p>
-            
-            {achievement.reward && (
-              <div className="mt-2 bg-yellow-900 bg-opacity-20 p-2 rounded text-sm">
-                <span className="font-bold">Récompense :</span> {achievement.reward.description}
-              </div>
-            )}
-            
-            <div className="mt-3 flex justify-between">
-              <button 
-                onClick={handleDismiss}
-                className="px-3 py-1 rounded bg-gray-800 bg-opacity-30 hover:bg-opacity-50 text-sm"
-              >
-                OK
-              </button>
+    <div className="fixed bottom-4 right-4 z-50 max-w-md w-full transform transition-transform duration-300 ease-in-out">
+      <div className={`${achievement.color} rounded-lg shadow-lg p-4 mb-4 border-2 border-gray-200`}>
+        <div className="flex justify-between items-start">
+          <div className="flex items-center">
+            <span className="text-2xl mr-3">{achievement.icon}</span>
+            <div>
+              <h3 className={`font-bold ${getTextColor(achievement.color)}`}>
+                Débloqué : {achievement.name}
+              </h3>
+              <p className={`text-sm mt-1 ${getTextColor(achievement.color)} opacity-90`}>
+                {achievement.description}
+              </p>
               
-              <button 
-                className="px-3 py-1 rounded bg-blue-800 bg-opacity-30 hover:bg-opacity-50 text-sm flex items-center"
-                onClick={() => {
-                  // This would normally call a sharing function
-                  window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(achievement.shareText)}&hashtags=Propagation,GameAchievement`, '_blank');
-                  handleDismiss();
-                }}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-                </svg>
-                Partager
-              </button>
+              {achievement.reward && (
+                <div className="mt-2 py-1 px-2 rounded bg-black bg-opacity-20 inline-block">
+                  <span className="text-sm font-bold text-white">
+                    Récompense : {achievement.reward.description}
+                  </span>
+                </div>
+              )}
             </div>
           </div>
+          
+          <button 
+            onClick={onDismiss}
+            className="ml-4 text-gray-700 hover:text-gray-900 focus:outline-none p-1 rounded hover:bg-gray-200"
+            aria-label="Fermer"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+            </svg>
+          </button>
+        </div>
+        
+        <div className="mt-3 w-full bg-gray-300 bg-opacity-30 h-1 rounded-full overflow-hidden">
+          <div 
+            className="bg-white h-full rounded-full" 
+            style={{ 
+              width: '100%',
+              animation: `shrink ${autoDismissDelay}ms linear forwards`
+            }}
+          />
         </div>
       </div>
     </div>
