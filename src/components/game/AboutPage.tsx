@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 
 interface ResourceLink {
   title: string;
@@ -8,10 +8,217 @@ interface ResourceLink {
 }
 
 /**
+ * Star Wars style credits component
+ */
+const StarWarsCredits = ({ onClose }: { onClose: () => void }) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const creditsRef = useRef<HTMLDivElement>(null);
+  const animationRef = useRef<number>(0);
+  const [scrollPosition, setScrollPosition] = useState(0);
+  
+  // Handle hidden achievement trigger for clicking on personal link
+  const handleCreatorLinkClick = () => {
+    // This would be connected to the achievement system in a real implementation
+    if (window.__SECRET_DOM_DO_NOT_USE_OR_YOU_WILL_BE_FIRED) {
+      window.__SECRET_DOM_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.dispatch({ 
+        type: 'UNLOCK_SECRET_ACHIEVEMENT', 
+        payload: { achievementId: 'found_creator_link' } 
+      });
+    }
+  };
+
+  // Set up animation loop
+  useEffect(() => {
+    // Play sound effect when credits open
+    const achievementSound = new Audio('/achievement.mp3');
+    achievementSound.volume = 0.5;
+    achievementSound.play().catch(e => console.log('Audio playback prevented:', e));
+    
+    let startTime = performance.now();
+    let prevTime = startTime;
+    
+    // Add escape key listener
+    const handleEscapeKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    
+    // Add history state to handle mobile back button
+    window.history.pushState({ creditsOpen: true }, '');
+    const handlePopState = () => {
+      onClose();
+    };
+    
+    window.addEventListener('keydown', handleEscapeKey);
+    window.addEventListener('popstate', handlePopState);
+    
+    // Animation function
+    const animate = (time: number) => {
+      // Calculate time delta for smooth animation
+      const deltaTime = time - prevTime;
+      prevTime = time;
+      
+      // Slow scrolling speed (adjust the divisor for speed)
+      const newPosition = scrollPosition + (deltaTime / 50);
+      setScrollPosition(newPosition);
+      
+      // Loop the credits when they're scrolled enough
+      if (creditsRef.current && containerRef.current) {
+        const contentHeight = creditsRef.current.offsetHeight;
+        const containerHeight = containerRef.current.offsetHeight;
+        
+        // Reset position when credits have scrolled out of view
+        if (newPosition > contentHeight) {
+          setScrollPosition(-containerHeight * 0.8);
+        }
+      }
+      
+      // Continue animation loop
+      animationRef.current = requestAnimationFrame(animate);
+    };
+    
+    // Start animation
+    animationRef.current = requestAnimationFrame(animate);
+    
+    // Cleanup on unmount
+    return () => {
+      cancelAnimationFrame(animationRef.current);
+      window.removeEventListener('keydown', handleEscapeKey);
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [onClose, scrollPosition]);
+  
+  // Calculate responsive font sizes
+  const fontSize = {
+    title: "min(8vw, 4rem)",
+    heading: "min(6vw, 3rem)",
+    subheading: "min(5vw, 2.5rem)",
+    text: "min(4vw, 2rem)",
+    small: "min(3vw, 1.5rem)"
+  };
+  
+  return (
+    <div className="fixed inset-0 bg-black z-50 flex items-center justify-center overflow-hidden">
+      {/* Close button */}
+      <button
+        onClick={onClose}
+        className="absolute top-4 right-4 text-gray-400 hover:text-white z-10"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+      
+      {/* Stars background - using divs to create a starfield effect */}
+      <div className="absolute inset-0 overflow-hidden">
+        {Array.from({ length: 100 }).map((_, i) => (
+          <div
+            key={i}
+            className="absolute bg-white rounded-full"
+            style={{
+              width: `${Math.random() * 3}px`,
+              height: `${Math.random() * 3}px`,
+              top: `${Math.random() * 100}%`,
+              left: `${Math.random() * 100}%`,
+              opacity: Math.random() * 0.8 + 0.2
+            }}
+          />
+        ))}
+      </div>
+      
+      {/* Credits content container with perspective effect */}
+      <div 
+        ref={containerRef}
+        className="relative w-full h-full overflow-hidden" 
+        style={{ perspective: '400px' }}
+      >
+        {/* Scrolling container */}
+        <div 
+          ref={creditsRef}
+          className="absolute left-0 right-0 text-center text-yellow-300 w-full"
+          style={{
+            fontFamily: "'SF Distant Galaxy', Arial, sans-serif",
+            transform: `translateY(${-scrollPosition}px) rotateX(25deg)`,
+            transformOrigin: '50% 100%',
+            paddingTop: '100vh',
+            paddingBottom: '150vh'
+          }}
+        >
+          {/* Credits content */}
+          <div className="w-4/5 mx-auto">
+            <h1 style={{ fontSize: fontSize.title, marginBottom: '3rem' }}>CREDITS</h1>
+            
+            <h2 style={{ fontSize: fontSize.heading, marginBottom: '2rem' }}>The Internet ❤️</h2>
+            <p style={{ fontSize: fontSize.text, marginBottom: '4rem' }}>🔌</p>
+            
+            <h2 style={{ fontSize: fontSize.heading, marginBottom: '2rem' }}>
+              <a 
+                href="https://freesound.org/people/LaurenPonder/sounds/635665/" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="hover:text-white"
+              >
+                Lauren Ponder
+              </a>
+            </h2>
+            <p style={{ fontSize: fontSize.text, marginBottom: '4rem' }}>pour le son des Accomplissements</p>
+
+            <h2 style={{ fontSize: fontSize.heading, marginBottom: '2rem' }}>HTML, JavaScript, et CSS</h2>
+            <p style={{ fontSize: fontSize.text, marginBottom: '4rem' }}>le squelette du Pays des Merveilles 🌎</p>
+
+            <h2 style={{ fontSize: fontSize.heading, marginBottom: '2rem' }}>React, Next.js, Tailwind.css</h2>
+            <p style={{ fontSize: fontSize.text, marginBottom: '4rem' }}>et les stacks web modernes 👏</p>
+
+            <h2 style={{ fontSize: fontSize.heading, marginBottom: '2rem' }}>IDEs modernes et ctrl+space</h2>
+            <p style={{ fontSize: fontSize.text, marginBottom: '4rem' }}>d'Eclipse à Cursor 🚀</p>
+
+            <h2 style={{ fontSize: fontSize.subheading, marginBottom: '3rem' }}>Merci également à:</h2>
+
+            <h3 style={{ fontSize: fontSize.subheading, marginBottom: '1.5rem' }}>Debuggers</h3>
+            <p style={{ fontSize: fontSize.text, marginBottom: '1.5rem' }}>des console.log aux enfers des breakpoints,</p>
+            <p style={{ fontSize: fontSize.text, marginBottom: '1.5rem' }}>le paradis de l'introspection des variables,</p>
+            <p style={{ fontSize: fontSize.text, marginBottom: '3rem' }}>et tout ce qui se trouve entre les deux 🔦</p>
+
+            <h3 style={{ fontSize: fontSize.subheading, marginBottom: '1.5rem' }}>Modèles de langage</h3>
+            <p style={{ fontSize: fontSize.text, marginBottom: '3rem' }}>de SpaCy à celui qui reformule cette phrase 📜✒️</p>
+
+            <h3 style={{ fontSize: fontSize.subheading, marginBottom: '1.5rem' }}>Anthropic</h3>
+            <p style={{ fontSize: fontSize.text, marginBottom: '3rem' }}>pour montrer *comment* on fait 🤗</p>
+
+            <h3 style={{ fontSize: fontSize.subheading, marginBottom: '1.5rem' }}>Claude</h3>
+            <p style={{ fontSize: fontSize.text, marginBottom: '3rem' }}>pour être un digne "It"</p>
+
+            <h3 style={{ fontSize: fontSize.subheading, marginBottom: '1.5rem' }}>
+              <span>Vous pour supporter </span>
+              <a 
+                href="https://me.plnech.fr" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="hover:text-white"
+                onClick={handleCreatorLinkClick}
+              >
+                &lt;me href="me.plnech.fr"/&gt;
+              </a>
+            </h3>
+            <p style={{ fontSize: fontSize.text, marginBottom: '1.5rem' }}>alors que nous découvrons ensemble</p>
+            <p style={{ fontSize: fontSize.text, marginBottom: '5rem' }}>ce nouveau monde merveilleux ❤️</p>
+            
+            <p style={{ fontSize: fontSize.small, marginBottom: '10rem' }}>Cliquer le lien déclenche un accomplissement caché</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/**
  * About page component with information about the game and educational resources
  */
 const AboutPage: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const [activeTab, setActiveTab] = useState<'about' | 'resources'>('about');
+  const [showCredits, setShowCredits] = useState(false);
+  
   // Organized educational resources
   const resources: ResourceLink[] = [
     // Critical Thinking Resources
@@ -227,6 +434,19 @@ const AboutPage: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                     Ce projet a évolué grâce à un dialogue significatif — des cycles itératifs de définition d&apos;objectifs humains, propositions de l&apos;IA, raffinement collaboratif et réflexion éthique.
                   </p>
                 </section>
+
+                {/* Credits button */}
+                <section className="flex justify-center mt-8">
+                  <button
+                    onClick={() => setShowCredits(true)}
+                    className="px-6 py-2 bg-purple-700 hover:bg-purple-600 text-white rounded-md shadow transition flex items-center"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                    Voir les Crédits
+                  </button>
+                </section>
               </>
             )}
             
@@ -392,6 +612,9 @@ const AboutPage: React.FC<{ onClose: () => void }> = ({ onClose }) => {
           </div>
         </div>
       </div>
+
+      {/* Star Wars style credits modal */}
+      {showCredits && <StarWarsCredits onClose={() => setShowCredits(false)} />}
     </div>
   );
 };

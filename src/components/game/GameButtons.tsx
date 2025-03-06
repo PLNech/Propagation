@@ -8,13 +8,13 @@ interface GameButtonsProps {
   onInfluence: () => void;
   resources: GameResources;
   manipulateButtonId?: string;
-  currentEra?: string; // Added for era-specific witty text
-  isGaslightActive?: boolean; // For gaslighting effects
+  currentEra?: string;
+  isGaslightActive?: boolean;
 }
 
 /**
- * Enhanced game action buttons with keyboard shortcuts, hold functionality,
- * and era-specific witty descriptions
+ * Concentric circles game buttons representing the propagation of influence
+ * with a clean right-side legend showing details
  */
 const GameButtons: React.FC<GameButtonsProps> = ({
   onManipulate,
@@ -26,49 +26,85 @@ const GameButtons: React.FC<GameButtonsProps> = ({
   currentEra = 'ancient',
   isGaslightActive = false
 }) => {
+  // Track if features are unlocked based on manipulation points thresholds
+  const isNetworkingUnlocked = resources.manipulationPoints >= 100 || resources.networkPoints > 0;
+  const isCredibilityUnlocked = resources.manipulationPoints >= 200 || resources.credibilityPoints > 0;
+  const isInfluenceUnlocked = resources.manipulationPoints >= 400 || resources.influencePoints > 0;
+
   // Check if player can afford each action
-  const canAffordNetworking = resources.manipulationPoints >= 2;
-  const canAffordCredibility = resources.manipulationPoints >= 3;
-  const canAffordInfluence = resources.manipulationPoints >= 5;
+  const canAffordNetworking = resources.manipulationPoints >= 2 && isNetworkingUnlocked;
+  const canAffordCredibility = resources.manipulationPoints >= 3 && isCredibilityUnlocked;
+  const canAffordInfluence = resources.manipulationPoints >= 5 && isInfluenceUnlocked;
 
   // Button press tracking state
   const [pressedButtons, setPressedButtons] = useState<Record<string, boolean>>({
     manipulate: false,
-    networking: false,
     credibility: false,
+    networking: false,
     influence: false
   });
+
+  // Ripple effect state
+  const [rippleEffects, setRippleEffects] = useState<Record<string, boolean>>({
+    manipulate: false,
+    credibility: false,
+    networking: false,
+    influence: false
+  });
+
+  // Hover state for tooltips
+  const [hoveredButton, setHoveredButton] = useState<string | null>(null);
 
   // References for the button press intervals
   const buttonIntervals = useRef<Record<string, NodeJS.Timeout | null>>({
     manipulate: null,
-    networking: null,
     credibility: null,
+    networking: null,
     influence: null
   });
 
   // Button info with keyboard shortcuts, costs, and witty descriptions
   const buttonInfo = {
     manipulate: {
-      key: 'q',
+      key: "q",
       cost: 0,
       label: "Manipuler",
       icon: "🧠",
       unit: "MP",
+      order: 1,
+      color: "#9333ea", // Purple
       descriptions: {
         ancient: "Tisser des mythes",
-        medieval: "R\u00e9pandre des rumeurs",
+        medieval: "Répandre des rumeurs",
         industrial: "Fabriquer des faits",
-        modern: "D\u00e9former la r\u00e9alit\u00e9",
+        modern: "Déformer la réalité",
         digital: "Viraliser des mensonges"
       }
     },
+    credibility: {
+      key: "w",
+      cost: 3,
+      label: "Crédibilité",
+      icon: "🛡️",
+      unit: "CP",
+      order: 2,
+      color: "#2563eb", // Blue
+      descriptions: {
+        ancient: "Inventer des prophéties",
+        medieval: "Imiter l'autorité",
+        industrial: "Falsifier des sources",
+        modern: "Établir des façades",
+        digital: "Fabriquer des preuves"
+      }
+    },
     networking: {
-      key: 'w',
+      key: "e",
       cost: 2,
-      label: "R\u00e9seautage",
+      label: "Réseautage",
       icon: "🌐",
       unit: "NP",
+      order: 3,
+      color: "#16a34a", // Green
       descriptions: {
         ancient: "Attirer des disciples",
         medieval: "Rassembler une cour",
@@ -77,32 +113,20 @@ const GameButtons: React.FC<GameButtonsProps> = ({
         digital: "Exploiter les algorithmes"
       }
     },
-    credibility: {
-      key: 'e',
-      cost: 3,
-      label: "Cr\u00e9dibilit\u00e9",
-      icon: "🛡️",
-      unit: "CP",
-      descriptions: {
-        ancient: "Inventer des proph\u00e9ties",
-        medieval: "Imiter l\u2019autorit\u00e9",
-        industrial: "Falsifier des sources",
-        modern: "\u00c9tablir des fa\u00e7ades",
-        digital: "Fabriquer des preuves"
-      }
-    },
     influence: {
-      key: 'r',
+      key: "r",
       cost: 5,
       label: "Influence",
       icon: "✨",
       unit: "IP",
+      order: 4,
+      color: "#7e22ce", // Deep purple
       descriptions: {
-        ancient: "Forcer l\u2019opinion",
+        ancient: "Forcer l'opinion",
         medieval: "Manipuler le pouvoir",
-        industrial: "Contr\u00f4ler les m\u00e9dias",
-        modern: "Fa\u00e7onner la perception",
-        digital: "Hacker l\u2019attention"
+        industrial: "Contrôler les médias",
+        modern: "Façonner la perception",
+        digital: "Hacker l'attention"
       }
     }
   };
@@ -110,17 +134,64 @@ const GameButtons: React.FC<GameButtonsProps> = ({
   // Button action mapping
   const buttonActions = {
     manipulate: onManipulate,
-    networking: onNetworking,
     credibility: onCredibility,
+    networking: onNetworking,
     influence: onInfluence
   };
 
-  // Affordability checks
+  // Affordability and unlock checks
   const canAfford = {
     manipulate: true,
-    networking: canAffordNetworking,
     credibility: canAffordCredibility,
+    networking: canAffordNetworking,
     influence: canAffordInfluence
+  };
+
+  // Unlock status
+  const isUnlocked = {
+    manipulate: true,
+    credibility: isCredibilityUnlocked,
+    networking: isNetworkingUnlocked,
+    influence: isInfluenceUnlocked
+  };
+
+  // Trigger ripple effect and propagate to next level
+  const triggerRippleEffect = (buttonType: string) => {
+    const order = buttonInfo[buttonType as keyof typeof buttonInfo].order;
+    
+    // Reset all ripples first
+    setRippleEffects({
+      manipulate: false,
+      credibility: false,
+      networking: false,
+      influence: false
+    });
+    
+    // Activate ripple for the current button
+    setRippleEffects(prev => ({ ...prev, [buttonType]: true }));
+    
+    // Find the next button in order to propagate the effect
+    const buttonTypes = Object.keys(buttonInfo) as Array<keyof typeof buttonInfo>;
+    const nextButton = buttonTypes.find(type => 
+      buttonInfo[type].order === order + 1 && isUnlocked[type as keyof typeof isUnlocked]
+    );
+    
+    // If there's a next button, trigger its ripple after a delay
+    if (nextButton) {
+      setTimeout(() => {
+        setRippleEffects(prev => ({ ...prev, [nextButton]: true }));
+      }, 150);
+    }
+    
+    // Clear all ripples after animation completes
+    setTimeout(() => {
+      setRippleEffects({
+        manipulate: false,
+        credibility: false,
+        networking: false,
+        influence: false
+      });
+    }, 600);
   };
 
   // Start button press and set interval for repeated actions
@@ -131,6 +202,9 @@ const GameButtons: React.FC<GameButtonsProps> = ({
     // Set the button as pressed
     setPressedButtons(prev => ({ ...prev, [buttonType]: true }));
     
+    // Trigger ripple effect
+    triggerRippleEffect(buttonType);
+    
     // Execute action immediately
     buttonActions[buttonType as keyof typeof buttonActions]();
     
@@ -139,8 +213,8 @@ const GameButtons: React.FC<GameButtonsProps> = ({
       buttonIntervals.current[buttonType] = setInterval(() => {
         // Check affordability again since resources may have changed
         if (buttonType === 'manipulate' || 
-            (buttonType === 'networking' && resources.manipulationPoints >= 2) ||
             (buttonType === 'credibility' && resources.manipulationPoints >= 3) ||
+            (buttonType === 'networking' && resources.manipulationPoints >= 2) ||
             (buttonType === 'influence' && resources.manipulationPoints >= 5)) {
           buttonActions[buttonType as keyof typeof buttonActions]();
         } else {
@@ -175,13 +249,13 @@ const GameButtons: React.FC<GameButtonsProps> = ({
       // Map keys to button types
       const keyToButton: Record<string, string> = {
         'q': 'manipulate',
-        'w': 'networking',
-        'e': 'credibility',
+        'w': 'credibility',
+        'e': 'networking',
         'r': 'influence'
       };
       
       const buttonType = keyToButton[key];
-      if (buttonType && !buttonIntervals.current[buttonType]) {
+      if (buttonType && !buttonIntervals.current[buttonType] && canAfford[buttonType as keyof typeof canAfford]) {
         startButtonPress(buttonType);
       }
     };
@@ -191,8 +265,8 @@ const GameButtons: React.FC<GameButtonsProps> = ({
       
       const keyToButton: Record<string, string> = {
         'q': 'manipulate',
-        'w': 'networking',
-        'e': 'credibility',
+        'w': 'credibility',
+        'e': 'networking',
         'r': 'influence'
       };
       
@@ -226,7 +300,7 @@ const GameButtons: React.FC<GameButtonsProps> = ({
     if (isGaslightActive && Math.random() > 0.85) {
       // Occasionally swap labels or show misleading text
       const gaslightLabels: Record<string, string> = {
-        "manipulate": "R\u00e9v\u00e9ler",
+        "manipulate": "Révéler",
         "networking": "Isoler",
         "credibility": "Mentir",
         "influence": "Soumettre"
@@ -245,78 +319,235 @@ const GameButtons: React.FC<GameButtonsProps> = ({
     return buttonInfo[buttonType as keyof typeof buttonInfo]?.descriptions[validEra as keyof typeof buttonInfo.manipulate.descriptions] || '';
   };
 
-  // Button style creator 
-  const getButtonStyle = (buttonType: string, isAffordable: boolean, isPressed: boolean) => {
-    const baseStyle = "py-2 px-4 rounded shadow transition-all duration-200 w-full max-w-xs font-medium flex items-center justify-center gap-2";
+  // Get class for locked state
+  const getLockedClass = (buttonType: string) => {
+    if (!isUnlocked[buttonType as keyof typeof isUnlocked]) {
+      return "opacity-30 filter grayscale cursor-not-allowed";
+    }
+    return "";
+  };
+
+  // Get class for disabled (but unlocked) button
+  const getDisabledClass = (buttonType: string) => {
+    if (isUnlocked[buttonType as keyof typeof isUnlocked] && !canAfford[buttonType as keyof typeof canAfford]) {
+      return "opacity-60 cursor-not-allowed";
+    }
+    return "";
+  };
+
+  // Get class for pressed state
+  const getPressedClass = (buttonType: string) => {
+    return pressedButtons[buttonType] && canAfford[buttonType as keyof typeof canAfford] 
+      ? "transform scale-95 brightness-90" 
+      : "";
+  };
+
+  // Get ripple effect class
+  const getRippleClass = (buttonType: string) => {
+    return rippleEffects[buttonType] 
+      ? "after:absolute after:inset-0 after:rounded-full after:bg-gradient-to-br after:opacity-60 after:game-ripple after:z-10" 
+      : "";
+  };
+
+  // Get button size based on its order
+  const getButtonSize = (order: number) => {
+    switch (order) {
+      case 1: return "w-[25%] h-[25%]"; // Manipulate - smallest
+      case 2: return "w-[45%] h-[45%]"; // Credibility - second
+      case 3: return "w-[70%] h-[70%]"; // Networking - third
+      case 4: return "w-full h-full";   // Influence - largest
+      default: return "w-[25%] h-[25%]";
+    }
+  };
+
+  // Get button position
+  const getButtonPosition = (order: number) => {
+    return "left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2";
+  };
+
+  // Custom hook to handle button press on mobile and desktop
+  const useButtonPressHandlers = (buttonType: string) => {
+    const isActionAvailable = canAfford[buttonType as keyof typeof canAfford];
     
-    // Style variations based on button type
-    const buttonStyles: Record<string, string> = {
-      manipulate: "bg-purple-600 hover:bg-purple-700 active:bg-purple-800",
-      networking: "bg-green-600 hover:bg-green-700 active:bg-green-800",
-      credibility: "bg-blue-600 hover:bg-blue-700 active:bg-blue-800",
-      influence: "bg-purple-800 hover:bg-purple-900 active:bg-purple-950"
+    return {
+      onClick: () => isActionAvailable && startButtonPress(buttonType),
+      onMouseDown: () => isActionAvailable && startButtonPress(buttonType),
+      onMouseUp: () => endButtonPress(buttonType),
+      onMouseEnter: () => setHoveredButton(buttonType),
+      onMouseLeave: () => {
+        setHoveredButton(null);
+        if (pressedButtons[buttonType]) endButtonPress(buttonType);
+      },
+      onTouchStart: (e: React.TouchEvent) => {
+        if (isActionAvailable) {
+          e.preventDefault();
+          setHoveredButton(buttonType);
+          startButtonPress(buttonType);
+        }
+      },
+      onTouchEnd: () => {
+        setTimeout(() => setHoveredButton(null), 500);
+        endButtonPress(buttonType);
+      }
     };
+  };
+
+  // Find next button in the propagation sequence
+  const getNextButtonInSequence = (currentType: string): string | null => {
+    const currentOrder = buttonInfo[currentType as keyof typeof buttonInfo].order;
+    const nextOrder = currentOrder + 1;
     
-    // Disabled style
-    const disabledStyle = "bg-gray-600 text-gray-300 cursor-not-allowed";
+    const nextButton = Object.keys(buttonInfo).find(type => 
+      buttonInfo[type as keyof typeof buttonInfo].order === nextOrder && 
+      isUnlocked[type as keyof typeof isUnlocked]
+    );
     
-    // Pressed style override
-    const pressedStyle = isPressed ? "transform scale-95 shadow-inner" : "";
+    return nextButton || null;
+  };
+
+  // Render minimal content for the buttons
+  const renderButtonContent = (buttonType: string) => {
+    const info = buttonInfo[buttonType as keyof typeof buttonInfo];
+    const isLocked = !isUnlocked[buttonType as keyof typeof isUnlocked];
     
-    // Occasional gaslighting visual effect
-    const gaslightStyle = isGaslightActive && Math.random() > 0.9 ? "blur-[0.3px] opacity-95" : "";
-    
-    return `${baseStyle} ${isAffordable ? buttonStyles[buttonType] + " text-white font-bold" : disabledStyle} ${pressedStyle} ${gaslightStyle}`;
+    if (isLocked) {
+      return (
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-black/50 p-2 rounded-full flex flex-col items-center">
+          <span className="text-2xl">🔒</span>
+          <span className="text-white text-xs font-bold">{buttonType === 'networking' ? '100' : buttonType === 'credibility' ? '200' : '400'} MP</span>
+        </div>
+      );
+    }
+
+    // Minimal content - just icon and key
+    return (
+      <div className="absolute inset-0 flex flex-col items-center justify-center">
+        <span className="text-white text-2xl">{info.icon}</span>
+        <span className="text-white text-xs font-bold mt-1">[{info.key.toUpperCase()}]</span>
+      </div>
+    );
   };
 
   return (
-    <div className="mt-4 space-y-3">
-      {/* Button order: manipulate first, followed by others */}
-      {(["manipulate", "networking", "credibility", "influence"] as const).map(buttonType => {
-        const info = buttonInfo[buttonType];
-        const isAffordable = canAfford[buttonType];
-        const isPressed = pressedButtons[buttonType];
+    <div className="mt-8 flex flex-col md:flex-row w-full max-w-4xl mx-auto">
+      {/* Circles container - 2/3 width on medium+ screens */}
+      <div className="w-full md:w-2/3 relative">
+        <div className="aspect-square relative flex items-center justify-center">
+          {/* Generate buttons in reverse order (from largest to smallest) */}
+          {Object.keys(buttonInfo)
+            .sort((a, b) => buttonInfo[b as keyof typeof buttonInfo].order - buttonInfo[a as keyof typeof buttonInfo].order)
+            .map(buttonType => {
+              const info = buttonInfo[buttonType as keyof typeof buttonInfo];
+              const nextButtonType = getNextButtonInSequence(buttonType);
+              
+              return (
+                <div
+                  key={buttonType}
+                  className={`absolute rounded-full transition-all duration-200 border-4 border-white/20
+                    ${isUnlocked[buttonType as keyof typeof isUnlocked] ? "" : "bg-gray-800"}
+                    ${getLockedClass(buttonType)} 
+                    ${canAfford[buttonType as keyof typeof canAfford] ? "cursor-pointer" : getDisabledClass(buttonType)} 
+                    ${getPressedClass(buttonType)}
+                    ${getRippleClass(buttonType)}
+                    ${getButtonSize(info.order)}
+                    ${getButtonPosition(info.order)}
+                    overflow-hidden`}
+                  style={{
+                    backgroundColor: isUnlocked[buttonType as keyof typeof isUnlocked] ? info.color : undefined
+                  }}
+                  {...useButtonPressHandlers(buttonType)}
+                  id={buttonType === 'manipulate' ? manipulateButtonId : `${buttonType}-button`}
+                >
+                  {renderButtonContent(buttonType)}
+                  
+                  {/* Ripple/pulse animations */}
+                  {buttonType === 'manipulate' && (
+                    <div className={`absolute inset-0 rounded-full bg-white opacity-20 
+                      ${pressedButtons.manipulate ? "game-ping-once" : "animate-pulse"}`}
+                    ></div>
+                  )}
+                  
+                  {/* Ripple effect animation for propagation */}
+                  {rippleEffects[buttonType] && nextButtonType && (
+                    <div 
+                      className="absolute inset-0 rounded-full game-ripple-out" 
+                      style={{
+                        background: `radial-gradient(circle, ${info.color} 0%, transparent 70%)`
+                      }}
+                    ></div>
+                  )}
+                </div>
+              );
+            })}
+        </div>
         
-        return (
-          <div key={buttonType} className="flex justify-center relative">
-            <button
-              id={buttonType === "manipulate" ? manipulateButtonId : undefined}
-              disabled={!isAffordable}
-              className={getButtonStyle(buttonType, isAffordable, isPressed)}
-              onMouseDown={() => startButtonPress(buttonType)}
-              onMouseUp={() => endButtonPress(buttonType)}
-              onMouseLeave={() => isPressed && endButtonPress(buttonType)}
-              onTouchStart={() => startButtonPress(buttonType)}
-              onTouchEnd={() => endButtonPress(buttonType)}
-            >
-              <div className="flex flex-col items-center">
-                {/* Icon and main label */}
+        {/* Keyboard shortcut hint - centered below circles */}
+        <div className="text-xs text-center text-gray-400 mt-2">
+          Maintenez ou utilisez [Q,W,E,R] pour actions répétées
+        </div>
+      </div>
+      
+      {/* Legend/Details container - 1/3 width on medium+ screens */}
+      <div className="w-full md:w-1/3 p-4 flex flex-col justify-center">
+        <h3 className="text-white text-lg font-bold mb-4">Actions</h3>
+        
+        {/* Legend items */}
+        {Object.keys(buttonInfo)
+          .sort((a, b) => buttonInfo[a as keyof typeof buttonInfo].order - buttonInfo[b as keyof typeof buttonInfo].order)
+          .map(buttonType => {
+            const info = buttonInfo[buttonType as keyof typeof buttonInfo];
+            const isAvailable = isUnlocked[buttonType as keyof typeof isUnlocked];
+            
+            if (!isAvailable) {
+              return (
+                <div key={buttonType} className="mb-4 opacity-50">
+                  <div className="flex items-center">
+                    <div className="w-6 h-6 rounded-full flex items-center justify-center mr-2" style={{ backgroundColor: "#666" }}>
+                      <span className="text-white text-xs">🔒</span>
+                    </div>
+                    <span className="text-white font-bold">{info.label}</span>
+                    <span className="text-gray-400 text-xs ml-2">Débloque à {buttonType === 'networking' ? '100' : buttonType === 'credibility' ? '200' : '400'} MP</span>
+                  </div>
+                </div>
+              );
+            }
+            
+            return (
+              <div 
+                key={buttonType} 
+                className={`mb-4 ${!canAfford[buttonType as keyof typeof canAfford] ? "opacity-60" : ""}`}
+                onMouseEnter={() => setHoveredButton(buttonType)}
+                onMouseLeave={() => setHoveredButton(null)}
+              >
                 <div className="flex items-center">
-                  <span className="mr-1">{info.icon}</span>
-                  <span>{getGaslightedLabel(buttonType, info.label)}</span>
-                  <span className="text-xs ml-2 opacity-70">[{info.key.toUpperCase()}]</span>
+                  <div className="w-6 h-6 rounded-full flex items-center justify-center mr-2" style={{ backgroundColor: info.color }}>
+                    <span className="text-white text-xs">{info.icon}</span>
+                  </div>
+                  <span className="text-white font-bold">
+                    {getGaslightedLabel(buttonType, info.label)}
+                  </span>
+                  <span className="text-gray-400 text-xs ml-2">[{info.key.toUpperCase()}]</span>
+                  
+                  {/* Afficher le coût MP pour tous les boutons sauf Manipuler */}
+                  {buttonType !== 'manipulate' && (
+                    <span className={`ml-auto text-sm ${canAfford[buttonType as keyof typeof canAfford] ? "text-white" : "text-red-400"}`}>
+                      {buttonType === 'networking' ? '2' : buttonType === 'credibility' ? '3' : '5'} MP
+                    </span>
+                  )}
                 </div>
                 
-                {/* Cost and witty description */}
-                <div className="text-xs mt-1">
-                  {info.cost > 0 && <span className="font-mono">{info.cost} {info.unit}</span>}
-                  <span className="italic ml-2 opacity-80">{getDescription(buttonType)}</span>
-                </div>
+                {/* Description only shows on hover */}
+                {hoveredButton === buttonType && (
+                  <div className="text-sm text-gray-300 mt-1 ml-8 italic">
+                    {getDescription(buttonType)}
+                  </div>
+                )}
               </div>
-              
-              {/* Visual effect for pressed state */}
-              {isPressed && isAffordable && (
-                <span className="absolute inset-0 bg-white opacity-10 rounded animate-pulse"></span>
-              )}
-            </button>
-          </div>
-        );
-      })}
-      
-      {/* Keyboard shortcuts hint */}
-      <div className="text-xs text-center text-gray-400 mt-1">
-        Maintenez les boutons ou utilisez [Q,W,E,R] pour actions r\u00e9p\u00e9t\u00e9es
+            );
+          })}
       </div>
+      
+      {/* No custom CSS here - using styles from globals.css */}
     </div>
   );
 };
