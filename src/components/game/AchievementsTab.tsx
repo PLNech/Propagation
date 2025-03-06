@@ -96,7 +96,7 @@ const AchievementsTab: React.FC<AchievementsTabProps> = ({
   return (
     <div className="mt-6">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold">Accomplissements</h2>
+        <h2 className="text-2xl font-bold">Succès</h2>
         <div className="text-sm text-gray-400">
           <span className="font-bold text-yellow-400">{totalUnlocked}</span> / {achievements.length} débloqués
         </div>

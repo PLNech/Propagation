@@ -68,7 +68,7 @@ const TheoriesTab: React.FC<TheoriesTabProps> = ({
   return (
     <div className="mt-6">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-bold">Théories à Propager</h2>
+        <h2 className="text-2xl font-bold">Croyances à Propager</h2>
         <div className="flex items-center space-x-2">
           <span className="text-sm">Score éthique:</span>
           <span className={`font-bold ${getEthicalScoreColor()}`}>{ethicalScore}</span>

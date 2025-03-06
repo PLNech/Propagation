@@ -650,7 +650,7 @@ const PropagationGame = () => {
             className={`py-2 px-4 ${activeTab === 'progression' ? 'border-b-2 border-purple-500 text-purple-300' : 'text-gray-400 hover:text-gray-200'}`}
             onClick={() => handleTabChange('progression')}
           >
-            Progression
+            Ères
           </button>
           <button
             className={`py-2 px-4 ${activeTab === 'upgrades' ? 'border-b-2 border-purple-500 text-purple-300' : 'text-gray-400 hover:text-gray-200'}`}
@@ -680,7 +680,7 @@ const PropagationGame = () => {
             className={`py-2 px-4 ${activeTab === 'achievements' ? 'border-b-2 border-yellow-500 text-yellow-300' : 'text-gray-400 hover:text-gray-200'}`}
             onClick={() => handleTabChange('achievements')}
           >
-            Accomplissements
+            Succès
           </button>
         </div>
         

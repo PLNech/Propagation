@@ -68,9 +68,9 @@ const achievementHints = [
   {
     achievementId: 'meta_ethics',
     hints: [
-      "Comprendre l'éthique est une chose. Débloquer tous ses accomplissements en est une autre.",
+      "Comprendre l'éthique est une chose. Débloquer tous ses succès en est une autre.",
       "Il y a une méta-récompense pour ceux qui maîtrisent tous les aspects éthiques du jeu.",
-      "Collectionne tous les accomplissements éthiques, et un secret te sera révélé."
+      "Collectionne tous les succès éthiques, et un secret te sera révélé."
     ]
   }
 ];

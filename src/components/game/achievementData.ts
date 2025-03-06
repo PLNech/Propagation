@@ -507,7 +507,7 @@ export const initialAchievements: Achievement[] = [
   {
     id: 'meta_ethics',
     name: 'Méta-Éthique',
-    description: 'Obtenez tous les accomplissements de la catégorie Éthique. Le jeu vous a-t-il vraiment rendu plus éthique, ou juste plus conscient de la manipulation ?',
+    description: 'Obtenez tous les succès de la catégorie Éthique. Le jeu vous a-t-il vraiment rendu plus éthique, ou juste plus conscient de la manipulation ?',
     category: 'secret',
     rarity: 'epic',
     isSecret: true,
@@ -524,7 +524,7 @@ export const initialAchievements: Achievement[] = [
     },
     icon: '🧠',
     color: 'bg-green-900 text-white',
-    shareText: 'J\'ai obtenu tous les accomplissements éthiques dans #Propagation ! Suis-je vraiment devenu plus éthique, ou juste plus conscient de ne pas l\'être ? 🤔'
+    shareText: 'J\'ai obtenu tous les succès éthiques dans #Propagation ! Suis-je vraiment devenu plus éthique, ou juste plus conscient de ne pas l\'être ? 🤔'
   },
 ];
 
@@ -1047,7 +1047,7 @@ export const endingAchievements: Achievement[] = [
     {
       id: 'all_achievements',
       name: 'Complétionniste',
-      description: 'Débloquer tous les autres accomplissements. Votre maîtrise du jeu est totale.',
+      description: 'Débloquer tous les autres succès. Votre maîtrise du jeu est totale.',
       category: 'meta',
       rarity: 'legendary',
       isSecret: true,
@@ -1064,7 +1064,7 @@ export const endingAchievements: Achievement[] = [
       },
       icon: '🏆',
       color: 'bg-yellow-400 text-black',
-      shareText: 'J\'ai débloqué TOUS les accomplissements dans #Propagation! Ma maîtrise de la manipulation et de l\'éthique est absolue.'
+      shareText: 'J\'ai débloqué TOUS les succès dans #Propagation! Ma maîtrise de la manipulation et de l\'éthique est absolue.'
     },
     {
       id: 'speed_manipulator',
@@ -1087,13 +1087,434 @@ export const endingAchievements: Achievement[] = [
       shareText: 'Je suis un Manipulateur Éclair dans #Propagation! J\'ai atteint l\'ère numérique en moins de 30 minutes. Mon efficacité est terrifiante.'
     }
   ];
+ 
   
-  // Combine all new achievements
-  export const allNewAchievements = [
-    ...endingAchievements,
-    ...loreAchievements,
-    ...additionalAchievements
+
+/**
+ * Diffusion d'Information achievements - progression from family to universe
+ */
+export const diffusionAchievements: Achievement[] = [
+    {
+      id: 'influence_family',
+      name: 'Cercle Familial',
+      description: 'Atteindre 100 esprits influencés. Votre impact se limite à votre famille et vos proches.',
+      category: 'progression',
+      rarity: 'common',
+      isSecret: false,
+      unlocked: false,
+      condition: {
+        type: 'specific_combination',
+        customCheck: (state: GameState) => {
+          return state.ethicalStats.livesImpacted >= 100;
+        }
+      },
+      icon: '👨‍👩‍👧‍👦',
+      color: 'bg-green-100 text-green-800',
+      shareText: 'J\'ai atteint le niveau Cercle Familial dans #Propagation - mes idées commencent à se propager!'
+    },
+    {
+      id: 'influence_village',
+      name: 'Village Entier',
+      description: 'Atteindre 1,000 esprits influencés. Vos idées se répandent dans tout votre village ou quartier.',
+      category: 'progression',
+      rarity: 'common',
+      isSecret: false,
+      unlocked: false,
+      condition: {
+        type: 'specific_combination',
+        customCheck: (state: GameState) => {
+          return state.ethicalStats.livesImpacted >= 1000;
+        }
+      },
+      icon: '🏘️',
+      color: 'bg-green-100 text-green-800',
+      shareText: 'J\'ai atteint le niveau Village Entier dans #Propagation - toute la communauté locale est sous mon influence!'
+    },
+    {
+      id: 'influence_city',
+      name: 'Cité sous Influence',
+      description: 'Atteindre 50,000 esprits influencés. Votre message résonne dans toute une ville.',
+      category: 'progression',
+      rarity: 'uncommon',
+      isSecret: false,
+      unlocked: false,
+      condition: {
+        type: 'specific_combination',
+        customCheck: (state: GameState) => {
+          return state.ethicalStats.livesImpacted >= 50000;
+        }
+      },
+      icon: '🏙️',
+      color: 'bg-blue-100 text-blue-800',
+      shareText: 'J\'ai atteint le niveau Cité sous Influence dans #Propagation - une ville entière écoute mes paroles!'
+    },
+    {
+      id: 'influence_region',
+      name: 'Main sur la Région',
+      description: 'Atteindre 500,000 esprits influencés. Votre influence s\'étend sur toute une région.',
+      category: 'progression',
+      rarity: 'uncommon',
+      isSecret: false,
+      unlocked: false,
+      condition: {
+        type: 'specific_combination',
+        customCheck: (state: GameState) => {
+          return state.ethicalStats.livesImpacted >= 500000;
+        }
+      },
+      icon: '🏞️',
+      color: 'bg-blue-100 text-blue-800',
+      shareText: 'J\'ai atteint le niveau Main sur la Région dans #Propagation - mon influence s\'étend sur des centaines de kilomètres!'
+    },
+    {
+      id: 'influence_nation',
+      name: 'Conscience Nationale',
+      description: 'Atteindre 5 millions d\'esprits influencés. Votre message façonne la pensée de tout un pays.',
+      category: 'progression',
+      rarity: 'rare',
+      isSecret: false,
+      unlocked: false,
+      condition: {
+        type: 'specific_combination',
+        customCheck: (state: GameState) => {
+          return state.ethicalStats.livesImpacted >= 5000000;
+        }
+      },
+      icon: '🏛️',
+      color: 'bg-purple-100 text-purple-800',
+      shareText: 'J\'ai atteint le niveau Conscience Nationale dans #Propagation - tout un pays pense à travers mes mots!'
+    },
+    {
+      id: 'influence_global',
+      name: 'Phénomène Mondial',
+      description: 'Atteindre 100 millions d\'esprits influencés. Votre influence s\'étend sur le globe entier.',
+      category: 'progression',
+      rarity: 'epic',
+      isSecret: false,
+      unlocked: false,
+      condition: {
+        type: 'specific_combination',
+        customCheck: (state: GameState) => {
+          return state.ethicalStats.livesImpacted >= 100000000;
+        }
+      },
+      icon: '🌍',
+      color: 'bg-indigo-100 text-indigo-800',
+      shareText: 'J\'ai atteint le niveau Phénomène Mondial dans #Propagation - mes idées transcendent les frontières!'
+    },
+    {
+      id: 'influence_planetary',
+      name: 'Conscience Planétaire',
+      description: 'Atteindre 1 milliard d\'esprits influencés. Presque chaque humain a entendu votre message.',
+      category: 'progression',
+      rarity: 'epic',
+      isSecret: false,
+      unlocked: false,
+      condition: {
+        type: 'specific_combination',
+        customCheck: (state: GameState) => {
+          return state.ethicalStats.livesImpacted >= 1000000000;
+        }
+      },
+      icon: '🌐',
+      color: 'bg-purple-100 text-purple-800',
+      shareText: 'J\'ai atteint le niveau Conscience Planétaire dans #Propagation - l\'humanité entière est sous mon influence!'
+    },
+    {
+      id: 'influence_solar',
+      name: 'Message Interplanétaire',
+      description: 'Atteindre 10 milliards d\'esprits influencés. Votre message s\'étend au-delà de la Terre, vers d\'autres mondes.',
+      category: 'progression',
+      rarity: 'legendary',
+      isSecret: false,
+      unlocked: false,
+      condition: {
+        type: 'specific_combination',
+        customCheck: (state: GameState) => {
+          return state.ethicalStats.livesImpacted >= 10000000000;
+        }
+      },
+      icon: '☀️',
+      color: 'bg-yellow-100 text-yellow-800',
+      shareText: 'J\'ai atteint le niveau Message Interplanétaire dans #Propagation - même les extraterrestres connaissent mon nom!'
+    },
+    {
+      id: 'influence_galactic',
+      name: 'Résonance Galactique',
+      description: 'Atteindre 100 milliards d\'esprits influencés. Votre influence s\'étend à travers toute la galaxie.',
+      category: 'progression',
+      rarity: 'legendary',
+      isSecret: false,
+      unlocked: false,
+      condition: {
+        type: 'specific_combination',
+        customCheck: (state: GameState) => {
+          return state.ethicalStats.livesImpacted >= 100000000000;
+        }
+      },
+      icon: '🌌',
+      color: 'bg-purple-900 text-white',
+      shareText: 'J\'ai atteint le niveau Résonance Galactique dans #Propagation - la Voie Lactée vibre selon mes idées!'
+    },
+    {
+      id: 'influence_universal',
+      name: 'Conscience Universelle',
+      description: 'Atteindre 1 trillion d\'esprits influencés. Chaque esprit conscient dans l\'univers connaît votre message.',
+      category: 'progression',
+      rarity: 'legendary',
+      isSecret: true,
+      hint: "Au-delà des étoiles, existe-t-il encore des limites à votre influence?",
+      unlocked: false,
+      condition: {
+        type: 'specific_combination',
+        customCheck: (state: GameState) => {
+          return state.ethicalStats.livesImpacted >= 1000000000000;
+        }
+      },
+      icon: '✨',
+      color: 'bg-black text-white',
+      shareText: 'J\'ai atteint la CONSCIENCE UNIVERSELLE dans #Propagation - chaque être pensant dans l\'univers connaît mon message!'
+    }
   ];
+  
+  /**
+   * Vérité vs Mensonge achievements for extremes
+   */
+  export const veriteMensongeAchievements: Achievement[] = [
+    {
+      id: 'truth_absolute',
+      name: 'Vérité Absolue',
+      description: 'Atteindre un ratio de 20:1 entre actions éthiques et théories propagées. Votre dévouement à la vérité est indéfectible.',
+      category: 'ethics',
+      rarity: 'legendary',
+      isSecret: false,
+      unlocked: false,
+      condition: {
+        type: 'specific_combination',
+        customCheck: (state: GameState) => {
+          const ethicalActions = state.ethicalStats.ethicalActionsPerformed;
+          const theories = state.ethicalStats.theoriesPropagated;
+          return ethicalActions >= 20 && theories > 0 && (ethicalActions / theories >= 20);
+        }
+      },
+      reward: {
+        type: 'resource_multiplier',
+        target: 'credibility',
+        value: 3.0,
+        description: '+200% de crédibilité'
+      },
+      icon: '⚖️',
+      color: 'bg-green-100 text-green-800',
+      shareText: 'J\'ai atteint la Vérité Absolue dans #Propagation - mon dévouement à l\'éthique dépasse 20 fois mes manipulations!'
+    },
+    {
+      id: 'truth_champion',
+      name: 'Champion de la Vérité',
+      description: 'Atteindre un ratio de 10:1 entre actions éthiques et théories propagées. Vous êtes un défenseur acharné de la vérité.',
+      category: 'ethics',
+      rarity: 'epic',
+      isSecret: false,
+      unlocked: false,
+      condition: {
+        type: 'specific_combination',
+        customCheck: (state: GameState) => {
+          const ethicalActions = state.ethicalStats.ethicalActionsPerformed;
+          const theories = state.ethicalStats.theoriesPropagated;
+          return ethicalActions >= 10 && theories > 0 && (ethicalActions / theories >= 10);
+        }
+      },
+      icon: '🛡️',
+      color: 'bg-green-100 text-green-800',
+      shareText: 'Je suis un Champion de la Vérité dans #Propagation - mes actions éthiques surpassent largement mes manipulations!'
+    },
+    {
+      id: 'lies_absolute',
+      name: 'Mensonge Incarné',
+      description: 'Atteindre un ratio de 20:1 entre théories propagées et actions éthiques. Votre dévouement à la manipulation est total.',
+      category: 'manipulation',
+      rarity: 'legendary',
+      isSecret: false,
+      unlocked: false,
+      condition: {
+        type: 'specific_combination',
+        customCheck: (state: GameState) => {
+          const ethicalActions = state.ethicalStats.ethicalActionsPerformed;
+          const theories = state.ethicalStats.theoriesPropagated;
+          return theories >= 20 && ethicalActions > 0 && (theories / ethicalActions >= 20);
+        }
+      },
+      reward: {
+        type: 'resource_multiplier',
+        target: 'manipulationPoints',
+        value: 3.0,
+        description: '+200% de points de manipulation'
+      },
+      icon: '😈',
+      color: 'bg-red-100 text-red-800',
+      shareText: 'Je suis le Mensonge Incarné dans #Propagation - mes manipulations dépassent 20 fois mes actions éthiques!'
+    },
+    {
+      id: 'lies_master',
+      name: 'Maître des Mensonges',
+      description: 'Atteindre un ratio de 10:1 entre théories propagées et actions éthiques. Vous êtes un virtuose de la manipulation.',
+      category: 'manipulation',
+      rarity: 'epic',
+      isSecret: false,
+      unlocked: false,
+      condition: {
+        type: 'specific_combination',
+        customCheck: (state: GameState) => {
+          const ethicalActions = state.ethicalStats.ethicalActionsPerformed;
+          const theories = state.ethicalStats.theoriesPropagated;
+          return theories >= 10 && ethicalActions > 0 && (theories / ethicalActions >= 10);
+        }
+      },
+      icon: '🎭',
+      color: 'bg-red-100 text-red-800',
+      shareText: 'Je suis un Maître des Mensonges dans #Propagation - mes manipulations surpassent largement mes actions éthiques!'
+    }
+  ];
+  
+  /**
+   * Prix de la Conscience achievements with wordplay (price/cost/award/trophy)
+   */
+  export const prixConscienceAchievements: Achievement[] = [
+    {
+      id: 'prix_tag',
+      name: 'Étiquette de Prix',
+      description: '1000 points d\'influence sacrifiés sur l\'autel de l\'éthique. Votre conscience a un prix, et il est bien visible.',
+      category: 'ethics',
+      rarity: 'uncommon',
+      isSecret: false,
+      unlocked: false,
+      condition: {
+        type: 'specific_combination',
+        customCheck: (state: GameState) => {
+          return state.ethicalStats.influenceSacrificed >= 1000;
+        }
+      },
+      icon: '🏷️',
+      color: 'bg-yellow-100 text-yellow-800',
+      shareText: 'J\'ai obtenu l\'Étiquette de Prix dans #Propagation - ma conscience a un coût, mais elle n\'est pas à vendre!'
+    },
+    {
+      id: 'prix_boutique',
+      name: 'Prix de Boutique',
+      description: '5000 points d\'influence sacrifiés pour l\'éthique. Votre conscience est coûteuse, mais reste dans les prix du marché.',
+      category: 'ethics',
+      rarity: 'rare',
+      isSecret: false,
+      unlocked: false,
+      condition: {
+        type: 'specific_combination',
+        customCheck: (state: GameState) => {
+          return state.ethicalStats.influenceSacrificed >= 5000;
+        }
+      },
+      icon: '💲',
+      color: 'bg-green-100 text-green-800',
+      shareText: 'J\'ai atteint le Prix de Boutique dans #Propagation - ma conscience coûte cher, mais elle vaut chaque point d\'influence!'
+    },
+    {
+      id: 'prix_luxe',
+      name: 'Article de Luxe',
+      description: '15000 points d\'influence sacrifiés pour l\'éthique. Votre conscience est un produit de luxe que peu peuvent s\'offrir.',
+      category: 'ethics',
+      rarity: 'epic',
+      isSecret: false,
+      unlocked: false,
+      condition: {
+        type: 'specific_combination',
+        customCheck: (state: GameState) => {
+          return state.ethicalStats.influenceSacrificed >= 15000;
+        }
+      },
+      reward: {
+        type: 'resource_multiplier',
+        target: 'credibility',
+        value: 1.5,
+        description: '+50% de crédibilité'
+      },
+      icon: '💎',
+      color: 'bg-blue-100 text-blue-800',
+      shareText: 'Ma conscience est un Article de Luxe dans #Propagation - peu peuvent se permettre un tel sacrifice d\'influence!'
+    },
+    {
+      id: 'prix_inestimable',
+      name: 'Valeur Inestimable',
+      description: '50000 points d\'influence sacrifiés pour l\'éthique. Votre conscience n\'a pas de prix - elle est littéralement inestimable.',
+      category: 'ethics',
+      rarity: 'legendary',
+      isSecret: false,
+      unlocked: false,
+      condition: {
+        type: 'specific_combination',
+        customCheck: (state: GameState) => {
+          return state.ethicalStats.influenceSacrificed >= 50000;
+        }
+      },
+      icon: '💯',
+      color: 'bg-purple-100 text-purple-800',
+      shareText: 'Ma conscience a une Valeur Inestimable dans #Propagation - aucun prix ne peut être fixé sur mes principes!'
+    },
+    {
+      id: 'prix_trophee',
+      name: 'Trophée Éthique',
+      description: 'Sacrifier 10000 points d\'influence tout en maintenant un score éthique de 90+. Votre conscience n\'est pas un coût, mais une récompense.',
+      category: 'ethics',
+      rarity: 'epic',
+      isSecret: false,
+      unlocked: false,
+      condition: {
+        type: 'specific_combination',
+        customCheck: (state: GameState) => {
+          return state.ethicalStats.influenceSacrificed >= 10000 && state.ethicalScore >= 90;
+        }
+      },
+      icon: '🏆',
+      color: 'bg-yellow-100 text-yellow-800',
+      shareText: 'J\'ai remporté le Trophée Éthique dans #Propagation - ma conscience n\'est pas un coût, mais ma plus belle récompense!'
+    },
+    {
+      id: 'prix_absurde',
+      name: 'Prix Absurde',
+      description: 'Sacrifier plus de 100000 points d\'influence pour l\'éthique. À ce stade, est-ce vraiment un prix ou une obsession?',
+      category: 'ethics',
+      rarity: 'legendary',
+      isSecret: true,
+      hint: "Certains prix sont tellement élevés qu'ils en deviennent absurdes...",
+      unlocked: false,
+      condition: {
+        type: 'specific_combination',
+        customCheck: (state: GameState) => {
+          return state.ethicalStats.influenceSacrificed >= 100000;
+        }
+      },
+      icon: '🤯',
+      color: 'bg-pink-100 text-pink-800',
+      shareText: 'J\'ai payé le Prix Absurde dans #Propagation - 100000 points d\'influence sacrifiés sur l\'autel de la morale!'
+    },
+    {
+      id: 'prix_derisoire',
+      name: 'Prix Dérisoire',
+      description: 'Maintenir un score éthique de 0 après avoir effectué au moins une action éthique. Votre conscience est en solde.',
+      category: 'manipulation',
+      rarity: 'rare',
+      isSecret: true,
+      hint: "Même les soldes les plus ridicules trouvent preneurs...",
+      unlocked: false,
+      condition: {
+        type: 'specific_combination',
+        customCheck: (state: GameState) => {
+          return state.ethicalScore === 0 && state.ethicalStats.ethicalActionsPerformed > 0;
+        }
+      },
+      icon: '🏷️',
+      color: 'bg-red-100 text-red-800',
+      shareText: 'J\'ai obtenu le Prix Dérisoire dans #Propagation - même ma conscience est en solde permanent!'
+    }
+  ];
+
 
   
 /**
@@ -1101,7 +1522,12 @@ export const endingAchievements: Achievement[] = [
  */
   export const achievements = [
     ...initialAchievements,
-    ...allNewAchievements
+    ...endingAchievements,
+    ...loreAchievements,
+    ...additionalAchievements,
+    ...diffusionAchievements,
+    ...veriteMensongeAchievements,
+    ...prixConscienceAchievements
   ]
 
 /**

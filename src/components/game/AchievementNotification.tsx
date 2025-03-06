@@ -6,6 +6,9 @@ interface AchievementNotificationProps {
   onDismiss: () => void;
 }
 
+// Global variable to track the last time the sound was played
+let lastSoundTimestamp = 0;
+
 /**
  * Component to display a notification when an achievement is unlocked
  */
@@ -33,19 +36,31 @@ const AchievementNotification: React.FC<AchievementNotificationProps> = ({
     setTimeout(onDismiss, 500);
   };
   
-  // Play sound effect when notification appears
-  useEffect(() => {
-    // Simple way to create a sound effect - in a real app, would preload audio
-    try {
-      const audio = new Audio('/achievement_unlocked.mp3'); // TODO Add a sound :)
-      audio.volume = 0.5;
-      audio.play();
-    } catch (error) {
-      // Fallback for browsers that block autoplay or if audio doesn't exist
-      console.log('Could not play achievement sound:', error);
+
+// Play sound effect when notification appears, but only once every 5 seconds
+useEffect(() => {
+    // Get current timestamp
+    const currentTime = Date.now();
+    
+    // Check if at least 5000ms (5s) have passed since the last sound played
+    if (currentTime - lastSoundTimestamp >= 5000) {
+      try {
+        const audio = new Audio('/achievement.mp3'); // TODO Add a sound :)
+        audio.volume = 0.5;
+        audio.play();
+        
+        // Update the timestamp after playing the sound
+        lastSoundTimestamp = currentTime;
+      } catch (error) {
+        // Fallback for browsers that block autoplay or if audio doesn't exist
+        console.log('Could not play achievement sound:', error);
+      }
+    } else {
+      // Optionally log that sound was skipped due to throttling
+      console.log('Sound throttled - less than 5s since last play');
     }
   }, []);
-  
+    
   return (
     <div 
       className={`fixed bottom-4 right-4 z-50 max-w-sm w-full transition-all duration-500 

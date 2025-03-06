@@ -173,7 +173,7 @@ export const scenarios: Scenario[] = [
       {
         id: "lineage_moderate",
         text: "Occulter l'usurpation en accentuant d'autres aspects",
-        description: "Sans mentir directement, vous minimisez l'usurpation en la présentant comme une 'restauration légitime' et mettez l'accent sur les accomplissements de la famille royale.",
+        description: "Sans mentir directement, vous minimisez l'usurpation en la présentant comme une 'restauration légitime' et mettez l'accent sur les succès de la famille royale.",
         type: "moderate",
         consequences: {
           resources: { credibility: 40, networks: 35 },

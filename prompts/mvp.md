@@ -147,15 +147,17 @@ L'interface des scénarios doit être immersive, avec un style rappelant les liv
 
 Objectif éducatif: Les scénarios permettent d'illustrer des cas concrets de manipulation de l'information à travers l'histoire, rendant les mécanismes abstraits plus tangibles et mémorables.
 
-Prompt 6: Système d'accomplissements et sauvegarde
+Prompt 6: Système de succès et sauvegarde
 
-Finalisons "Propagation" avec un système d'accomplissements qui fait rire et donne envie de partager ses succès à ses potes.
+Finalisons "Propagation" avec un système de succès qui fait rire et donne envie de partager ses succès à ses potes.
 
-1. Implémente un système d'accomplissements:
+1. Implémente un système de succès:
    - Accomplissements pour diverses actions (débloquer des ères, atteindre certains seuils de ressources...)
    - Récompenses pour les accomplissements (multiplicateurs, déblocages spéciaux)
-   - Notifications lors du déblocage d'accomplissements
+   - Notifications lors du déblocage de succès
    - Tableau récapitulatif des accomplissements
+   - Achievements secrets aux hints intégrés dans le moteur de gaslight 
+
 
 2. Peaufine l'interface utilisateur:
    - Ajoute des notifications pour les événements importants
@@ -165,7 +167,7 @@ Finalisons "Propagation" avec un système d'accomplissements qui fait rire et do
 
 N'oublie pas d'ajouter une section "À propos" expliquant l'objectif éducatif du jeu et précisant qu'il s'agit d'une fiction visant à développer l'esprit critique.
 
-Objectif éducatif: Le système d'accomplissements permet de valoriser les approches éthiques autant que les approches manipulatrices, renforçant le message que l'intégrité est aussi valorisable que l'efficacité.
+Objectif éducatif: Le système de succès permet de valoriser les approches éthiques autant que les approches manipulatrices, renforçant le message que l'intégrité est aussi valorisable que l'efficacité.
 
 Prompt 7: Optimisation et polissage final
 
