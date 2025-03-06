@@ -89,6 +89,20 @@ const PropagationGame = () => {
     const getState = () => gameStateRef.current;
     window.__SECRET_DOM_DO_NOT_USE_OR_YOU_WILL_BE_FIRED = createDebugHelper(dispatch, getState);
     console.log("Debug helper loaded. Access via window.__SECRET_DOM_DO_NOT_USE_OR_YOU_WILL_BE_FIRED");
+    
+    // Add keyboard shortcut (Shift+D) to toggle debug overlay
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.shiftKey && e.key === 'D') {
+        e.preventDefault();
+        window.__SECRET_DOM_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.toggleDebugOverlay();
+      }
+    };
+    
+    document.addEventListener('keydown', handleKeyDown);
+    
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
   }, []);
   
   // Vérifier s'il y a une sauvegarde à charger

@@ -387,6 +387,500 @@ export const createDebugHelper = (
         
         return eraScenarios;
       },
+          
+          // Toggle debug overlay GUI
+      toggleDebugOverlay: () => {
+        // Check if overlay already exists
+        let overlay = document.getElementById('debug-overlay');
+        
+        if (overlay) {
+          // Toggle visibility if it exists
+          if (overlay.style.display === 'none') {
+            overlay.style.display = 'block';
+            console.log("Debug overlay enabled");
+          } else {
+            overlay.style.display = 'none';
+            console.log("Debug overlay disabled");
+          }
+          return;
+        }
+        
+        // Create the overlay if it doesn't exist
+        overlay = document.createElement('div');
+        overlay.id = 'debug-overlay';
+        overlay.style.cssText = `
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background-color: rgba(0, 0, 0, 0.85);
+          color: #00ff00;
+          z-index: 10000;
+          padding: 20px;
+          overflow-y: auto;
+          font-family: monospace;
+          display: flex;
+          flex-direction: column;
+        `;
+        
+        // Create header with close button
+        const header = document.createElement('div');
+        header.style.cssText = `
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 20px;
+        `;
+        
+        const title = document.createElement('h2');
+        title.textContent = '🛠️ Propagation Debug Console';
+        title.style.color = '#00ff00';
+        
+        const closeButton = document.createElement('button');
+        closeButton.textContent = 'X';
+        closeButton.style.cssText = `
+          background-color: #ff0000;
+          color: white;
+          border: none;
+          border-radius: 50%;
+          width: 30px;
+          height: 30px;
+          cursor: pointer;
+          font-weight: bold;
+        `;
+        closeButton.onclick = () => {
+          overlay.style.display = 'none';
+        };
+        
+        header.appendChild(title);
+        header.appendChild(closeButton);
+        overlay.appendChild(header);
+        
+        // Create content container
+        const contentContainer = document.createElement('div');
+        contentContainer.style.cssText = `
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+          gap: 20px;
+          margin-bottom: 20px;
+        `;
+        
+        // Resources Section
+        const resourcesCard = createSectionCard('Resources');
+        
+        // Resource inputs
+        ['Credibility', 'Influence', 'Networks', 'ManipulationPoints'].forEach(resource => {
+          const resourceInput = createNumberInput(resource, 100);
+          const giveButton = createActionButton(`Give ${resource}`, () => {
+            const amount = parseInt(resourceInput.value, 10) || 100;
+            window.__SECRET_DOM_DO_NOT_USE_OR_YOU_WILL_BE_FIRED[`give${resource}`](amount);
+            updateStateDisplay();
+          });
+          
+          const container = document.createElement('div');
+          container.style.cssText = 'display: flex; margin-bottom: 10px;';
+          container.appendChild(resourceInput);
+          container.appendChild(giveButton);
+          resourcesCard.appendChild(container);
+        });
+        
+        const giveAllContainer = document.createElement('div');
+        const giveAllInput = createNumberInput('giveAllAmount', 100);
+        const giveAllButton = createActionButton('Give All Resources', () => {
+          const amount = parseInt(giveAllInput.value, 10) || 100;
+          window.__SECRET_DOM_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.giveAllResources(amount);
+          updateStateDisplay();
+        });
+        giveAllContainer.style.cssText = 'display: flex; margin-bottom: 10px;';
+        giveAllContainer.appendChild(giveAllInput);
+        giveAllContainer.appendChild(giveAllButton);
+        resourcesCard.appendChild(giveAllContainer);
+        
+        // Game State Section
+        const stateCard = createSectionCard('Game State');
+        
+        // Ethics & Critical Thinking
+        ['Ethics', 'CriticalThinking'].forEach(stat => {
+          const statInput = createNumberInput(stat, 50);
+          const setButton = createActionButton(`Set ${stat}`, () => {
+            const value = parseInt(statInput.value, 10) || 50;
+            window.__SECRET_DOM_DO_NOT_USE_OR_YOU_WILL_BE_FIRED[`set${stat}`](value);
+            updateStateDisplay();
+          });
+          
+          const container = document.createElement('div');
+          container.style.cssText = 'display: flex; margin-bottom: 10px;';
+          container.appendChild(statInput);
+          container.appendChild(setButton);
+          stateCard.appendChild(container);
+        });
+        
+        // Game Mode
+        const modeSelect = document.createElement('select');
+        modeSelect.style.cssText = `
+          background-color: #222;
+          color: white;
+          border: 1px solid #00ff00;
+          padding: 5px;
+          margin-right: 5px;
+          flex-grow: 1;
+        `;
+        
+        ['manipulation', 'revelation'].forEach(mode => {
+          const option = document.createElement('option');
+          option.value = mode;
+          option.textContent = mode.charAt(0).toUpperCase() + mode.slice(1);
+          modeSelect.appendChild(option);
+        });
+        
+        const setModeButton = createActionButton('Set Game Mode', () => {
+          window.__SECRET_DOM_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.setGameMode(modeSelect.value);
+          updateStateDisplay();
+        });
+        
+        const modeContainer = document.createElement('div');
+        modeContainer.style.cssText = 'display: flex; margin-bottom: 10px;';
+        modeContainer.appendChild(modeSelect);
+        modeContainer.appendChild(setModeButton);
+        stateCard.appendChild(modeContainer);
+        
+        // Progression Section
+        const progressionCard = createSectionCard('Progression');
+        
+        const unlockAllErasButton = createActionButton('Unlock All Eras', () => {
+          window.__SECRET_DOM_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.unlockAllEras();
+          updateStateDisplay();
+        });
+        progressionCard.appendChild(unlockAllErasButton);
+        
+        const unlockAllUpgradesButton = createActionButton('Unlock All Upgrades', () => {
+          window.__SECRET_DOM_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.unlockAllUpgrades();
+          updateStateDisplay();
+        });
+        progressionCard.appendChild(unlockAllUpgradesButton);
+        
+        // Endings Section
+        const endingsCard = createSectionCard('Endings');
+        
+        const endingSelect = document.createElement('select');
+        endingSelect.style.cssText = `
+          background-color: #222;
+          color: white;
+          border: 1px solid #00ff00;
+          padding: 5px;
+          margin-right: 5px;
+          flex-grow: 1;
+          margin-bottom: 10px;
+        `;
+        
+        // Populate with endings when state changes
+        const populateEndingSelect = () => {
+          endingSelect.innerHTML = '';
+          const state = getState();
+          state.gameEndings.forEach(ending => {
+            const option = document.createElement('option');
+            option.value = ending.id;
+            option.textContent = ending.title;
+            endingSelect.appendChild(option);
+          });
+        };
+        
+        const triggerEndingButton = createActionButton('Trigger Ending', () => {
+          window.__SECRET_DOM_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.triggerEnding(endingSelect.value);
+        });
+        
+        const endingContainer = document.createElement('div');
+        endingContainer.style.cssText = 'display: flex; margin-bottom: 10px;';
+        endingContainer.appendChild(endingSelect);
+        endingContainer.appendChild(triggerEndingButton);
+        endingsCard.appendChild(endingContainer);
+        
+        const checkEndingsButton = createActionButton('Check Ending Requirements', () => {
+          window.__SECRET_DOM_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.checkEndingRequirements();
+        });
+        endingsCard.appendChild(checkEndingsButton);
+        
+        // Gaslighting Section
+        const gaslightingCard = createSectionCard('Gaslighting');
+        
+        const triggerGaslightButton = createActionButton('Trigger Random Gaslighting', () => {
+          window.__SECRET_DOM_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.triggerRandomGaslighting();
+        });
+        gaslightingCard.appendChild(triggerGaslightButton);
+        
+        const simulateIntenseButton = createActionButton('Simulate Intense Gaslighting', () => {
+          window.__SECRET_DOM_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.simulateIntenseGaslighting();
+        });
+        gaslightingCard.appendChild(simulateIntenseButton);
+        
+        // Scenarios Section
+        const scenariosCard = createSectionCard('Scenarios');
+        
+        const scenarioSelect = document.createElement('select');
+        scenarioSelect.style.cssText = `
+          background-color: #222;
+          color: white;
+          border: 1px solid #00ff00;
+          padding: 5px;
+          margin-right: 5px;
+          flex-grow: 1;
+        `;
+        
+        // Populate with scenarios when state changes
+        const populateScenarioSelect = () => {
+          scenarioSelect.innerHTML = '';
+          const state = getState();
+          if (state.scenarios) {
+            state.scenarios.forEach(scenario => {
+              const option = document.createElement('option');
+              option.value = scenario.id;
+              option.textContent = scenario.title;
+              scenarioSelect.appendChild(option);
+            });
+          }
+        };
+        
+        const triggerScenarioButton = createActionButton('Trigger Scenario', () => {
+          window.__SECRET_DOM_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.triggerScenario(scenarioSelect.value);
+        });
+        
+        const scenarioContainer = document.createElement('div');
+        scenarioContainer.style.cssText = 'display: flex; margin-bottom: 10px;';
+        scenarioContainer.appendChild(scenarioSelect);
+        scenarioContainer.appendChild(triggerScenarioButton);
+        scenariosCard.appendChild(scenarioContainer);
+        
+        const listScenariosButton = createActionButton('List All Scenarios', () => {
+          window.__SECRET_DOM_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.listScenarios();
+        });
+        scenariosCard.appendChild(listScenariosButton);
+        
+        const currentEraScenariosButton = createActionButton('Current Era Scenarios', () => {
+          window.__SECRET_DOM_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.currentEraScenarios();
+        });
+        scenariosCard.appendChild(currentEraScenariosButton);
+        
+        // Add all sections to the content container
+        contentContainer.appendChild(resourcesCard);
+        contentContainer.appendChild(stateCard);
+        contentContainer.appendChild(progressionCard);
+        contentContainer.appendChild(endingsCard);
+        contentContainer.appendChild(gaslightingCard);
+        contentContainer.appendChild(scenariosCard);
+        
+        overlay.appendChild(contentContainer);
+        
+        // State Display Area
+        const stateDisplayContainer = document.createElement('div');
+        stateDisplayContainer.style.cssText = `
+          background-color: #111;
+          border: 1px solid #00ff00;
+          padding: 10px;
+          margin-top: 10px;
+          height: 200px;
+          overflow-y: auto;
+          font-family: monospace;
+          font-size: 12px;
+        `;
+        stateDisplayContainer.id = 'debug-state-display';
+        
+        overlay.appendChild(stateDisplayContainer);
+        
+        // Footer with info
+        const footer = document.createElement('div');
+        footer.style.cssText = `
+          margin-top: 20px;
+          font-size: 11px;
+          color: #999;
+          text-align: center;
+        `;
+        footer.innerHTML = `All changes are applied immediately. For more complex operations, use the console directly with 
+        <span id="secret-name-trigger" style="color: #00aa00; cursor: pointer; border-bottom: 1px dotted #00aa00; position: relative;">
+        <code>window.__SECRET_DOM_DO_NOT_USE_OR_YOU_WILL_BE_FIRED</code></span>
+        `;
+        const secretNameTrigger = document.getElementById('secret-name-trigger');
+                
+        if (secretNameTrigger) {
+          // Create the tooltip element but don't add it to DOM yet
+          const tooltip = document.createElement('div');
+          tooltip.style.cssText = `
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 300px;
+            background-color: #111;
+            border: 1px solid #00aa00;
+            padding: 10px;
+            font-size: 11px;
+            color: #aaa;
+            text-align: left;
+            z-index: 10001;
+            display: none;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
+          `;
+          tooltip.innerHTML = `
+            <strong style="color: #00aa00;">INTERNAL MEMO:</strong><br>
+            ATTENTION: Employees accessing this interface must adhere to Protocol 34-B.<br><br>
+            USE OF FORBIDDEN DOM MANIPULATIONS WILL RESULT IN IMMEDIATE TERMINATION WITHOUT SEVERANCE BENEFITS AS PER SECTION 12.5 OF YOUR EMPLOYMENT CONTRACT.<br><br>
+            <small>See <a href="https://github.com/facebook/react/issues/7092" style="color: #00aaff;" target="_blank">Documentation 7092</a> for compliance guidelines.<br>
+            <a href="https://www.reddit.com/r/ProgrammerHumor/comments/3nhk5e/secret_dom_do_not_use_or_you_will_be_fired/" style="color: #00aaff;" target="_blank">Risk Assessment Form 3NH-K5E</a> must be filed before accessing.</small>
+          `;
+          
+          // Add the tooltip to the trigger element
+          secretNameTrigger.appendChild(tooltip);
+          
+          // Show on hover for desktop
+          secretNameTrigger.addEventListener('mouseenter', () => {
+            tooltip.style.display = 'block';
+          });
+          
+          secretNameTrigger.addEventListener('mouseleave', () => {
+            tooltip.style.display = 'none';
+          });
+          
+          // Toggle on click for mobile
+          secretNameTrigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (tooltip.style.display === 'none') {
+              tooltip.style.display = 'block';
+            } else {
+              tooltip.style.display = 'none';
+            }
+          });
+          
+          // Hide tooltip when clicking elsewhere
+          document.addEventListener('click', () => {
+            tooltip.style.display = 'none';
+          });
+        }
+        overlay.appendChild(footer);
+        
+        document.body.appendChild(overlay);
+        
+        // Update state display and selections
+        updateStateDisplay();
+        populateEndingSelect();
+        populateScenarioSelect();
+        
+        console.log("Debug overlay enabled");
+        return true;
+        
+        // Helper function to create section cards
+        function createSectionCard(title) {
+          const card = document.createElement('div');
+          card.style.cssText = `
+            background-color: #222;
+            border: 1px solid #00ff00;
+            border-radius: 5px;
+            padding: 10px;
+          `;
+          
+          const cardTitle = document.createElement('h3');
+          cardTitle.textContent = title;
+          cardTitle.style.cssText = `
+            margin-top: 0;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #00ff00;
+            color: #00ff00;
+          `;
+          
+          card.appendChild(cardTitle);
+          return card;
+        }
+        
+        // Helper function to create number inputs
+        function createNumberInput(name, defaultValue) {
+          const input = document.createElement('input');
+          input.type = 'number';
+          input.value = defaultValue.toString();
+          input.style.cssText = `
+            background-color: #222;
+            color: white;
+            border: 1px solid #00ff00;
+            padding: 5px;
+            margin-right: 5px;
+            flex-grow: 1;
+          `;
+          input.id = `debug-input-${name.toLowerCase()}`;
+          return input;
+        }
+        
+        // Helper function to create action buttons
+        function createActionButton(label, onClick) {
+          const button = document.createElement('button');
+          button.textContent = label;
+          button.style.cssText = `
+            background-color: #005500;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+          `;
+          button.onmouseover = () => {
+            button.style.backgroundColor = '#008800';
+          };
+          button.onmouseout = () => {
+            button.style.backgroundColor = '#005500';
+          };
+          button.onclick = onClick;
+          return button;
+        }
+        
+        // Function to update state display
+        function updateStateDisplay() {
+          const stateDisplay = document.getElementById('debug-state-display');
+          if (!stateDisplay) return;
+          
+          const state = getState();
+          
+          const resources = state.resources;
+          const ethicalScore = state.ethicalScore;
+          const criticalThinking = state.criticalThinking;
+          const currentEra = state.eras.find(era => era.id === state.currentEraId);
+          const unlockedEras = state.eras.filter(era => era.unlocked).length;
+          const purchasedUpgrades = state.upgrades.filter(upgrade => upgrade.purchased).length;
+          
+          stateDisplay.innerHTML = `
+            <div style="color: #00ff00; margin-bottom: 5px;">Current State Summary:</div>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 5px;">
+              <div><strong>Resources:</strong></div>
+              <div>Cr: ${resources.credibility} | In: ${resources.influence} | Net: ${resources.networks} | MP: ${resources.manipulationPoints}</div>
+              
+              <div><strong>Ethical Score:</strong></div>
+              <div>${ethicalScore}/100</div>
+              
+              <div><strong>Critical Thinking:</strong></div>
+              <div>${criticalThinking}/100</div>
+              
+              <div><strong>Current Era:</strong></div>
+              <div>${currentEra?.name || 'None'}</div>
+              
+              <div><strong>Game Mode:</strong></div>
+              <div>${state.gameMode}</div>
+              
+              <div><strong>Eras Unlocked:</strong></div>
+              <div>${unlockedEras}/${state.eras.length}</div>
+              
+              <div><strong>Upgrades Purchased:</strong></div>
+              <div>${purchasedUpgrades}/${state.upgrades.length}</div>
+              
+              <div><strong>Active Scenario:</strong></div>
+              <div>${state.activeScenarioId || 'None'}</div>
+              
+              <div><strong>Game Ended:</strong></div>
+              <div>${state.gameEnded ? `Yes (${state.activeEndingId})` : 'No'}</div>
+            </div>
+          `;
+          
+          // Update selections
+          populateEndingSelect();
+          populateScenarioSelect();
+        }
+      },
       
       // TODO: GUI DEVMODE LEVERAGING DEBUGHELPER
       // // Toggle development mode (extra console messages)
