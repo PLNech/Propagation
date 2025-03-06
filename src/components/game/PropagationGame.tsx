@@ -769,6 +769,7 @@ const PropagationGame = () => {
             stats={gameState.ethicalStats}
             onPerformEthicalAction={handlePerformEthicalAction}
             onSwitchGameMode={handleSwitchGameMode}
+            dispatch={dispatch}
           />
         )}
 

@@ -208,6 +208,13 @@ export interface GameState {
     hasSharedAchievement: boolean;
     hasClickedGaslightEffect: boolean;
     lastTabVisited?: string;
+    clickedLoreLinks?: string[]; // All clicked links
+    clickedHistoryLinks?: string[]; // History-related links
+    clickedPhilosophyLinks?: string[]; // Philosophy/rationality links
+    clickedPropagandaLinks?: string[]; // Propaganda/manipulation links
+    timeAtZeroEthics?: number; // Time spent at zero ethics
+    gaslightEffectsClicked?: string[]; // IDs of clicked gaslight effects
+    totalPlayTime?: number; // Total play time
   };
 }
 
@@ -236,6 +243,7 @@ export type GameAction =
 | { type: 'SHARE_ACHIEVEMENT'; payload: { achievementId: string } }
 | { type: 'CHECK_ACHIEVEMENTS'; }
 | { type: 'CLICK_GASLIGHT_EFFECT'; }
+| { type: 'CLICK_LORE_LINK'; payload: { linkType: string, url: string } }
 // Utils
 | { type: 'SWITCH_GAME_MODE'; payload: { mode: GameMode } }  // Switch between game modes
 | { type: 'ACKNOWLEDGE_ENDING'; payload: { endingId: string } }  // Acknowledge a game ending

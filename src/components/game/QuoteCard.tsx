@@ -1,9 +1,45 @@
 import React from 'react';
-import { CriticalThinkingQuote } from '@/types';
+import { CriticalThinkingQuote, GameAction } from '@/types';
 
 interface QuoteCardProps {
   quote: CriticalThinkingQuote;
+  dispatch: React.Dispatch<GameAction>;
 }
+
+// Get Wikipedia link for author with tracking
+const AuthorLink = ({ author, dispatch }: { author: string, dispatch: React.Dispatch<GameAction> }) => {
+  const authorLinks: Record<string, { url: string, type: string }> = {
+    "Socrate": { url: "https://fr.wikipedia.org/wiki/Socrate", type: "philosophy" },
+    "Aristote": { url: "https://fr.wikipedia.org/wiki/Aristote", type: "philosophy" },
+    // ... other authors
+  };
+  
+  const linkInfo = authorLinks[author];
+  
+  if (!linkInfo) return <>{author}</>;
+  
+  return (
+    <a 
+      href={linkInfo.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-blue-400 hover:underline"
+      title={`En savoir plus sur ${author}`}
+      onClick={() => {
+        // Track the link click
+        dispatch({ 
+          type: 'CLICK_LORE_LINK', 
+          payload: { 
+            linkType: linkInfo.type,
+            url: linkInfo.url 
+          } 
+        });
+      }}
+    >
+      {author}
+    </a>
+  );
+};
 
 /**
  * Card component for displaying inspirational quotes about critical thinking

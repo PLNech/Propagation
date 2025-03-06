@@ -285,7 +285,7 @@ const EthicsTab: React.FC<EthicsTabProps> = ({
           <div className="mb-6">
             <h3 className="text-xl font-semibold mb-3">Techniques de l&apos;Ère</h3>
             {currentEraContent.map(content => (
-              <EducationalCard key={content.id} content={content} />
+              <EducationalCard key={content.id} content={content} dispatch={dispatch} />
             ))}
           </div>
           
@@ -295,7 +295,7 @@ const EthicsTab: React.FC<EthicsTabProps> = ({
               Ils étaient si confiants dans leurs vérités... Touchant, n&apos;est-ce pas?
             </p>
             {getRelevantQuotes().map(quote => (
-              <QuoteCard key={quote.id} quote={quote} />
+              <QuoteCard key={quote.id} quote={quote} dispatch={dispatch} />
             ))}
           </div>
         </div>

@@ -1058,7 +1058,41 @@ export const gameReducer = (state: GameState, action: ExtendedGameAction): GameS
         }
       };
     }
-    
+   
+    case 'CLICK_LORE_LINK': {
+      const { linkType, url } = action.payload;
+      
+      // Update clicked links lists
+      const clickedLoreLinks = [...(state.stats?.clickedLoreLinks || []), url];
+      
+      let clickedHistoryLinks = state.stats?.clickedHistoryLinks || [];
+      let clickedPhilosophyLinks = state.stats?.clickedPhilosophyLinks || [];
+      let clickedPropagandaLinks = state.stats?.clickedPropagandaLinks || [];
+      
+      // Update category-specific lists based on link type
+      if (linkType === 'history') {
+        clickedHistoryLinks = [...clickedHistoryLinks, url];
+      } else if (linkType === 'philosophy') {
+        clickedPhilosophyLinks = [...clickedPhilosophyLinks, url];
+      } else if (linkType === 'propaganda') {
+        clickedPropagandaLinks = [...clickedPropagandaLinks, url];
+      }
+      
+      return {
+        ...state,
+        stats: {
+          ...state.stats,
+          manipulateClicks: state.stats?.manipulateClicks || 0,
+          hasSharedAchievement: state.stats?.hasSharedAchievement || false,
+          hasClickedGaslightEffect: state.stats?.hasClickedGaslightEffect || false,
+          clickedLoreLinks,
+          clickedHistoryLinks,
+          clickedPhilosophyLinks,
+          clickedPropagandaLinks
+        }
+      };
+    }
+
     case 'ACKNOWLEDGE_ENDING': {
       const { endingId } = action.payload;
       
@@ -1102,9 +1136,18 @@ export const gameReducer = (state: GameState, action: ExtendedGameAction): GameS
       return loadedState;
     }    
     case 'RESET': {
-      // Reset game to initial state
-      return initialGameState;
-    }
+
+  // Save current achievement state
+  const currentAchievementState = state.achievementState;
+  
+  // Reset game to initial state
+  const newState = { ...initialGameState };
+  
+  // Restore achievement state
+  newState.achievementState = currentAchievementState;
+  
+  return newState;
+  }
     
     default:
     return state;
