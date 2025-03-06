@@ -209,3 +209,35 @@ export const applyAchievementReward = (reward: AchievementReward, state: GameSta
   
   return updatedState;
 };
+
+
+/**
+ * Patches achievements in saved state with any new achievements from the initial state
+ * @param savedAchievements The achievement state from a saved game
+ * @param initialAchievements The current set of achievement definitions in the game
+ * @returns Updated achievement state with new achievements added
+ */
+export const patchAchievementsWithNewOnes = (
+    savedAchievements: Achievement[], 
+    initialAchievements: Achievement[]
+  ): Achievement[] => {
+    // Create sets of IDs for faster lookup
+    const existingIds = new Set(savedAchievements.map(a => a.id));
+    
+    // Find achievements that don't exist in the saved state
+    const newAchievements = initialAchievements.filter(a => !existingIds.has(a.id));
+    
+    // If no new achievements, return the original array
+    if (newAchievements.length === 0) {
+      return savedAchievements;
+    }
+    
+    // Combine existing achievements with new ones
+    return [
+      ...savedAchievements,
+      ...newAchievements.map(achievement => ({
+        ...achievement,
+        unlocked: false // Ensure new achievements start as unlocked
+      }))
+    ];
+  };

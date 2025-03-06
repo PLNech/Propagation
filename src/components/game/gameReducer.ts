@@ -11,7 +11,7 @@ import { upgrades } from './upgradeData';
 import { conspiracyTheories } from './conspiracyData';
 import { scenarios } from './scenarioData';
 import { initialAchievementState } from './achievementData';
-import { checkAchievements, applyAchievementReward } from './achievementService';
+import { checkAchievements, applyAchievementReward, patchAchievementsWithNewOnes } from './achievementService';
 import { 
   ethicalActions, 
   educationalContent, 
@@ -1122,6 +1122,7 @@ export const gameReducer = (state: GameState, action: ExtendedGameAction): GameS
       const loadedState = action.payload.state;
       console.log("Loading gameState:", loadedState);
       
+      // Handle completely missing features in older save versions
       if (!loadedState.scenarios || !loadedState.achievementState) {
         const patched = {
           ...loadedState,
@@ -1133,8 +1134,32 @@ export const gameReducer = (state: GameState, action: ExtendedGameAction): GameS
         return patched;
       }
       
+      // Patch the achievements with any new ones
+      const patchedAchievements = patchAchievementsWithNewOnes(
+        loadedState.achievementState.achievements,
+        initialAchievementState.achievements
+      );
+      
+      // If any new achievements were added, update the state
+      if (patchedAchievements.length !== loadedState.achievementState.achievements.length) {
+        console.log(`Patching ${patchedAchievements.length - loadedState.achievementState.achievements.length} new achievements into save`);
+        
+        // Create patched state with new achievements
+        const patchedState = {
+          ...loadedState,
+          achievementState: {
+            ...loadedState.achievementState,
+            achievements: patchedAchievements,
+            totalAchievements: initialAchievementState.totalAchievements // Use the current total
+          }
+        };
+        
+        return patchedState;
+      }
+      
       return loadedState;
-    }    
+    }
+    
     case 'RESET': {
 
   // Save current achievement state

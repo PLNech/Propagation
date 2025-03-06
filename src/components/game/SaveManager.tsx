@@ -162,7 +162,7 @@ const handleExportCopy = () => {
 
   // Réinitialiser le jeu
   const handleReset = () => {
-    if (window.confirm('Êtes-vous sûr de vouloir réinitialiser le jeu? Toute progression non sauvegardée sera perdue.')) {
+    if (window.confirm('Recommencer le jeu en gardant seulement vos Succès ?')) {
       onResetGame();
       setShowModal(false);
     }
@@ -294,9 +294,9 @@ const handleExportCopy = () => {
               <div className="mt-4 pt-4 border-t border-gray-600">
                 <button
                   onClick={handleReset}
-                  className="bg-red-600 hover:bg-red-500 px-3 py-1 rounded text-sm"
+                  className="bg-red-800 hover:bg-red-500 text-white px-3 py-1 rounded text-sm"
                 >
-                  Réinitialiser le jeu
+                  Recommencer (garde les Succès)
                 </button>
               </div>
             </div>
