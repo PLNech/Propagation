@@ -72,7 +72,7 @@ const GameButtons: React.FC<GameButtonsProps> = ({
       icon: "🧠",
       unit: "MP",
       order: 1,
-      color: "#9333ea", // Purple
+      color: "#dc2626", // Red
       descriptions: {
         ancient: "Tisser des mythes",
         medieval: "Répandre des rumeurs",
@@ -352,11 +352,11 @@ const GameButtons: React.FC<GameButtonsProps> = ({
   // Get button size based on its order
   const getButtonSize = (order: number) => {
     switch (order) {
-      case 1: return "w-[25%] h-[25%]"; // Manipulate - smallest
-      case 2: return "w-[45%] h-[45%]"; // Credibility - second
-      case 3: return "w-[70%] h-[70%]"; // Networking - third
+      case 1: return "w-[15%] h-[15%]"; // Manipulate - smallest
+      case 2: return "w-[46%] h-[46%]"; // Credibility - second
+      case 3: return "w-[75%] h-[75%]"; // Networking - third
       case 4: return "w-full h-full";   // Influence - largest
-      default: return "w-[25%] h-[25%]";
+      default: return "w-[15%] h-[15%]";
     }
   };
 
@@ -419,13 +419,44 @@ const GameButtons: React.FC<GameButtonsProps> = ({
       );
     }
 
-    // Minimal content - just icon and key
-    return (
-      <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="text-white text-2xl">{info.icon}</span>
-        <span className="text-white text-xs font-bold mt-1">[{info.key.toUpperCase()}]</span>
-      </div>
-    );
+    // Position content based on the button's order - all vertically aligned, center to top
+    switch (info.order) {
+      case 1: // Manipulate
+        return (
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
+            <span className="text-white text-3xl md:text-4xl font-bold">{info.icon}</span>
+            <span className="text-white text-xs md:text-sm font-bold mt-1 bg-black/30 px-2 py-0.5 rounded">[{info.key.toUpperCase()}]</span>
+          </div>
+        );
+      case 2: // Credibility
+        return (
+          <div className="absolute left-1/2 bottom-[70%] transform -translate-x-1/2 flex flex-col items-center">
+            <span className="text-white text-3xl md:text-3xl font-bold">{info.icon}</span>
+            <span className="text-white text-xs md:text-sm font-bold mt-1 bg-black/30 px-2 py-0.5 rounded hidden md:inline-block">[{info.key.toUpperCase()}]</span>
+          </div>
+        );
+      case 3: // Networking
+        return (
+          <div className="absolute left-1/2 bottom-[82%] transform -translate-x-1/2 flex flex-col items-center">
+            <span className="text-white text-3xl md:text-3xl font-bold">{info.icon}</span>
+            <span className="text-white text-xs md:text-sm font-bold mt-1 bg-black/30 px-2 py-0.5 rounded hidden md:inline-block">[{info.key.toUpperCase()}]</span>
+          </div>
+        );
+      case 4: // Influence
+        return (
+          <div className="absolute left-1/2 bottom-[88%] transform -translate-x-1/2 flex flex-col items-center">
+            <span className="text-white text-3xl md:text-3xl font-bold">{info.icon}</span>
+            <span className="text-white text-xs md:text-sm font-bold mt-1 bg-black/30 px-2 py-0.5 rounded hidden md:inline-block">[{info.key.toUpperCase()}]</span>
+          </div>
+        );
+      default:
+        return (
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
+            <span className="text-white text-3xl md:text-4xl font-bold">{info.icon}</span>
+            <span className="text-white text-xs md:text-sm font-bold mt-1 bg-black/30 px-2 py-0.5 rounded hidden md:inline-block">[{info.key.toUpperCase()}]</span>
+          </div>
+        );
+    }
   };
 
   return (
