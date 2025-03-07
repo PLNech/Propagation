@@ -6,7 +6,7 @@ import {
   hasSaveGame,
   exportSave,
   importSave
-} from './saveService';
+} from '../core/saveService';
 
 interface SaveManagerProps {
   gameState: GameState;

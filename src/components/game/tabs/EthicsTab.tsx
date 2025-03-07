@@ -7,9 +7,9 @@ import {
   EthicalStats,
   GameMode 
 } from '@/types';
-import EthicalActionCard from './EthicalActionCard';
-import EducationalCard from './EducationalCard';
-import QuoteCard from './QuoteCard';
+import EthicalActionCard from '../cards/EthicalActionCard';
+import EducationalCard from '../cards/EducationalCard';
+import QuoteCard from '../cards/QuoteCard';
 
 interface EthicsTabProps {
   ethicalScore: number;

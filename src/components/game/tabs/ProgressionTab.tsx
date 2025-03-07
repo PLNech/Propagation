@@ -1,6 +1,6 @@
 import React from 'react';
 import { HistoricalEra } from '@/types';
-import HistoricalContext from './HistoricalContext';
+import HistoricalContext from '@/game/HistoricalContext';
 
 interface ProgressionTabProps {
   eras: HistoricalEra[];

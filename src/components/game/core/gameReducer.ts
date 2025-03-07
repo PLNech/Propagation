@@ -6,11 +6,11 @@ import {
   GameMode,
   GameEnding 
 } from '@/types';
-import { historicalEras } from './eraData';
-import { upgrades } from './upgradeData';
-import { conspiracyTheories } from './conspiracyData';
-import { scenarios } from './scenarioData';
-import { initialAchievementState } from './achievementData';
+import { historicalEras } from '@/data/eraData';
+import { upgrades } from '@/data/upgradeData';
+import { conspiracyTheories } from '@/data/conspiracyData';
+import { scenarios } from '@/data/scenarioData';
+import { initialAchievementState } from '@/data/achievementData';
 import { checkAchievements, applyAchievementReward, patchAchievementsWithNewOnes } from './achievementService';
 import { 
   ethicalActions, 
@@ -18,7 +18,7 @@ import {
   criticalThinkingQuotes, 
   gameEndings,
   initialEthicalStats 
-} from './ethicalData';
+} from '@/data/ethicalData';
 
 // Étendre le type GameAction pour inclure le chargement de sauvegardes
 type ExtendedGameAction = GameAction | 

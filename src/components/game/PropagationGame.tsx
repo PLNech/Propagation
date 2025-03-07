@@ -1,20 +1,20 @@
 // This is the updated PropagationGame.tsx component with AboutPage integration
 
 import React, { useReducer, useEffect, useState, useRef, useCallback } from 'react';
-import { gameReducer, initialGameState } from './gameReducer';
-import ResourceDisplay from './ResourceDisplay';
-import GameButtons from './GameButtons';
-import ProgressionTab from './ProgressionTab';
-import UpgradesTab from './UpgradesTab';
-import TheoriesTab from './TheoriesTab';
-import EthicsTab from './EthicsTab';
-import ScenarioModal from './ScenarioModal';
-import ScenariosTab from './ScenariosTab';
-import AchievementsTab from './AchievementsTab';
-import AchievementNotificationManager from './AchievementNotificationManager';
-import GameEndingModal from './GameEndingModal';
-import WelcomeModal from './WelcomeModal';  
-import SaveManager from './SaveManager';
+import { gameReducer, initialGameState } from './core/gameReducer';
+import ResourceDisplay from './ui/ResourceDisplay';
+import GameButtons from './ui/GameButtons';
+import ProgressionTab from './tabs/ProgressionTab';
+import UpgradesTab from './tabs/UpgradesTab';
+import TheoriesTab from './tabs/TheoriesTab';
+import EthicsTab from './tabs/EthicsTab';
+import ScenarioModal from './modals/ScenarioModal';
+import ScenariosTab from './tabs/ScenariosTab';
+import AchievementsTab from './tabs/AchievementsTab';
+import AchievementNotificationManager from './features/achievements/AchievementNotificationManager';
+import GameEndingModal from './modals/GameEndingModal';
+import WelcomeModal from './modals/WelcomeModal';  
+import SaveManager from './ui/SaveManager';
 import NotificationSystem, { useNotifications, NotificationType } from './NotificationSystem';
 import { HistoricalEra, GameMode, GameState } from '@/types';
 import { 
@@ -23,17 +23,17 @@ import {
   applyUIChange,
   initializeGaslightingStyles,
   GaslightEffect
-} from './gaslightingService';
+} from './core/gaslightingService';
 import { 
   setupAutoSave, 
   saveGame, 
   loadGame, 
   hasSaveGame
-} from './saveService';
-import TutorialModal from './TutorialModal';
-import AboutPage from './AboutPage';
-import { createDebugHelper } from './debugHelper';
-import Header from './Header';
+} from './core/saveService';
+import TutorialModal from './modals/TutorialModal';
+import AboutPage from './ui/AboutPage';
+import { createDebugHelper } from './core/debugHelper';
+import Header from './ui/Header';
 
 // Tab types
 type TabType = 'resources' | 'progression' | 'upgrades' | 'theories' | 'ethics' | 'scenarios' | 'achievements';

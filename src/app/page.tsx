@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import PropagationGame from '@/components/game/PropagationGame';
+import PropagationGame from '@/game/PropagationGame';
 
 /**
  * Main page component for the Next.js app

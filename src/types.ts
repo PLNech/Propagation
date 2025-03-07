@@ -329,6 +329,6 @@ export interface AchievementState {
 declare global {
   interface Window {
     handleGaslightClick?: () => void;
-    __SECRET_DOM_DO_NOT_USE_OR_YOU_WILL_BE_FIRED: ReturnType<typeof import('./components/game/debugHelper').createDebugHelper>;
+    __SECRET_DOM_DO_NOT_USE_OR_YOU_WILL_BE_FIRED: ReturnType<typeof import('./components/game/core/debugHelper').createDebugHelper>;
   }
 }

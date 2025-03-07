@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ConspiracyTheory } from '@/types';
-import TheoryCard from './TheoryCard';
+import TheoryCard from '@/game/cards/TheoryCard';
 
 interface TheoriesTabProps {
   theories: ConspiracyTheory[];

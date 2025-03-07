@@ -1,6 +1,6 @@
 import React from 'react';
 import { Upgrade, GameResources } from '@/types';
-import UpgradeCard from './UpgradeCard';
+import UpgradeCard from '@/game/cards/UpgradeCard';
 
 interface UpgradesTabProps {
   upgrades: Upgrade[];
