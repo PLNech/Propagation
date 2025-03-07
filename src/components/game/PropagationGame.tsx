@@ -33,6 +33,7 @@ import {
 import TutorialModal from './TutorialModal';
 import AboutPage from './AboutPage';
 import { createDebugHelper } from './debugHelper';
+import Header from './Header';
 
 // Tab types
 type TabType = 'resources' | 'progression' | 'upgrades' | 'theories' | 'ethics' | 'scenarios' | 'achievements';
@@ -46,7 +47,8 @@ const PropagationGame = () => {
   const { notifications, addNotification, dismissNotification } = useNotifications();
   const [showTutorial, setShowTutorial] = useState(true);
   const [showAbout, setShowAbout] = useState(false);
-  const [showWelcomeModal, setShowWelcomeModal] = useState(true);
+  const [showWelcomeModal, setShowWelcomeModal] = useState(false);
+  const [headerInfo, setHeaderInfo] = useState({ isSticky: false, height: 0 });
   const [onboardingCompleted, setOnboardingCompleted] = useState(false);
   const [theoryPropagationStatus, setTheoryPropagationStatus] = useState<Record<string, 'success' | 'failed' | null>>({});
   const lastTabChangeTime = useRef(Date.now());
@@ -570,7 +572,6 @@ const PropagationGame = () => {
         <h2 className="text-xl mb-6 text-center text-gray-300">
           Un Jeu Incrémental de Manipulation Sociale
         </h2>
-        
         {/* About Button */}
         <button
           onClick={handleShowAbout}
@@ -581,7 +582,7 @@ const PropagationGame = () => {
           </svg>
           À propos
         </button>
-        
+
         {/* Save Manager */}
         <SaveManager
           gameState={gameState}
@@ -589,13 +590,34 @@ const PropagationGame = () => {
           onSaveState={handleSaveGame}
           onResetGame={handleResetGame}
         />
-                
+            
         {/* Notification System */}
         <NotificationSystem 
           notifications={notifications}
           onDismiss={dismissNotification}
         />
 
+        {/* Game Header - NEW! */}
+        {gameState.playerName && (
+          <>
+            <Header 
+              playerName={gameState.playerName}
+              entityName={gameState.entityName}
+              entityType={gameState.entityType}
+              currentEra={currentEra}
+              resources={gameState.resources}
+              ethicalScore={gameState.ethicalScore}
+              criticalThinking={gameState.criticalThinking}
+              gameMode={gameState.gameMode}
+              onStickyChange={(isSticky, height) => setHeaderInfo({ isSticky, height })}
+            />
+            {/* Placeholder div outside the Header component */}
+            {headerInfo.isSticky && (
+              <div style={{ height: `${headerInfo.height}px` }} className="transition-all duration-300"></div>
+            )}
+          </>
+        )}
+        
         {showWelcomeModal && (
           <WelcomeModal onSubmit={handlePlayerNameSubmit} />
         )}
@@ -637,27 +659,6 @@ const PropagationGame = () => {
           <AboutPage onClose={handleCloseAbout} />
         )}
 
-        {/* Current era display */}
-        <div className="bg-gray-800 p-3 rounded-lg mb-4 text-center">
-          <p className="text-sm text-gray-400">Ère actuelle</p>
-          <p className="text-lg font-semibold">{currentEra.name}</p>
-        </div>
-
-
-        {/* Player entity display */}
-        {gameState.playerName && (
-          <div className="bg-gray-800 p-3 rounded-lg mb-4 flex justify-between items-center">
-            <div>
-              <p className="text-sm text-gray-400">Votre entité</p>
-              <p className="text-lg font-semibold">{gameState.entityName}</p>
-            </div>
-            <div>
-              <span className="px-3 py-1 bg-purple-900 text-purple-100 rounded-full text-sm">
-                {gameState.entityType}
-              </span>
-            </div>
-          </div>
-        )}
         
         {/* Stats bar */}
         <div className="bg-gray-800 p-3 rounded-lg mb-4 grid grid-cols-2 gap-4">

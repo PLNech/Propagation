@@ -365,3 +365,13 @@ body {
   width: 100%;
   max-width: 380px;
 }
+
+/* Header sticky transition */
+.transition-all {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.duration-300 {
+  transition-duration: 300ms;
+}
