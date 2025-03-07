@@ -180,6 +180,9 @@ export type GameMode = 'manipulation' | 'revelation';
 * Main game state
 */
 export interface GameState {
+  playerName: string;
+  entityName: string;
+  entityType: 'Tribu' | 'Village' | 'Cité' | 'Pays' | 'Empire';
   resources: GameResources;
   eras: HistoricalEra[];
   currentEraId: string;
@@ -222,6 +225,7 @@ export interface GameState {
 * Actions that can modify the game state
 */
 export type GameAction = 
+| { type: 'SET_PLAYER_INFO'; payload: { playerName: string, entityName: string } }
 | { type: 'TICK'; payload: { currentTime: number } }  // Regular game update
 | { type: 'MANIPULATE'; }  // Player initiated action
 | { type: 'NETWORKING'; }  // Generate networks

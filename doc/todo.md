@@ -126,3 +126,14 @@
 ## RAPH TODO
 - Progressive reveal
 - Balance progressive, tu devrais pas savoir au debut comment gagner
+
+- Narrative: on joue une cite, un pouvoir, situer et personnaliser, choisis un nom au debut!
+- Tu es un bebe leviatan en devenir
+
+
+A chaque ere tu changes de scale:
+- Antiquité: Tribu
+- Moyen Âge: Village
+- Ère Industrielle: Cite
+- Guerre Froide: Pays
+- Ère Numérique: Empire

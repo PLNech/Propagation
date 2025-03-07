@@ -13,6 +13,7 @@ import ScenariosTab from './ScenariosTab';
 import AchievementsTab from './AchievementsTab';
 import AchievementNotificationManager from './AchievementNotificationManager';
 import GameEndingModal from './GameEndingModal';
+import WelcomeModal from './WelcomeModal';  
 import SaveManager from './SaveManager';
 import NotificationSystem, { useNotifications, NotificationType } from './NotificationSystem';
 import { HistoricalEra, GameMode, GameState } from '@/types';
@@ -45,6 +46,8 @@ const PropagationGame = () => {
   const { notifications, addNotification, dismissNotification } = useNotifications();
   const [showTutorial, setShowTutorial] = useState(true);
   const [showAbout, setShowAbout] = useState(false);
+  const [showWelcomeModal, setShowWelcomeModal] = useState(true);
+  const [onboardingCompleted, setOnboardingCompleted] = useState(false);
   const [theoryPropagationStatus, setTheoryPropagationStatus] = useState<Record<string, 'success' | 'failed' | null>>({});
   const lastTabChangeTime = useRef(Date.now());
   
@@ -248,6 +251,16 @@ const PropagationGame = () => {
     return () => clearInterval(timer);
   }, [gameState.tickInterval, checkForGaslightEffects]);
   
+
+  const handlePlayerNameSubmit = (playerName: string, entityName: string) => {
+    dispatch({ 
+      type: 'SET_PLAYER_INFO', 
+      payload: { playerName, entityName } 
+    });
+    setShowWelcomeModal(false);
+    // Show tutorial after welcome
+    setShowTutorial(true);
+  };
   // Handle the manipulate button click
   const handleManipulate = () => {
     dispatch({ type: 'MANIPULATE' });
@@ -433,6 +446,11 @@ const PropagationGame = () => {
     const now = Date.now();
     lastTabChangeTime.current = now;
   };
+
+  const handleTutorialClose = () => {
+    setShowTutorial(false);
+    setOnboardingCompleted(true);
+  }
   
   // Sauvegarder le jeu manuellement
   const handleSaveGame = () => {
@@ -465,6 +483,8 @@ const PropagationGame = () => {
   const handleResetGame = () => {
     dispatch({ type: 'RESET' });
     interactionCount.current = 0;
+    setShowWelcomeModal(true); // Show welcome modal after reset
+    setOnboardingCompleted(false); // Reset onboarding state
   };
 
   // Show the About page
@@ -569,26 +589,49 @@ const PropagationGame = () => {
           onSaveState={handleSaveGame}
           onResetGame={handleResetGame}
         />
-        
-        {/* Game Ending Modal */}
-        {gameState.gameEnded && activeEnding && (
-          <GameEndingModal
-            ending={activeEnding}
-            stats={gameState.ethicalStats}
-            onAcknowledge={handleAcknowledgeEnding}
-          />
-        )}
-        
+                
         {/* Notification System */}
         <NotificationSystem 
           notifications={notifications}
           onDismiss={dismissNotification}
         />
-                
-        {showTutorial && (
-          <TutorialModal onClose={() => setShowTutorial(false)} />
+
+        {showWelcomeModal && (
+          <WelcomeModal onSubmit={handlePlayerNameSubmit} />
         )}
 
+        {!showWelcomeModal && showTutorial && (
+          <TutorialModal onClose={handleTutorialClose} />
+        )}
+
+
+        {/* Only show other modals after onboarding is completed */}
+        {onboardingCompleted && (
+          <>
+            {/* Game Ending Modal */}
+            {gameState.gameEnded && activeEnding && (
+              <GameEndingModal
+                ending={activeEnding}
+                stats={gameState.ethicalStats}
+                onAcknowledge={handleAcknowledgeEnding}
+              />
+            )}
+
+            {/* About Page Modal */}
+            {showAbout && (
+              <AboutPage onClose={handleCloseAbout} />
+            )}
+
+            {/* Scenario Modal - only show if onboarding is complete */}
+            {gameState.activeScenarioId && (
+              <ScenarioModal
+                scenario={gameState.scenarios.find(s => s.id === gameState.activeScenarioId)!}
+                onMakeChoice={handleMakeScenarioChoice}
+                onDismiss={handleDismissScenario}
+              />
+            )}
+          </>
+        )}
         {/* About Page Modal */}
         {showAbout && (
           <AboutPage onClose={handleCloseAbout} />
@@ -599,6 +642,22 @@ const PropagationGame = () => {
           <p className="text-sm text-gray-400">Ère actuelle</p>
           <p className="text-lg font-semibold">{currentEra.name}</p>
         </div>
+
+
+        {/* Player entity display */}
+        {gameState.playerName && (
+          <div className="bg-gray-800 p-3 rounded-lg mb-4 flex justify-between items-center">
+            <div>
+              <p className="text-sm text-gray-400">Votre entité</p>
+              <p className="text-lg font-semibold">{gameState.entityName}</p>
+            </div>
+            <div>
+              <span className="px-3 py-1 bg-purple-900 text-purple-100 rounded-full text-sm">
+                {gameState.entityType}
+              </span>
+            </div>
+          </div>
+        )}
         
         {/* Stats bar */}
         <div className="bg-gray-800 p-3 rounded-lg mb-4 grid grid-cols-2 gap-4">

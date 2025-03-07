@@ -98,7 +98,7 @@ export const scenarios: Scenario[] = [
     completed: false,
     triggerCondition: {
       type: "resourceThreshold",
-      value: 100 // Influence threshold
+      value: 200 // Influence threshold
     }
   },
 

@@ -310,6 +310,9 @@ const calculateLivesImpacted = (influence: number, networks: number): number => 
 * Initial game state with resources, eras, upgrades, theories and ethical system
 */
 export const initialGameState: GameState = {
+  playerName: '',
+  entityName: '',
+  entityType: 'Tribu',
   resources: {
     credibility: 0,
     influence: 0,
@@ -447,7 +450,13 @@ export const gameReducer = (state: GameState, action: ExtendedGameAction): GameS
         activeEndingId
       };
     }
-    
+    case 'SET_PLAYER_INFO':
+      return {
+        ...state,
+        playerName: action.payload.playerName,
+        entityName: action.payload.entityName || `${action.payload.playerName}ium`, // Use provided entity name or create one
+      };
+      
     case 'MANIPULATE': {
       let result: GameState;
       // Different behavior based on game mode
@@ -496,14 +505,32 @@ export const gameReducer = (state: GameState, action: ExtendedGameAction): GameS
       
       return result;
     }
-    
+        
+    // src/components/game/gameReducer.ts (UNLOCK_ERA case)
     case 'UNLOCK_ERA': {
-      const { eraId } = action.payload;
+      const eraId = action.payload.eraId;
       const eraToUnlock = state.eras.find(era => era.id === eraId);
       
       // If era doesn't exist or is already unlocked or player doesn't have enough influence, do nothing
       if (!eraToUnlock || eraToUnlock.unlocked || state.resources.influence < eraToUnlock.unlockCost) {
         return state;
+      }
+      
+      // Determine entity type based on era
+      let entityType = state.entityType;
+      switch(eraId) {
+        case 'middleAges':
+          entityType = 'Village';
+          break;
+        case 'industrial':
+          entityType = 'Cité';
+          break;
+        case 'coldWar':
+          entityType = 'Pays';
+          break;
+        case 'digital':
+          entityType = 'Empire';
+          break;
       }
       
       // Unlock the era and spend influence
@@ -513,11 +540,13 @@ export const gameReducer = (state: GameState, action: ExtendedGameAction): GameS
           ...state.resources,
           influence: state.resources.influence - eraToUnlock.unlockCost
         },
-        eras: state.eras.map(era => 
+        eras: state.eras.map(era =>
           era.id === eraId ? { ...era, unlocked: true } : era
         ),
         // Automatically select the newly unlocked era
-        currentEraId: eraId
+        currentEraId: eraId,
+        // Update the entity type
+        entityType
       };
     }
     
