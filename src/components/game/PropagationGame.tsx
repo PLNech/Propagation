@@ -617,7 +617,7 @@ const PropagationGame = () => {
             )}
           </>
         )}
-        
+
         {showWelcomeModal && (
           <WelcomeModal onSubmit={handlePlayerNameSubmit} />
         )}
@@ -721,17 +721,23 @@ const PropagationGame = () => {
             Ressources
           </button>
           <button
+            className={`py-2 px-4 ${activeTab === 'upgrades' ? 'border-b-2 border-purple-500 text-purple-300' : 'text-gray-400 hover:text-gray-200'}`}
+            onClick={() => handleTabChange('upgrades')}
+          >
+            Améliorations
+          </button>
+          <button
             className={`py-2 px-4 ${activeTab === 'progression' ? 'border-b-2 border-purple-500 text-purple-300' : 'text-gray-400 hover:text-gray-200'}`}
             onClick={() => handleTabChange('progression')}
           >
             Ères
           </button>
           <button
-            className={`py-2 px-4 ${activeTab === 'upgrades' ? 'border-b-2 border-purple-500 text-purple-300' : 'text-gray-400 hover:text-gray-200'}`}
-            onClick={() => handleTabChange('upgrades')}
+            className={`py-2 px-4 ${activeTab === 'scenarios' ? 'border-b-2 border-amber-500 text-amber-300' : 'text-gray-400 hover:text-gray-200'}`}
+            onClick={() => handleTabChange('scenarios')}
           >
-            Améliorations
-          </button>
+            Scénarios
+        </button>
           <button
             className={`py-2 px-4 ${activeTab === 'theories' ? 'border-b-2 border-purple-500 text-purple-300' : 'text-gray-400 hover:text-gray-200'}`}
             onClick={() => handleTabChange('theories')}
@@ -743,12 +749,6 @@ const PropagationGame = () => {
             onClick={() => handleTabChange('ethics')}
           >
             Éthique
-          </button>
-            <button
-              className={`py-2 px-4 ${activeTab === 'scenarios' ? 'border-b-2 border-amber-500 text-amber-300' : 'text-gray-400 hover:text-gray-200'}`}
-              onClick={() => handleTabChange('scenarios')}
-            >
-              Scénarios
           </button>
           <button
             className={`py-2 px-4 ${activeTab === 'achievements' ? 'border-b-2 border-yellow-500 text-yellow-300' : 'text-gray-400 hover:text-gray-200'}`}
