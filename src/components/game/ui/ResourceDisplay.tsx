@@ -10,7 +10,7 @@ interface ResourceDisplayProps {
  */
 const ResourceDisplay: React.FC<ResourceDisplayProps> = ({ resources }) => {
   return (
-    <div className="grid grid-cols-2 gap-4 mb-4">
+    <div className="grid grid-cols-2 gap-4 mb-4 md:m-4">
       <div className="bg-gray-800 p-4 rounded-lg shadow border border-red-900">
         <div className="flex items-center mb-2">
           <div className="w-10 h-10 rounded-full bg-red-900 flex items-center justify-center mr-3">

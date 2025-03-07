@@ -526,6 +526,29 @@ export const initialAchievements: Achievement[] = [
     color: 'bg-green-900 text-white',
     shareText: 'J\'ai obtenu tous les succès éthiques dans #Propagation ! Suis-je vraiment devenu plus éthique, ou juste plus conscient de ne pas l\'être ? 🤔'
   },
+  {
+    id: 'time_traveler',
+    name: 'Voyageur Temporel',
+    description: 'Retourner à l\'Antiquité après avoir débloqué les Théories ou l\'Éthique',
+    category: 'progression',
+    rarity: 'uncommon',
+    icon: '⏳',
+    color: 'bg-blue-800',
+    isSecret: false,
+    hint: 'Certaines techniques fonctionnent mieux quand on les applique depuis le début...',
+    unlocked: false,
+    shareText: 'J\'ai débloqué le succès "Voyageur Temporel" dans Propagation ! Je voyage à travers les ères pour propager l\'information... ou la vérité ?',
+    condition: {
+      type: 'special_action',
+      target: 'back_to_antiquity'
+    },
+    reward: {
+      type: 'resource_multiplier',
+      target: 'influence',
+      value: 1.25,
+      description: '+25% gain d\'influence'
+    }
+  },
 ];
 
 

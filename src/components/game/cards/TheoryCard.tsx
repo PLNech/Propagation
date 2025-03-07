@@ -1,3 +1,5 @@
+// src/components/game/cards/TheoryCard.tsx
+
 import React from 'react';
 import { ConspiracyTheory } from '@/types';
 
@@ -5,8 +7,8 @@ interface TheoryCardProps {
   theory: ConspiracyTheory;
   manipulationPoints: number;
   onPropagate: (theoryId: string) => void;
-  // Nouvelle prop pour tracking de statut
   propagationStatus?: 'success' | 'failed' | null;
+  showProgressBar?: boolean; // New prop to show progress towards affordability
 }
 
 /**
@@ -16,7 +18,8 @@ const TheoryCard: React.FC<TheoryCardProps> = ({
   theory, 
   manipulationPoints, 
   onPropagate,
-  propagationStatus 
+  propagationStatus,
+  showProgressBar = false
 }) => {
   // Check if player can afford to propagate this theory
   const canAfford = manipulationPoints >= theory.cost;
@@ -51,6 +54,9 @@ const TheoryCard: React.FC<TheoryCardProps> = ({
       : 'bg-gray-800 border-gray-600 opacity-75';
   };
 
+  // Calculate progress percentage towards affordability
+  const progressPercentage = Math.min(100, (manipulationPoints / theory.cost) * 100);
+
   return (
     <div className={`
       border rounded-lg p-4 relative
@@ -68,17 +74,24 @@ const TheoryCard: React.FC<TheoryCardProps> = ({
       <div className="flex justify-between items-start">
         <h3 className="text-lg font-semibold">{theory.name}</h3>
         {!theory.propagated && (
-          <button
-            onClick={() => onPropagate(theory.id)}
-            disabled={!canAfford}
-            className={`px-3 py-1 rounded text-sm ${
-              canAfford 
-                ? 'bg-yellow-600 hover:bg-yellow-500' 
-                : 'bg-gray-700 cursor-not-allowed'
-            }`}
-          >
-            Propager
-          </button>
+          <div className="flex items-center">
+            <div className="mr-2 text-sm">
+              <span className={canAfford ? 'text-green-400' : 'text-red-400'}>
+                {Math.floor(manipulationPoints)}/{theory.cost}
+              </span>
+            </div>
+            <button
+              onClick={() => onPropagate(theory.id)}
+              disabled={!canAfford}
+              className={`px-3 py-1 rounded text-sm ${
+                canAfford 
+                  ? 'bg-yellow-600 hover:bg-yellow-500' 
+                  : 'bg-gray-700 cursor-not-allowed'
+              }`}
+            >
+              Propager
+            </button>
+          </div>
         )}
         {theory.propagated && (
           <span className="px-3 py-1 rounded text-sm bg-green-700">
@@ -86,6 +99,16 @@ const TheoryCard: React.FC<TheoryCardProps> = ({
           </span>
         )}
       </div>
+      
+      {/* Progress bar for affordability */}
+      {!theory.propagated && !canAfford && showProgressBar && (
+        <div className="mt-2 bg-gray-700 h-1.5 rounded-full overflow-hidden">
+          <div 
+            className="bg-yellow-600 h-full"
+            style={{ width: `${progressPercentage}%` }}
+          ></div>
+        </div>
+      )}
       
       <p className="text-sm text-gray-300 mt-2 mb-3">
         {theory.description}

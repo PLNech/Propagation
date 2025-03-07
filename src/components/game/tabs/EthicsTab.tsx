@@ -191,8 +191,15 @@ const EthicsTab: React.FC<EthicsTabProps> = ({
                 : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
             }`}
             onClick={() => onSwitchGameMode('revelation')}
+            title={currentEraId !== 'coldWar' && currentEraId !== 'digital' ? "Ce mode sera débloqué plus tard dans le jeu..." : ""}
+            onTouchStart={(e) => {
+              if (currentEraId !== 'coldWar' && currentEraId !== 'digital') {
+                alert("Ce mode sera débloqué plus tard dans le jeu...");
+                e.preventDefault();
+              }
+            }}
           >
-            Révélation
+            Révélation {currentEraId !== 'coldWar' && currentEraId !== 'digital' && '🔒'}
           </button>
         </div>
         <p className="mt-3 text-sm text-gray-300">

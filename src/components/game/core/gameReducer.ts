@@ -320,6 +320,7 @@ export const initialGameState: GameState = {
     manipulationPoints: 0,
   },
   eras: historicalEras,
+  highestEraReached: 'antiquity',
   currentEraId: "antiquity", // Start in the Antiquity era
   upgrades: upgrades,
   conspiracyTheories: conspiracyTheories.map(theory => ({
@@ -353,7 +354,19 @@ export const initialGameState: GameState = {
     manipulateClicks: 0,
     hasSharedAchievement: false,
     hasClickedGaslightEffect: false
-  }
+  },
+  featureDiscovered: {
+    scenarios: false,
+    theories: false,
+    ethics: false,
+    digital: false
+  },
+  featureAcknowledged: {
+    scenarios: false,
+    theories: false,
+    ethics: false,
+    digital: false
+  },
 };
 
 /**
@@ -457,6 +470,7 @@ export const gameReducer = (state: GameState, action: ExtendedGameAction): GameS
         entityName: action.payload.entityName || `${action.payload.playerName}ium`, // Use provided entity name or create one
       };
       
+
     case 'MANIPULATE': {
       let result: GameState;
       // Different behavior based on game mode
@@ -464,12 +478,15 @@ export const gameReducer = (state: GameState, action: ExtendedGameAction): GameS
         // In manipulation mode, generate manipulation points
         const multipliers = calculateResourceMultipliers(state);
         
+        // Increase initial manipulation points gain to accelerate early game
+        const baseGain = state.resources.manipulationPoints < 20 ? 2 : 1;
+        
         // Increment manipulation points with active multiplier
         result = {
           ...state,
           resources: {
             ...state.resources,
-            manipulationPoints: state.resources.manipulationPoints + 1 * multipliers.manipulationPoints,
+            manipulationPoints: state.resources.manipulationPoints + baseGain * multipliers.manipulationPoints,
           },
         };
       } else {
@@ -505,8 +522,7 @@ export const gameReducer = (state: GameState, action: ExtendedGameAction): GameS
       
       return result;
     }
-        
-    // src/components/game/gameReducer.ts (UNLOCK_ERA case)
+  
     case 'UNLOCK_ERA': {
       const eraId = action.payload.eraId;
       const eraToUnlock = state.eras.find(era => era.id === eraId);
@@ -515,6 +531,13 @@ export const gameReducer = (state: GameState, action: ExtendedGameAction): GameS
       if (!eraToUnlock || eraToUnlock.unlocked || state.resources.influence < eraToUnlock.unlockCost) {
         return state;
       }
+      
+      // Adjust era unlocking costs - make early progression easier
+      const unlockCost = eraId === 'middleAges' ? 50 : // Lower cost for first era progression
+                        eraId === 'industrial' ? 150 :
+                        eraId === 'coldWar' ? 500 :
+                        eraId === 'digital' ? 1500 :
+                        eraToUnlock.unlockCost;
       
       // Determine entity type based on era
       let entityType = state.entityType;
@@ -532,13 +555,21 @@ export const gameReducer = (state: GameState, action: ExtendedGameAction): GameS
           entityType = 'Empire';
           break;
       }
+        
+      // Check if this is a higher era than previously reached
+      const eraProgression = ['antiquity', 'middleAges', 'industrial', 'coldWar', 'digital'];
+      const newEraIndex = eraProgression.indexOf(eraId);
+      const highestEraIndex = eraProgression.indexOf(state.highestEraReached);
+      
+      // Update highest era reached if applicable
+      const newHighestEra = newEraIndex > highestEraIndex ? eraId : state.highestEraReached;
       
       // Unlock the era and spend influence
       return {
         ...state,
         resources: {
           ...state.resources,
-          influence: state.resources.influence - eraToUnlock.unlockCost
+          influence: state.resources.influence - unlockCost
         },
         eras: state.eras.map(era =>
           era.id === eraId ? { ...era, unlocked: true } : era
@@ -546,9 +577,11 @@ export const gameReducer = (state: GameState, action: ExtendedGameAction): GameS
         // Automatically select the newly unlocked era
         currentEraId: eraId,
         // Update the entity type
-        entityType
+        entityType,
+        // Update highest era reached
+        highestEraReached: newHighestEra
       };
-    }
+    }    
     
     case 'SELECT_ERA': {
       const { eraId } = action.payload;
@@ -832,6 +865,34 @@ export const gameReducer = (state: GameState, action: ExtendedGameAction): GameS
         scenarios: updatedScenarios,
         completedScenarios: [...state.completedScenarios, scenarioId],
         activeScenarioId: null
+      };
+    }
+
+    case 'DISCOVER_FEATURE': {
+      const { feature } = action.payload;
+      
+      return {
+        ...state,
+        featureDiscovered: {
+          ...state.featureDiscovered,
+          [feature]: true
+        }
+      };
+    }
+
+    case 'ACKNOWLEDGE_FEATURE': {
+      const { feature } = action.payload;
+      
+      return {
+        ...state,
+        featureDiscovered: {
+          ...state.featureDiscovered,
+          [feature]: true
+        },
+        featureAcknowledged: {
+          ...state.featureAcknowledged,
+          [feature]: true
+        }
       };
     }
     

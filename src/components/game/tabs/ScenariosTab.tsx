@@ -21,35 +21,69 @@ const ScenariosTab: React.FC<ScenariosTabProps> = ({
 }) => {
   const [selectedFilter, setSelectedFilter] = useState<'all' | 'active' | 'completed' | 'era'>('all');
   
-  // Filter scenarios based on selection
+
+  // Filter scenarios based on selection and reveal them progressively
   const getFilteredScenarios = () => {
-    let filtered = [...scenarios];
+    // First, filter by current era and only show scenarios for eras the player has unlocked
+    const eraProgression = ['antiquity', 'middleAges', 'industrial', 'coldWar', 'digital'];
+    const currentEraIndex = eraProgression.indexOf(currentEraId);
     
+    // Get eligible scenarios based on unlocked eras
+    let filtered = scenarios.filter(scenario => {
+      const scenarioEraIndex = eraProgression.indexOf(scenario.eraId);
+      return scenarioEraIndex <= currentEraIndex; // Only show scenarios from current or previous eras
+    });
+    
+    // Progressive revelation: show only next incomplete scenario for each era
+    const revealedScenarios: Scenario[] = [];
+    
+    // Group by era
+    const scenariosByEra: Record<string, Scenario[]> = {};
+    filtered.forEach(scenario => {
+      if (!scenariosByEra[scenario.eraId]) {
+        scenariosByEra[scenario.eraId] = [];
+      }
+      scenariosByEra[scenario.eraId].push(scenario);
+    });
+    
+    // For each era, add completed scenarios + the next incomplete one
+    Object.values(scenariosByEra).forEach(eraScenarios => {
+      // First add all completed scenarios
+      const completedForEra = eraScenarios.filter(s => 
+        s.completed || completedScenarios.includes(s.id)
+      );
+      revealedScenarios.push(...completedForEra);
+      
+      // Then add the next incomplete scenario if available
+      const nextIncomplete = eraScenarios.find(s => 
+        !s.completed && !completedScenarios.includes(s.id)
+      );
+      if (nextIncomplete) {
+        revealedScenarios.push(nextIncomplete);
+      }
+    });
+    
+    // Now apply any additional filters
     switch (selectedFilter) {
       case 'active':
         // Show active scenarios
-        filtered = filtered.filter(scenario => 
+        return revealedScenarios.filter(scenario => 
           (activeScenarioId === scenario.id || !scenario.completed) && 
           !completedScenarios.includes(scenario.id)
         );
-        break;
       case 'completed':
         // Show completed scenarios
-        filtered = filtered.filter(scenario => 
+        return revealedScenarios.filter(scenario => 
           scenario.completed || completedScenarios.includes(scenario.id)
         );
-        break;
       case 'era':
         // Show scenarios from current era
-        filtered = filtered.filter(scenario => scenario.eraId === currentEraId);
-        break;
+        return revealedScenarios.filter(scenario => scenario.eraId === currentEraId);
       case 'all':
       default:
-        // No additional filtering
-        break;
+        // All revealed scenarios
+        return revealedScenarios;
     }
-    
-    return filtered;
   };
   
   const filteredScenarios = getFilteredScenarios();

@@ -185,6 +185,7 @@ export interface GameState {
   entityType: 'Tribu' | 'Village' | 'Cité' | 'Pays' | 'Empire';
   resources: GameResources;
   eras: HistoricalEra[];
+  highestEraReached: string,
   currentEraId: string;
   upgrades: Upgrade[];
   conspiracyTheories: ConspiracyTheory[];
@@ -205,6 +206,18 @@ export interface GameState {
   tickInterval: number;  // Time between updates in milliseconds
   achievementState: AchievementState;
   resourceMultipliers?: Partial<Record<keyof GameResources, number>>;
+  featureDiscovered: {
+    scenarios: boolean;
+    theories: boolean;
+    ethics: boolean;
+    digital: boolean;
+  };
+  featureAcknowledged: {
+    scenarios: boolean;
+    theories: boolean;
+    ethics: boolean;
+    digital: boolean;
+  };
   stats?: {
     manipulateClicks: number;
     previousGameMode?: GameMode;
@@ -236,6 +249,9 @@ export type GameAction =
 | { type: 'PURCHASE_UPGRADE'; payload: { upgradeId: string } }  // Purchase an upgrade
 | { type: 'PROPAGATE_THEORY'; payload: { theoryId: string } }  // Propagate a conspiracy theory
 | { type: 'PERFORM_ETHICAL_ACTION'; payload: { actionId: string } }  // Perform an ethical action
+// Reveal
+| { type: 'DISCOVER_FEATURE'; payload: { feature: string } }
+| { type: 'ACKNOWLEDGE_FEATURE'; payload: { feature: string } }
 // Scenarios
 | { type: 'TRIGGER_SCENARIO'; payload: { scenarioId: string } }
 | { type: 'MAKE_SCENARIO_CHOICE'; payload: { scenarioId: string, choiceId: string } }
