@@ -30,6 +30,71 @@ const SaveManager: React.FC<SaveManagerProps> = ({
   const [manualSaveInfo, setManualSaveInfo] = useState<{ exists: boolean; timestamp?: number }>({ exists: false });
   const [autoSaveInfo, setAutoSaveInfo] = useState<{ exists: boolean; timestamp?: number }>({ exists: false });
 
+  // Handle keyboard shortcuts
+  useEffect(() => {
+    // Global shortcut to open save menu (S key)
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 's' && !showModal) {
+        e.preventDefault();
+        setShowModal(true);
+      }
+    };
+    
+    // Shortcuts within the save menu
+    const handleModalKeyDown = (e: KeyboardEvent) => {
+      if (!showModal) return;
+      
+      switch (e.key.toLowerCase()) {
+        case 'escape':
+          e.preventDefault();
+          setShowModal(false);
+          break;
+        case 's':
+          e.preventDefault();
+          handleSave();
+          break;
+        case 'c':
+          e.preventDefault();
+          if (manualSaveInfo.exists) {
+            handleLoad(false);
+          }
+          break;
+        case 'd':
+          e.preventDefault();
+          if (autoSaveInfo.exists) {
+            handleLoad(true);
+          }
+          break;
+        case 'p':
+          e.preventDefault();
+          if (manualSaveInfo.exists) {
+            handleExportCopy();
+          }
+          break;
+        case 'f':
+          e.preventDefault();
+          if (manualSaveInfo.exists) {
+            handleExportFile();
+          }
+          break;
+        case 'r':
+          e.preventDefault();
+          handleReset();
+          break;
+      }
+    };
+    
+    document.addEventListener('keydown', handleGlobalKeyDown);
+    if (showModal) {
+      document.addEventListener('keydown', handleModalKeyDown);
+    }
+    
+    return () => {
+      document.removeEventListener('keydown', handleGlobalKeyDown);
+      document.removeEventListener('keydown', handleModalKeyDown);
+    };
+  }, [showModal, manualSaveInfo.exists, autoSaveInfo.exists]);
+
   // Vérifier l'existence des sauvegardes au chargement
   useEffect(() => {
     setManualSaveInfo(hasSaveGame(false));
@@ -124,20 +189,37 @@ const handleExportCopy = () => {
 
   // Charger le jeu
   const handleLoad = (useAutoSave = false) => {
-    const loadedState = loadGame(useAutoSave);
+    const saveInfo = useAutoSave ? autoSaveInfo : manualSaveInfo;
     
-    if (loadedState) {
-      onLoadState(loadedState);
-      setSaveStatus('loaded');
+    // Format the save date for display
+    const saveDate = saveInfo.timestamp 
+      ? new Date(saveInfo.timestamp).toLocaleString() 
+      : 'Date inconnue';
+    
+    // Get save type for display
+    const saveType = useAutoSave ? 'automatique' : 'manuelle';
+    
+    // Show confirmation popup
+    if (window.confirm(
+      `Êtes-vous sûr de vouloir charger cette sauvegarde ${saveType} ?\n\n` +
+      `Date: ${saveDate}\n\n` +
+      `Toute progression non sauvegardée sera perdue.`
+    )) {
+      const loadedState = loadGame(useAutoSave);
       
-      // Fermer le modal
-      setShowModal(false);
-    } else {
-      setSaveStatus('error');
+      if (loadedState) {
+        onLoadState(loadedState);
+        setSaveStatus('loaded');
+        
+        // Fermer le modal
+        setShowModal(false);
+      } else {
+        setSaveStatus('error');
+      }
+      
+      // Réinitialiser le statut après un délai
+      setTimeout(() => setSaveStatus('idle'), 2000);
     }
-    
-    // Réinitialiser le statut après un délai
-    setTimeout(() => setSaveStatus('idle'), 2000);
   };
 
   // Importer une sauvegarde
@@ -170,14 +252,18 @@ const handleExportCopy = () => {
 
   return (
     <>
-      <button
+    <button
         onClick={() => setShowModal(true)}
         className="absolute top-4 left-4 bg-gray-800 hover:bg-gray-700 text-gray-200 px-3 py-1 rounded-md text-sm flex items-center"
       >
         <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
         </svg>
-        Sauvegarde
+        <span>
+          <span className="hidden sm:inline">Sauvegarde</span>
+          <span className="inline sm:hidden">Save</span>
+          <span className="ml-1 opacity-60 text-xs">(S)</span>
+        </span>
       </button>
 
       {/* Indicateur de statut */}
@@ -216,16 +302,19 @@ const handleExportCopy = () => {
                 <div className="flex space-x-2">
                   <button
                     onClick={handleSave}
-                    className="bg-blue-600 hover:bg-blue-500 px-3 py-1 rounded text-sm"
+                    className="bg-blue-600 hover:bg-blue-500 px-3 py-1 rounded text-sm flex items-center"
                   >
-                    Sauvegarder
+                    <span><b>S</b>auvegarder</span>
+                    <span className="ml-1 opacity-60 text-xs">(S)</span>
                   </button>
+
                   {manualSaveInfo.exists && (
                     <button
                       onClick={() => handleLoad(false)}
-                      className="bg-green-600 hover:bg-green-500 px-3 py-1 rounded text-sm"
+                      className="bg-green-600 hover:bg-green-500 px-3 py-1 rounded text-sm flex items-center"
                     >
-                      Charger
+                      <span><b>C</b>harger</span>
+                      <span className="ml-1 opacity-60 text-xs">(C)</span>
                     </button>
                   )}
                 </div>
@@ -245,11 +334,12 @@ const handleExportCopy = () => {
                 )}
                 {autoSaveInfo.exists && (
                   <button
-                    onClick={() => handleLoad(true)}
-                    className="bg-green-600 hover:bg-green-500 px-3 py-1 rounded text-sm"
-                  >
-                    Charger auto-save
-                  </button>
+                  onClick={() => handleLoad(true)}
+                  className="bg-green-600 hover:bg-green-500 px-3 py-1 rounded text-sm flex items-center"
+                >
+                  <span><b>D</b>ernière auto-save</span>
+                  <span className="ml-1 opacity-60 text-xs">(D)</span>
+                </button>
                 )}
               </div>
               
@@ -257,19 +347,21 @@ const handleExportCopy = () => {
               <div className="bg-gray-700 p-3 rounded">
                 <h3 className="font-medium mb-2">Import/Export</h3>
                 <div className="flex space-x-2 mb-2">
-                    <button
+                <button
                     onClick={handleExportCopy}
-                    className="bg-purple-600 hover:bg-purple-500 px-3 py-1 rounded text-sm"
+                    className="bg-purple-600 hover:bg-purple-500 px-3 py-1 rounded text-sm flex items-center"
                     disabled={!manualSaveInfo.exists}
                     >
-                    Exporter [copier]
+                    <span>Exporter [<b>P</b>resse-Papier]</span>
+                    <span className="ml-1 opacity-60 text-xs">(P)</span>
                     </button>
                     <button
                     onClick={handleExportFile}
-                    className="bg-blue-600 hover:bg-blue-500 px-3 py-1 rounded text-sm"
+                    className="bg-blue-600 hover:bg-blue-500 px-3 py-1 rounded text-sm flex items-center"
                     disabled={!manualSaveInfo.exists}
                     >
-                    Exporter [fichier]
+                    <span>Exporter [<b>F</b>ichier]</span>
+                    <span className="ml-1 opacity-60 text-xs">(F)</span>
                     </button>
                 </div>
                 <div className="mt-2">
@@ -296,7 +388,7 @@ const handleExportCopy = () => {
                   onClick={handleReset}
                   className="bg-red-800 hover:bg-red-500 text-white px-3 py-1 rounded text-sm"
                 >
-                  Recommencer (garde les Succès)
+                  <b>R</b>ecommencer (garde les Succès)
                 </button>
               </div>
             </div>

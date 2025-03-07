@@ -146,7 +146,7 @@ const StarWarsCredits = ({ onClose }: { onClose: () => void }) => {
           }}
         >
           {/* Credits content */}
-          <div className="w-4/5 mx-auto">
+          <div className="w-4/5 mx-auto text-3xl">
             <h1 style={{ fontSize: fontSize.title, marginBottom: '3rem' }}>CREDITS</h1>
             
             <h2 style={{ fontSize: fontSize.heading, marginBottom: '2rem' }}>The Internet ❤️</h2>

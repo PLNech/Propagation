@@ -1,5 +1,6 @@
 import React from 'react';
 import { Upgrade, GameResources } from '@/types';
+import { ReferenceLinks, upgradePatterns } from '../ui/LinkUtility';
 
 interface UpgradeCardProps {
   upgrade: Upgrade;
@@ -28,6 +29,28 @@ const UpgradeCard: React.FC<UpgradeCardProps> = ({ upgrade, resources, onPurchas
       default:
         return '';
     }
+  };
+
+  // Use ReferenceLinks when upgrade is purchased
+  const renderDescription = () => {
+    if (upgrade.purchased) {
+      return <ReferenceLinks 
+        text={upgrade.description} 
+        patterns={upgradePatterns}
+        onLinkClick={(pattern) => {
+          if (dispatch) {
+            dispatch({ 
+              type: 'CLICK_LORE_LINK', 
+              payload: { 
+                linkType: pattern.category || 'other',
+                url: pattern.url 
+              } 
+            });
+          }
+        }}
+      />;
+    }
+    return <p className="text-sm text-gray-300 mt-2 mb-3">{upgrade.description}</p>;
   };
 
   return (

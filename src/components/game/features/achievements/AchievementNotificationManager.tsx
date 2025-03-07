@@ -35,14 +35,24 @@ const AchievementNotificationManager: React.FC<AchievementNotificationManagerPro
   
   // Process the queue whenever it changes or when current notification is dismissed
   useEffect(() => {
+    let timer: NodeJS.Timeout | null = null;
+    
     // If there's no current notification and the queue has items, show the next one
     if (!currentNotification && queue.length > 0) {
       const nextNotification = queue[0];
       setCurrentNotification(nextNotification);
       setQueue(prevQueue => prevQueue.slice(1));
+      
+      // Set auto-dismiss timeout
+      timer = setTimeout(() => {
+        handleDismiss(nextNotification);
+      }, 8000); // 8 seconds auto-dismiss
     }
+    
+    return () => {
+      if (timer) clearTimeout(timer);
+    };
   }, [queue, currentNotification]);
-  
   // Handle notification dismissal
   const handleDismiss = (achievement: Achievement) => {
     onDismiss(achievement.id);

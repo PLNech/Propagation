@@ -124,16 +124,10 @@
 
 
 ## RAPH TODO
+
 - Progressive reveal
 - Balance progressive, tu devrais pas savoir au debut comment gagner
+- Plus de raison de spend tes ressources, pour maintenir tes variables 
+   - Tu debloque Stabilite, Legitimite, etc pour maintenir ta tribu/ton empire
+   - revele progressivement, des enjeux avec un equilibre a maintenir
 
-- Narrative: on joue une cite, un pouvoir, situer et personnaliser, choisis un nom au debut!
-- Tu es un bebe leviatan en devenir
-
-
-A chaque ere tu changes de scale:
-- Antiquité: Tribu
-- Moyen Âge: Village
-- Ère Industrielle: Cite
-- Guerre Froide: Pays
-- Ère Numérique: Empire

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 export type NotificationType = 'success' | 'error' | 'warning' | 'info' | 'ethical';
 
@@ -18,17 +18,41 @@ interface NotificationSystemProps {
  * Component to display game notifications with different styles based on type
  */
 const NotificationSystem: React.FC<NotificationSystemProps> = ({ notifications, onDismiss }) => {
+  // Use a ref to track notification timeouts across renders
+  const timeoutRef = useRef<Map<string, NodeJS.Timeout>>(new Map());
+  
   // Auto-dismiss notifications after their duration
   useEffect(() => {
+    // For each notification, set up a timeout if it doesn't already have one
     notifications.forEach(notification => {
-      const timer = setTimeout(() => {
-        onDismiss(notification.id);
-      }, notification.duration);
-      
-      return () => clearTimeout(timer);
+      // Only set a new timeout if this notification doesn't already have one
+      if (!timeoutRef.current.has(notification.id)) {
+        console.log(`Setting timeout for notification ${notification.id}, duration: ${notification.duration}ms`);
+        const timer = setTimeout(() => {
+          console.log(`Auto-dismissing notification ${notification.id}`);
+          onDismiss(notification.id);
+        }, notification.duration);
+        
+        // Store the timeout ID
+        timeoutRef.current.set(notification.id, timer);
+      }
     });
+    
+    // Cleanup function to clear timeouts for notifications that have been removed
+    return () => {
+      // Get all current notification IDs
+      const currentIds = new Set(notifications.map(n => n.id));
+      
+      // Clear timeouts for notifications that are no longer present
+      timeoutRef.current.forEach((timer, id) => {
+        if (!currentIds.has(id)) {
+          clearTimeout(timer);
+          timeoutRef.current.delete(id);
+        }
+      });
+    };
   }, [notifications, onDismiss]);
-  
+
   // Get the appropriate styles for each notification type
   const getNotificationStyles = (type: NotificationType) => {
     switch (type) {

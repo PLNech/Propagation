@@ -25,6 +25,18 @@ const AchievementNotification: React.FC<AchievementNotificationProps> = ({
     return () => clearTimeout(timer);
   }, [onDismiss, autoDismissDelay]);
   
+  // Auto-dismiss after specified delay
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      onDismiss();
+    }, autoDismissDelay);
+    
+    // Clean up the timer when the component unmounts
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [onDismiss, autoDismissDelay]);
+
   // Function to generate contrasting text color based on background
   const getTextColor = (bgColor: string): string => {
     // For common Tailwind color classes, return appropriate text color
