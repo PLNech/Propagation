@@ -703,6 +703,7 @@ const PropagationGame = () => {
           <>
             {activeTab === 'resources' && (
               <>
+                <ResourceDisplay resources={gameState.resources} />
                 <GameButtons 
                   onManipulate={handleManipulate} 
                   onNetworking={handleNetworking}
@@ -711,7 +712,6 @@ const PropagationGame = () => {
                   resources={gameState.resources}
                   manipulateButtonId="manipulate-button" 
                 />
-                <ResourceDisplay resources={gameState.resources} />
                 
                 {/* Era benefits preview */}
                 <div className="mt-8 p-4 bg-gray-800 rounded-lg">

@@ -28,16 +28,8 @@ const AchievementNotification: React.FC<AchievementNotificationProps> = ({
   // Function to generate contrasting text color based on background
   const getTextColor = (bgColor: string): string => {
     // For common Tailwind color classes, return appropriate text color
-    if (bgColor.includes('green')) return 'text-white font-bold';
-    if (bgColor.includes('blue')) return 'text-white font-bold';
-    if (bgColor.includes('red')) return 'text-white font-bold';
-    if (bgColor.includes('purple')) return 'text-white font-bold';
-    if (bgColor.includes('indigo')) return 'text-white font-bold';
-    if (bgColor.includes('yellow')) return 'text-gray-900 font-bold';
-    if (bgColor.includes('amber')) return 'text-gray-900 font-bold';
-    if (bgColor.includes('orange')) return 'text-gray-900 font-bold';
-    
-    // Default contrasting colors
+    if (bgColor.includes('100') || bgColor.includes('200') || bgColor.includes('300') || bgColor.includes('400')) return 'text-black font-bold';
+    if (bgColor.includes('600') || bgColor.includes('700') || bgColor.includes('800') || bgColor.includes('900')) return 'text-black font-bold';
     return bgColor.includes('bg-gray-900') ? 'text-white font-bold' : 'text-gray-900 font-bold';
   };
   

@@ -121,3 +121,8 @@
 3. **Mid-Game Content**: Add more depth to keep players engaged past the early game
 4. **Real-World Connections**: Strengthen the educational aspects with concrete examples
 5. **Mobile Optimization**: Make the game fully playable on mobile devices
+
+
+## RAPH TODO
+- Progressive reveal
+- Balance progressive, tu devrais pas savoir au debut comment gagner

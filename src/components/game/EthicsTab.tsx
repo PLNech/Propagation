@@ -23,6 +23,7 @@ interface EthicsTabProps {
   stats: EthicalStats;
   onPerformEthicalAction: (actionId: string) => void;
   onSwitchGameMode: (mode: GameMode) => void;
+  dispatch: React.Dispatch<any>;
 }
 
   // Messages ironiques aléatoires
@@ -71,7 +72,8 @@ const EthicsTab: React.FC<EthicsTabProps> = ({
   quotes,
   stats,
   onPerformEthicalAction,
-  onSwitchGameMode
+  onSwitchGameMode,
+  dispatch
 }) => {
   const [activeSection, setActiveSection] = useState<'actions' | 'education' | 'stats'>('actions');
   const [showGlitch, setShowGlitch] = useState(false);

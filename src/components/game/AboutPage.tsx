@@ -20,7 +20,7 @@ const StarWarsCredits = ({ onClose }: { onClose: () => void }) => {
   const handleCreatorLinkClick = () => {
     // This would be connected to the achievement system in a real implementation
     if (window.__SECRET_DOM_DO_NOT_USE_OR_YOU_WILL_BE_FIRED) {
-      window.__SECRET_DOM_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.dispatch({ 
+      (window.__SECRET_DOM_DO_NOT_USE_OR_YOU_WILL_BE_FIRED as any).dispatch({ 
         type: 'UNLOCK_SECRET_ACHIEVEMENT', 
         payload: { achievementId: 'found_creator_link' } 
       });
@@ -162,35 +162,35 @@ const StarWarsCredits = ({ onClose }: { onClose: () => void }) => {
                 Lauren Ponder
               </a>
             </h2>
-            <p style={{ fontSize: fontSize.text, marginBottom: '4rem' }}>pour le son des Accomplissements</p>
+            <p style={{ fontSize: fontSize.text, marginBottom: '4rem' }}>for the sound of Achievements</p>
 
             <h2 style={{ fontSize: fontSize.heading, marginBottom: '2rem' }}>HTML, JavaScript, et CSS</h2>
-            <p style={{ fontSize: fontSize.text, marginBottom: '4rem' }}>le squelette du Pays des Merveilles 🌎</p>
+            <p style={{ fontSize: fontSize.text, marginBottom: '4rem' }}>the backbone of our Wonderland 🌎</p>
 
             <h2 style={{ fontSize: fontSize.heading, marginBottom: '2rem' }}>React, Next.js, Tailwind.css</h2>
-            <p style={{ fontSize: fontSize.text, marginBottom: '4rem' }}>et les stacks web modernes 👏</p>
+            <p style={{ fontSize: fontSize.text, marginBottom: '4rem' }}>and the modern web stack 👏</p>
 
-            <h2 style={{ fontSize: fontSize.heading, marginBottom: '2rem' }}>IDEs modernes et ctrl+space</h2>
-            <p style={{ fontSize: fontSize.text, marginBottom: '4rem' }}>d'Eclipse à Cursor 🚀</p>
+            <h2 style={{ fontSize: fontSize.heading, marginBottom: '2rem' }}>Modern IDEs and ctrl+space</h2>
+            <p style={{ fontSize: fontSize.text, marginBottom: '4rem' }}>From the ancient Eclipse to the mighty Cursor 🚀</p>
 
-            <h2 style={{ fontSize: fontSize.subheading, marginBottom: '3rem' }}>Merci également à:</h2>
+            <h2 style={{ fontSize: fontSize.subheading, marginBottom: '3rem' }}>Huge thanks as well to</h2>
 
             <h3 style={{ fontSize: fontSize.subheading, marginBottom: '1.5rem' }}>Debuggers</h3>
-            <p style={{ fontSize: fontSize.text, marginBottom: '1.5rem' }}>des console.log aux enfers des breakpoints,</p>
-            <p style={{ fontSize: fontSize.text, marginBottom: '1.5rem' }}>le paradis de l'introspection des variables,</p>
-            <p style={{ fontSize: fontSize.text, marginBottom: '3rem' }}>et tout ce qui se trouve entre les deux 🔦</p>
+            <p style={{ fontSize: fontSize.text, marginBottom: '1.5rem' }}>from console.log to breakpoint-hell,</p>
+            <p style={{ fontSize: fontSize.text, marginBottom: '1.5rem' }}>variable introspection paradise,</p>
+            <p style={{ fontSize: fontSize.text, marginBottom: '3rem' }}>and everything in between 🔦</p>
 
-            <h3 style={{ fontSize: fontSize.subheading, marginBottom: '1.5rem' }}>Modèles de langage</h3>
-            <p style={{ fontSize: fontSize.text, marginBottom: '3rem' }}>de SpaCy à celui qui reformule cette phrase 📜✒️</p>
+            <h3 style={{ fontSize: fontSize.subheading, marginBottom: '1.5rem' }}>Language Models</h3>
+            <p style={{ fontSize: fontSize.text, marginBottom: '3rem' }}>from SpaCy to the one rephrasing this sentence 📜✒️</p>
 
             <h3 style={{ fontSize: fontSize.subheading, marginBottom: '1.5rem' }}>Anthropic</h3>
-            <p style={{ fontSize: fontSize.text, marginBottom: '3rem' }}>pour montrer *comment* on fait 🤗</p>
+            <p style={{ fontSize: fontSize.text, marginBottom: '3rem' }}>for showing *how* it's done 🤗</p>
 
-            <h3 style={{ fontSize: fontSize.subheading, marginBottom: '1.5rem' }}>Claude</h3>
-            <p style={{ fontSize: fontSize.text, marginBottom: '3rem' }}>pour être un digne "It"</p>
+            <h3 style={{ fontSize: fontSize.subheading, marginBottom: '1.5rem' }}>and Claude</h3>
+            <p style={{ fontSize: fontSize.text, marginBottom: '3rem' }}>for being a worthy _it_</p>
 
             <h3 style={{ fontSize: fontSize.subheading, marginBottom: '1.5rem' }}>
-              <span>Vous pour supporter </span>
+              <span>Thanks for bearing with</span>
               <a 
                 href="https://me.plnech.fr" 
                 target="_blank" 
@@ -198,13 +198,11 @@ const StarWarsCredits = ({ onClose }: { onClose: () => void }) => {
                 className="hover:text-white"
                 onClick={handleCreatorLinkClick}
               >
-                &lt;me href="me.plnech.fr"/&gt;
+                me
               </a>
             </h3>
-            <p style={{ fontSize: fontSize.text, marginBottom: '1.5rem' }}>alors que nous découvrons ensemble</p>
-            <p style={{ fontSize: fontSize.text, marginBottom: '5rem' }}>ce nouveau monde merveilleux ❤️</p>
-            
-            <p style={{ fontSize: fontSize.small, marginBottom: '10rem' }}>Cliquer le lien déclenche un accomplissement caché</p>
+            <p style={{ fontSize: fontSize.text, marginBottom: '1.5rem' }}>as we discover together</p>
+            <p style={{ fontSize: fontSize.text, marginBottom: '5rem' }}>this Brave New World &lt;3</p>
           </div>
         </div>
       </div>

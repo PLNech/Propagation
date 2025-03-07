@@ -474,7 +474,7 @@ export const createDebugHelper = (
           const resourceInput = createNumberInput(resource, 100);
           const giveButton = createActionButton(`Give ${resource}`, () => {
             const amount = parseInt(resourceInput.value, 10) || 100;
-            window.__SECRET_DOM_DO_NOT_USE_OR_YOU_WILL_BE_FIRED[`give${resource}`](amount);
+            (window.__SECRET_DOM_DO_NOT_USE_OR_YOU_WILL_BE_FIRED as any)[`give${resource}`](amount);
             updateStateDisplay();
           });
           
@@ -505,7 +505,7 @@ export const createDebugHelper = (
           const statInput = createNumberInput(stat, 50);
           const setButton = createActionButton(`Set ${stat}`, () => {
             const value = parseInt(statInput.value, 10) || 50;
-            window.__SECRET_DOM_DO_NOT_USE_OR_YOU_WILL_BE_FIRED[`set${stat}`](value);
+            (window.__SECRET_DOM_DO_NOT_USE_OR_YOU_WILL_BE_FIRED as any)[`set${stat}`](value);
             updateStateDisplay();
           });
           
@@ -768,7 +768,7 @@ export const createDebugHelper = (
         return true;
         
         // Helper function to create section cards
-        function createSectionCard(title) {
+        function createSectionCard(title: string) {
           const card = document.createElement('div');
           card.style.cssText = `
             background-color: #222;
@@ -792,7 +792,7 @@ export const createDebugHelper = (
         }
         
         // Helper function to create number inputs
-        function createNumberInput(name, defaultValue) {
+        function createNumberInput(name: string, defaultValue: number) {
           const input = document.createElement('input');
           input.type = 'number';
           input.value = defaultValue.toString();
@@ -809,7 +809,7 @@ export const createDebugHelper = (
         }
         
         // Helper function to create action buttons
-        function createActionButton(label, onClick) {
+        function createActionButton(label: string, onClick: () => void) {
           const button = document.createElement('button');
           button.textContent = label;
           button.style.cssText = `

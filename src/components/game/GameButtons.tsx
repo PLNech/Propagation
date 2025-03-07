@@ -27,9 +27,9 @@ const GameButtons: React.FC<GameButtonsProps> = ({
   isGaslightActive = false
 }) => {
   // Track if features are unlocked based on manipulation points thresholds
-  const isNetworkingUnlocked = resources.manipulationPoints >= 100 || resources.networkPoints > 0;
-  const isCredibilityUnlocked = resources.manipulationPoints >= 200 || resources.credibilityPoints > 0;
-  const isInfluenceUnlocked = resources.manipulationPoints >= 400 || resources.influencePoints > 0;
+  const isNetworkingUnlocked = resources.manipulationPoints >= 100 || resources.networks > 0;
+  const isCredibilityUnlocked = resources.manipulationPoints >= 200 || resources.credibility > 0;
+  const isInfluenceUnlocked = resources.manipulationPoints >= 400 || resources.influence > 0;
 
   // Check if player can afford each action
   const canAffordNetworking = resources.manipulationPoints >= 2 && isNetworkingUnlocked;
