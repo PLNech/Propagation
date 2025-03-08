@@ -1,0 +1,213 @@
+/* Styles spécifiques pour la page d'invitation */
+
+/* Styles pour l'affichage à l'écran uniquement */
+@media screen {
+    .screen-only {
+      display: block;
+    }
+    
+    .print-container {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+      margin: 2rem auto;
+      max-width: 210mm; /* A4 width */
+    }
+    
+    .flyer {
+      width: 210mm; /* A4 width */
+      height: 148mm; /* A5 height */
+      border: 1px dashed #6b7280;
+      position: relative;
+      overflow: hidden;
+      background-color: #1f2937;
+    }
+    
+    .flyer::after {
+      content: attr(class);
+      position: absolute;
+      bottom: 0.5rem;
+      right: 0.5rem;
+      font-size: 0.75rem;
+      color: #6b7280;
+      text-transform: uppercase;
+    }
+  }
+  
+  /* Styles pour l'impression */
+  @media print {
+    @page {
+      size: A4;
+      margin: 0;
+    }
+    
+    body {
+      margin: 0;
+      padding: 0;
+      background: white !important;
+    }
+    
+    .screen-only {
+      display: none !important;
+    }
+    
+    .print-container {
+      width: 210mm; /* A4 width */
+      height: 297mm; /* A4 height */
+      display: block;
+      page-break-after: always;
+      overflow: hidden;
+    }
+    
+    .flyer {
+      width: 148mm; /* A5 height */
+      height: 210mm; /* A5 width */
+      position: absolute;
+      overflow: hidden;
+      page-break-inside: avoid;
+      border: none;
+      background-color: #1f2937 !important;
+      color: #f3f4f6 !important;
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+    
+    .recto {
+      transform: rotate(90deg) translateY(-148mm);
+      transform-origin: top left;
+      left: 30mm; /* Center on A4 */
+      top: 30mm;
+    }
+    
+    .verso {
+      transform: rotate(90deg) translateY(-148mm);
+      transform-origin: top left;
+      left: 30mm; /* Center on A4 */
+      top: 178mm; /* A5 height (148mm) + margin */
+    }
+  }
+  
+  /* Styles communs */
+  .flyer-content {
+    padding: 1.5rem;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  
+  .flyer-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+  
+  .flyer-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    color: #d1d5db;
+    letter-spacing: 0.05em;
+  }
+  
+  .flyer-subtitle {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #9ca3af;
+  }
+  
+  .flyer-body {
+    flex-grow: 1;
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+  
+  .flyer-body p {
+    margin-bottom: 1rem;
+  }
+  
+  .flyer-footer {
+    margin-top: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .date {
+    font-size: 0.9rem;
+    font-style: italic;
+    color: #9ca3af;
+  }
+  
+  .logo {
+    width: 2rem;
+    height: 2rem;
+  }
+  
+  .eye-logo {
+    color: #9ca3af;
+  }
+  
+  /* Verso specific styles */
+  .mission-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #d1d5db;
+  }
+  
+  .mission-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    margin-bottom: 2rem;
+  }
+  
+  .mission-list li {
+    padding: 0.5rem 0;
+    padding-left: 1.5rem;
+    position: relative;
+    line-height: 1.4;
+  }
+  
+  .mission-list li::before {
+    content: '•';
+    position: absolute;
+    left: 0;
+    color: #9ca3af;
+  }
+  
+  .acceptance {
+    text-align: center;
+    margin-top: 2rem;
+  }
+  
+  .acceptance p {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+  
+  .signature-line {
+    width: 60%;
+    height: 1px;
+    background-color: #6b7280;
+    margin: 0.5rem auto;
+  }
+  
+  .providence-eye {
+    width: 3rem;
+    height: 3rem;
+    margin: 0 auto;
+    color: #9ca3af;
+  }
+  
+  .verso-text {
+    text-align: center;
+    font-size: 0.8rem;
+    font-style: italic;
+    color: #6b7280;
+    margin-top: 0.5rem;
+  }
