@@ -12,17 +12,17 @@
 
 ---
 
-## 👁️ [Gallerie des Écrans]
+## 👁️ [Galerie des Écrans]
 
 <div align="center">
   <!-- Desktop Screenshots -->
   <p><strong>Desktop Gameplay</strong></p>
   
   ![Desktop Gameplay](assets/screen1.png)
-  *Manipulate resources in different historical eras*
+  *Manipule la population à travers le temps et l'espace*
   
   ![Ethical Choices](assets/screen2.png)
-  *Choose between manipulation and revelation*
+  *Succès, Scénarios interactifs, et autres mécaniques à découvrir*
   
   <!-- Mobile Screenshots Carousel -->
   <p><strong>Mobile Experience</strong></p>
