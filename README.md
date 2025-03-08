@@ -211,6 +211,46 @@ npm run lint
 4. Run `npm run accent-check` to ensure proper French character encoding
 5. Submit a pull request with a clear description of your changes
 
+## 🔄 GitHub Actions
+
+The Propagation project uses several automated workflows to improve development efficiency and code quality.
+
+### CI/CD Workflows
+
+#### 📋 Code Quality Checks
+- **Build Check**: Verifies that every PR can build successfully before merging
+- **Bundle Size**: Monitors JavaScript bundle size changes to prevent performance regressions
+- **French Text Validator**: Ensures proper encoding of French characters in React components
+- **Lighthouse CI**: Runs performance, accessibility, and best practices audits on the live site
+
+#### 🏷️ PR & Issue Management
+- **PR Manager**: Auto-labels PRs by changed files and size, welcomes new contributors
+- **Issue Manager**: Auto-categorizes issues, detects French language, handles stale issues
+- **Dependabot Auto-Merge**: Automatically merges minor dependency updates after tests pass
+
+#### 📦 Release Management
+- **Auto Release Creator**: Generates GitHub releases from tags with changelog entries
+- **Tag Helper**: Creates version tags from code history with appropriate semantic versioning
+
+### How It Works
+
+Our GitHub Actions automate repetitive tasks, maintain code quality, and provide quick feedback:
+
+1. **When you open a PR**: It gets labeled by type of change and size, bundle size is calculated, and a build verification runs
+2. **When you push code**: French text is validated, performance metrics are checked
+3. **When an issue is created**: It's automatically categorized and added to our project board
+
+### Benefits for Contributors
+
+This automation provides several advantages:
+- Immediate feedback on code quality and build errors
+- Consistent issue and PR organization
+- Reduced manual work for maintainers
+- Faster review cycles with standardized templates
+- Prevention of common issues like French character encoding problems
+
+For details on any specific workflow, check the `.github/workflows` directory.
+
 ### 📋 Release Process
 
 When preparing a new release:
