@@ -1,5 +1,75 @@
 name: Auto Create Release
+
 on:
   push:
     tags:
-      - 'v*'  # Triggers on any tag that starts with 'v'
+      - 'v*'  # This will trigger the workflow on any tag that starts with 'v'
+
+jobs:
+  create-release:
+    name: Create Release from Changelog
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # We need the full history for tags and changelog
+
+      - name: Extract version from tag
+        id: get_version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+
+      - name: Extract release notes from CHANGELOG.md
+        id: extract_notes
+        run: |
+          # Get the version without the 'v' prefix for grep
+          VERSION_NUM=$(echo ${{ steps.get_version.outputs.VERSION }} | sed 's/^v//')
+          
+          # Find section for this version in CHANGELOG
+          echo "Extracting release notes for $VERSION_NUM from CHANGELOG.md"
+          
+          # Store the start line of the current version's section
+          START_LINE=$(grep -n "## Sprint.*(${{ steps.get_version.outputs.VERSION }})" CHANGELOG.md | head -n 1 | cut -d: -f1)
+          
+          if [ -z "$START_LINE" ]; then
+            echo "Error: Could not find section for ${{ steps.get_version.outputs.VERSION }} in CHANGELOG.md"
+            exit 1
+          fi
+          
+          # Find the next version section or end of file
+          NEXT_LINE=$(grep -n "^## Sprint" CHANGELOG.md | awk -v start="$START_LINE" '$1 > start {print $1; exit}')
+          
+          # If there is no next section, use the end of file
+          if [ -z "$NEXT_LINE" ]; then
+            NEXT_LINE=$(wc -l < CHANGELOG.md)
+          else
+            # Subtract 1 to exclude the next version header
+            NEXT_LINE=$((NEXT_LINE - 1))
+          fi
+          
+          # Extract the relevant section
+          NOTES=$(sed -n "${START_LINE},${NEXT_LINE}p" CHANGELOG.md)
+          
+          # Save to a file for the release action
+          echo "$NOTES" > release_notes.md
+          
+          echo "Extracted release notes:"
+          cat release_notes.md
+
+      - name: Create Release
+        id: create_release
+        uses: comnoco/create-release-action@v2.0.5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.get_version.outputs.VERSION }}
+          release_name: ${{ steps.get_version.outputs.VERSION }}
+          body_path: release_notes.md
+          draft: false
+          prerelease: false
+
+      - name: Verify Release Creation
+        run: |
+          echo "Release created successfully!"
+          echo "Release ID: ${{ steps.create_release.outputs.id }}"
+          echo "Release URL: ${{ steps.create_release.outputs.html_url }}"

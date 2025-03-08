@@ -4,6 +4,38 @@
 
 set -e  # Exit on error
 
+# Function to scan the repository for existing tags and their commit hashes
+scan_existing_tags() {
+    echo "Scanning for existing tags..."
+    
+    # Get all existing tags and their commit hashes
+    local existing_tags=$(git tag -l)
+    local total_tags=$(echo "$existing_tags" | wc -l)
+    
+    if [ "$total_tags" -gt 0 ]; then
+        echo "Found $total_tags existing tags in the repository."
+        echo "Existing tags:"
+        for tag in $existing_tags; do
+            local commit=$(git rev-list -n 1 "$tag")
+            local short_commit=$(git rev-parse --short "$commit")
+            echo "  $tag -> $short_commit"
+        done
+        echo ""
+    else
+        echo "No existing tags found in the repository."
+        echo ""
+    fi
+}
+
+# Function to show recent commit history for reference
+show_commit_history() {
+    echo "Showing recent commit history for reference:"
+    git log --oneline --max-count=15
+    echo ""
+    echo "To see more history, use: git log --oneline"
+    echo ""
+}
+
 # Check if git working copy is clean
 if ! git diff-index --quiet HEAD --; then
     echo "Error: Git working copy is not clean. Please commit or stash your changes first."
@@ -46,38 +78,6 @@ declare -A VERSION_TO_COMMIT=(
     ["v0.0.1"]="ce26a4f"  # 2025-03-04 feat: Scenarios
     ["v0.0.0"]="34ea197"  # 2025-03-04 feat: About and debugHelper
 )
-
-# Scan the repository for existing tags and their commit hashes
-scan_existing_tags() {
-    echo "Scanning for existing tags..."
-    
-    # Get all existing tags and their commit hashes
-    local existing_tags=$(git tag -l)
-    local total_tags=$(echo "$existing_tags" | wc -l)
-    
-    if [ "$total_tags" -gt 0 ]; then
-        echo "Found $total_tags existing tags in the repository."
-        echo "Existing tags:"
-        for tag in $existing_tags; do
-            local commit=$(git rev-list -n 1 "$tag")
-            local short_commit=$(git rev-parse --short "$commit")
-            echo "  $tag -> $short_commit"
-        done
-        echo ""
-    else
-        echo "No existing tags found in the repository."
-        echo ""
-    fi
-}
-
-# Get all commits with their dates and messages for reference
-show_commit_history() {
-    echo "Showing recent commit history for reference:"
-    git log --oneline --max-count=15
-    echo ""
-    echo "To see more history, use: git log --oneline"
-    echo ""
-}
 
 # Tag each version
 echo "Processing version tags..."
