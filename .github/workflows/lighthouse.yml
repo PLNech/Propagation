@@ -1,5 +1,7 @@
 name: Lighthouse CI
-on: [push, pull_request]
+on: 
+  deployment_status:
+    states: [success]
 
 jobs:
   lighthouse:
@@ -10,6 +12,6 @@ jobs:
         uses: treosh/lighthouse-ci-action@v9
         with:
           urls: |
-            https://propagation.vercel.app/
-          uploadArtifacts: true
+            ${{ github.event.deployment_status.target_url || 'https://propagation.vercel.app/' }}
+          uploadArtifacts: false # Change to false to avoid artifact upload errors
           temporaryPublicStorage: true

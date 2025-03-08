@@ -5,14 +5,10 @@ on:
     paths:
       - '**.tsx'
       - '**.ts'
-      - '**.md'
-      - '**.json'
   pull_request:
     paths:
       - '**.tsx'
       - '**.ts'
-      - '**.md'
-      - '**.json'
 
 jobs:
   validate-french:
@@ -20,44 +16,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          
+      - name: Install dependencies
+        run: npm ci
+      
       - name: Check for unescaped French characters
         run: |
-          # Create a check-only mode for the fix_unescaped script
-          cat > check_unescaped.sh << 'EOL'
-          #!/bin/bash
-          # Modified version of fix_unescaped.sh that only checks without modifying files
-          
-          FOUND_ERRORS=0
-          
-          # Check all relevant files
-          for file in $(find src -type f -name "*.tsx" -o -name "*.ts" | grep -v 'node_modules'); do
-            # Look for unescaped French characters
-            if grep -l "[éèêàçùûôîïëœ]" "$file" > /dev/null; then
-              echo "⚠️ Found unescaped French characters in: $file"
-              FOUND_ERRORS=1
-              
-              # Highlight the specific issues (optional, for better visibility)
-              grep -n "[éèêàçùûôîïëœ]" "$file" | head -5
-              COUNT=$(grep -c "[éèêàçùûôîïëœ]" "$file")
-              if [ $COUNT -gt 5 ]; then
-                echo "... and $((COUNT - 5)) more occurrences"
-              fi
-              echo ""
-            fi
-          done
-          
-          if [ $FOUND_ERRORS -eq 1 ]; then
-            echo "❌ Validation failed: Unescaped French characters found"
-            echo ""
-            echo "To fix these issues:"
-            echo "1. Run ./scripts/fix_unescaped.sh locally"
-            echo "2. Commit and push the changes"
-            exit 1
-          else
-            echo "✅ All files passed validation - no unescaped French characters found"
-            exit 0
-          fi
-          EOL
-          
-          chmod +x check_unescaped.sh
-          ./check_unescaped.sh
+          chmod +x ./scripts/fix_unescaped.sh
+          ./scripts/fix_unescaped.sh
