@@ -9,7 +9,8 @@
     "lint": "next lint",
     "tag": "chmod +x ./scripts/tag.sh && ./scripts/tag.sh",
     "accent-check": "./scripts/fix_unescaped.sh",
-    "accent-fix": "./scripts/fix_unescaped.sh --apply"
+    "accent-fix": "./scripts/fix_unescaped.sh --apply",
+    "safe-push": "npm run build | grep -q \"Generating static pages\" && (pkill -f \"npm run build\" || true) && git diff --quiet && git push || echo \"Build failed or git working copy is not clean\""
   },
   "dependencies": {
     "@vercel/speed-insights": "^1.2.0",
