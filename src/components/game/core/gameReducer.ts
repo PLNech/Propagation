@@ -1025,6 +1025,26 @@ export const gameReducer = (state: GameState, action: ExtendedGameAction): GameS
       };
     }
 
+
+    case 'RESET_ACHIEVEMENTS': {
+      // Keep track of the secret "reset achievements" achievement
+      const resetAchievement = state.achievementState.achievements.find(a => a.id === 'reset_achievements');
+      
+      return {
+        ...state,
+        achievementState: {
+          ...initialAchievementState,
+          achievements: initialAchievementState.achievements.map(a => 
+            a.id === 'reset_achievements' && resetAchievement?.unlocked
+              ? { ...a, unlocked: true, unlockedAt: resetAchievement.unlockedAt }
+              : a
+          ),
+          totalUnlocked: resetAchievement?.unlocked ? 1 : 0,
+          newUnlocked: []
+        }
+      };
+    }
+
     case 'DISMISS_ACHIEVEMENT_NOTIFICATION': {
       const { achievementId } = action.payload;
       
@@ -1249,20 +1269,31 @@ export const gameReducer = (state: GameState, action: ExtendedGameAction): GameS
       
       return loadedState;
     }
-    
+        
     case 'RESET': {
-
-  // Save current achievement state
-  const currentAchievementState = state.achievementState;
-  
-  // Reset game to initial state
-  const newState = { ...initialGameState };
-  
-  // Restore achievement state
-  newState.achievementState = currentAchievementState;
-  
-  return newState;
-  }
+      // Save current achievement state
+      const currentAchievementState = state.achievementState;
+      
+      // Get the reset_achievements achievement
+      const resetAchievement = currentAchievementState.achievements.find(a => a.id === 'reset_achievements');
+      const wasResetAchievementUnlocked = resetAchievement?.unlocked || false;
+      
+      // Reset game to initial state
+      const newState = { ...initialGameState };
+      
+      // If the reset_achievements achievement was unlocked, keep it unlocked
+      if (wasResetAchievementUnlocked) {
+        newState.achievementState = {
+          ...initialAchievementState,
+          achievements: initialAchievementState.achievements.map(a => 
+            a.id === 'reset_achievements' ? { ...a, unlocked: true, unlockedAt: resetAchievement?.unlockedAt || Date.now() } : a
+          ),
+          totalUnlocked: 1
+        };
+      }
+      
+      return newState;
+    }
     
     default:
     return state;

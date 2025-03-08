@@ -619,6 +619,25 @@ const PropagationGame = () => {
   };
 
 
+  const handleResetAchievements = () => {
+    // Unlock the secret achievement for resetting before the full reset
+    const achievement = gameState.achievementState.achievements.find(a => a.id === 'reset_achievements');
+    if (!achievement?.unlocked) {
+      dispatch({ type: 'UNLOCK_ACHIEVEMENT', payload: { achievementId: 'reset_achievements' } });
+    }
+    
+    // Use a timeout to ensure the achievement unlock is processed before the full reset
+    setTimeout(() => {
+      // Call the existing reset handler that resets the entire game
+      handleResetGame();
+      
+      // Notify the user
+      addNotification('Partie réinitialisée. Un nouveau départ commence...', 'warning', 5000);
+      
+      // Show welcome modal to let player start fresh
+      setShowWelcomeModal(true);
+    }, 100);
+  };
 
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100 p-4 flex flex-col items-center">
@@ -936,6 +955,7 @@ const PropagationGame = () => {
           />
         )}
 
+
         {activeTab === 'achievements' && (
           <AchievementsTab
             achievements={gameState.achievementState.achievements}
@@ -958,9 +978,9 @@ const PropagationGame = () => {
               // Mark as shared
               dispatch({ type: 'SHARE_ACHIEVEMENT', payload: { achievementId: achievement.id } });
             }}
+            onResetAchievements={handleResetAchievements}
           />
         )}
-
 
         {/* Feature unlock notifications */}
         {gameState.currentEraId === 'middleAges' && !gameState.featureDiscovered?.scenarios && (

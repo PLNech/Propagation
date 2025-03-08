@@ -6,6 +6,7 @@ interface AchievementsTabProps {
   totalUnlocked: number;
   onAchievementClick: (achievementId: string) => void;
   onShareAchievement: (achievement: Achievement) => void;
+  onResetAchievements?: () => void;
 }
 
 /**
@@ -15,7 +16,8 @@ const AchievementsTab: React.FC<AchievementsTabProps> = ({
   achievements,
   totalUnlocked,
   onAchievementClick,
-  onShareAchievement
+  onShareAchievement,
+  onResetAchievements
 }) => {
   const [activeCategory, setActiveCategory] = useState<AchievementCategory | 'all'>('all');
   const [showUnlocked, setShowUnlocked] = useState<boolean | null>(null); // null = show all
@@ -43,6 +45,23 @@ const AchievementsTab: React.FC<AchievementsTabProps> = ({
     
     return categoryMatch && lockStateMatch;
   });
+
+  const [showResetModal, setShowResetModal] = useState(false);
+
+  const handleResetClick = () => {
+    setShowResetModal(true);
+  };
+
+  const confirmReset = () => {
+    if (onResetAchievements) {
+      onResetAchievements();
+    }
+    setShowResetModal(false);
+  };
+
+  const cancelReset = () => {
+    setShowResetModal(false);
+  };
   
   return (
     <div className="mt-4">
@@ -67,7 +86,7 @@ const AchievementsTab: React.FC<AchievementsTabProps> = ({
           Vos succès racontent votre histoire de manipulation et révélation.
         </p>
       </div>
-      
+            
       {/* Filters */}
       <div className="mb-4 flex flex-wrap gap-2">
         <div className="bg-gray-800 p-2 rounded-lg flex flex-wrap gap-2">
@@ -190,6 +209,55 @@ const AchievementsTab: React.FC<AchievementsTabProps> = ({
           </div>
         )}
       </div>
+
+      {/* Reset button */}
+      <div className="mt-2 flex justify-end">
+        <button
+          onClick={handleResetClick}
+          className="px-3 py-1 text-sm bg-red-800 hover:bg-red-700 text-white rounded-md flex items-center"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+          </svg>
+          <p><b>Réécrire l'histoire </b> (tout recommencer, ou presque...)</p>
+        </button>
+      </div>
+
+      {/* Reset Confirmation Modal */}
+      {showResetModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+          <div className="bg-gray-800 rounded-lg shadow-xl overflow-hidden border-2 border-red-600 max-w-md w-full">
+            <div className="p-4 border-b border-gray-700">
+              <h2 className="text-xl font-bold text-red-400">Réinitialiser les accomplissements?</h2>
+            </div>
+            <div className="p-4">
+              <p className="text-gray-300 mb-4">
+                Êtes-vous sûr de vouloir <span className="font-bold text-red-400">réinitialiser entièrement le jeu</span>? Cette action ne peut pas être annulée et vous recommencerez depuis le début.
+              </p>
+              <p className="text-gray-400 text-sm italic mb-6">
+                Toutes vos ressources, ères débloquées, et améliorations seront perdues. Un nouvel accomplissement secret sera toutefois débloqué...
+              </p>
+              <div className="flex justify-end space-x-3">
+                <button
+                  onClick={cancelReset}
+                  className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded text-white"
+                >
+                  Annuler
+                </button>
+                <button
+                  onClick={confirmReset}
+                  className="px-4 py-2 bg-red-700 hover:bg-red-600 rounded text-white flex items-center"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                  Tout réinitialiser
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

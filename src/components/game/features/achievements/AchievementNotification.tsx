@@ -7,6 +7,7 @@ interface AchievementNotificationProps {
   autoDismissDelay?: number; // Time in ms before auto-dismissing
 }
 
+
 /**
  * Displays a notification when an achievement is unlocked
  * with improved readability and auto-dismiss functionality
@@ -16,15 +17,6 @@ const AchievementNotification: React.FC<AchievementNotificationProps> = ({
   onDismiss,
   autoDismissDelay = 5000 // Default to 5 seconds
 }) => {
-  // Auto-dismiss after specified delay
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      onDismiss();
-    }, autoDismissDelay);
-    
-    return () => clearTimeout(timer);
-  }, [onDismiss, autoDismissDelay]);
-  
   // Auto-dismiss after specified delay
   useEffect(() => {
     const timer = setTimeout(() => {

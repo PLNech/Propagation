@@ -549,7 +549,23 @@ export const initialAchievements: Achievement[] = [
       description: '+25% gain d\'influence'
     }
   },
-];
+  {
+    id: 'reset_achievements',
+    name: 'Effacer l\'Histoire',
+    description: 'Réinitialiser entièrement le jeu et les Succès. Parfois, le meilleur moyen de corriger l\'histoire est de la réécrire...',
+    category: 'secret',
+    rarity: 'legendary',
+    isSecret: true,
+    hint: 'Certains manipulateurs préfèrent tout effacer plutôt que de laisser des traces de leur passage...',
+    unlocked: false,
+    condition: {
+      type: 'special_action',
+      target: 'reset_achievements'
+    },
+    icon: '🗑️',
+    color: 'bg-gray-900 text-white',
+    shareText: 'J\'ai effacé toute mon histoire dans #Propagation pour recommencer à zéro. Qui dit que les manipulateurs ne peuvent pas avoir une seconde chance?'
+  }];
 
 
 // 1. ENDING ACHIEVEMENTS - One for each game ending

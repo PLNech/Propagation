@@ -262,6 +262,7 @@ export type GameAction =
 | { type: 'DISMISS_ACHIEVEMENT_NOTIFICATION'; payload: { achievementId: string } }
 | { type: 'SHARE_ACHIEVEMENT'; payload: { achievementId: string } }
 | { type: 'CHECK_ACHIEVEMENTS'; }
+| { type: 'RESET_ACHIEVEMENTS'; }
 | { type: 'CLICK_GASLIGHT_EFFECT'; }
 | { type: 'CLICK_LORE_LINK'; payload: { linkType: string, url: string } }
 // Utils
