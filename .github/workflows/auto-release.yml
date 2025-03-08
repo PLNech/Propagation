@@ -4,6 +4,8 @@ on:
   push:
     tags:
       - 'v*'  # This will trigger the workflow on any tag that starts with 'v'
+  workflow_dispatch:
+    # Manual trigger with no inputs needed
 
 jobs:
   create-release:
@@ -15,61 +17,102 @@ jobs:
         with:
           fetch-depth: 0  # We need the full history for tags and changelog
 
-      - name: Extract version from tag
-        id: get_version
-        run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
-
-      - name: Extract release notes from CHANGELOG.md
-        id: extract_notes
+      - name: Determine tags to process
+        id: get_tags
         run: |
-          # Get the version without the 'v' prefix for grep
-          VERSION_NUM=$(echo ${{ steps.get_version.outputs.VERSION }} | sed 's/^v//')
-          
-          # Find section for this version in CHANGELOG
-          echo "Extracting release notes for $VERSION_NUM from CHANGELOG.md"
-          
-          # Store the start line of the current version's section
-          START_LINE=$(grep -n "## Sprint.*(${{ steps.get_version.outputs.VERSION }})" CHANGELOG.md | head -n 1 | cut -d: -f1)
-          
-          if [ -z "$START_LINE" ]; then
-            echo "Error: Could not find section for ${{ steps.get_version.outputs.VERSION }} in CHANGELOG.md"
-            exit 1
-          fi
-          
-          # Find the next version section or end of file
-          NEXT_LINE=$(grep -n "^## Sprint" CHANGELOG.md | awk -v start="$START_LINE" '$1 > start {print $1; exit}')
-          
-          # If there is no next section, use the end of file
-          if [ -z "$NEXT_LINE" ]; then
-            NEXT_LINE=$(wc -l < CHANGELOG.md)
+          if [[ "${{ github.event_name }}" == "push" ]]; then
+            # For tag push event, use the single pushed tag
+            echo "TAGS=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+            echo "Process single tag: ${GITHUB_REF#refs/tags/}"
           else
-            # Subtract 1 to exclude the next version header
-            NEXT_LINE=$((NEXT_LINE - 1))
+            # For manual workflow dispatch, get all tags
+            ALL_TAGS=$(git tag | grep '^v' | sort -V | tr '\n' ' ')
+            echo "TAGS=${ALL_TAGS}" >> $GITHUB_OUTPUT
+            echo "Processing all tags: ${ALL_TAGS}"
           fi
-          
-          # Extract the relevant section
-          NOTES=$(sed -n "${START_LINE},${NEXT_LINE}p" CHANGELOG.md)
-          
-          # Save to a file for the release action
-          echo "$NOTES" > release_notes.md
-          
-          echo "Extracted release notes:"
-          cat release_notes.md
 
-      - name: Create Release
-        id: create_release
-        uses: comnoco/create-release-action@v2.0.5
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ steps.get_version.outputs.VERSION }}
-          release_name: ${{ steps.get_version.outputs.VERSION }}
-          body_path: release_notes.md
-          draft: false
-          prerelease: false
-
-      - name: Verify Release Creation
+      - name: Process releases
         run: |
-          echo "Release created successfully!"
-          echo "Release ID: ${{ steps.create_release.outputs.id }}"
-          echo "Release URL: ${{ steps.create_release.outputs.html_url }}"
+          # Convert space-separated tags to array
+          IFS=' ' read -r -a TAGS_ARRAY <<< "${{ steps.get_tags.outputs.TAGS }}"
+          
+          for TAG in "${TAGS_ARRAY[@]}"; do
+            # Skip if tag is empty (trailing space in list)
+            [ -z "$TAG" ] && continue
+            
+            echo "======================================"
+            echo "Processing tag: $TAG"
+            echo "======================================"
+            
+            # Check if release already exists
+            RELEASE_EXISTS=$(curl -s -o /dev/null -w "%{http_code}" \
+              -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+              "https://api.github.com/repos/${{ github.repository }}/releases/tags/$TAG")
+            
+            if [ "$RELEASE_EXISTS" == "200" ]; then
+              echo "Release for $TAG already exists. Skipping."
+              continue
+            fi
+            
+            # Get the version without the 'v' prefix for grep
+            VERSION_NUM=$(echo "$TAG" | sed 's/^v//')
+            
+            # Find section for this version in CHANGELOG
+            echo "Extracting release notes for $VERSION_NUM from CHANGELOG.md"
+            
+            # Store the start line of the current version's section
+            START_LINE=$(grep -n "## Sprint.*($TAG)" CHANGELOG.md | head -n 1 | cut -d: -f1)
+            
+            if [ -z "$START_LINE" ]; then
+              echo "Warning: Could not find section for $TAG in CHANGELOG.md"
+              echo "Creating minimal release without notes"
+              NOTES="Release $TAG (No detailed notes available in CHANGELOG.md)"
+            else
+              # Find the next version section or end of file
+              NEXT_LINE=$(grep -n "^## Sprint" CHANGELOG.md | awk -v start="$START_LINE" '$1 > start {print $1; exit}')
+              
+              # If there is no next section, use the end of file
+              if [ -z "$NEXT_LINE" ]; then
+                NEXT_LINE=$(wc -l < CHANGELOG.md)
+              else
+                # Subtract 1 to exclude the next version header
+                NEXT_LINE=$((NEXT_LINE - 1))
+              fi
+              
+              # Extract the relevant section
+              NOTES=$(sed -n "${START_LINE},${NEXT_LINE}p" CHANGELOG.md)
+            fi
+            
+            # Save to a file for the release action
+            echo "$NOTES" > release_notes_$TAG.md
+            
+            # Create the release
+            echo "Creating release for $TAG..."
+            
+            # Use create-release-action for the individual tag
+            id=$(echo $TAG | tr '.' '_')
+            
+            # Run the release creation step for this tag
+            {
+              gh release create "$TAG" \
+                --title "$TAG" \
+                --notes-file "release_notes_$TAG.md" || true
+            } &> release_output_$TAG.log
+            
+            echo "Release creation for $TAG completed"
+          done
+          
+          echo "All release processing completed!"
+
+      - name: Set up GitHub CLI
+        run: |
+          # Make sure GitHub CLI is available
+          gh --version || {
+            echo "Installing GitHub CLI..."
+            curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+            echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+            sudo apt update
+            sudo apt install gh -y
+          }
+          # Login with GITHUB_TOKEN
+          echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
