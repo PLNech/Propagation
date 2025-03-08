@@ -1,13 +1,217 @@
 # Development Log - Propagation
 
-## Sprint 4: Enhanced Gaslighting System and Save Functionality
+## Sprint 10: Header Enhancement & Progressive Disclosure (v0.9.0) - March 9, 2025
 
-**SUMMARY:** Implemented an improved gaslighting system with reduced frequency but increased variety and impact, along with a complete save/load system using localStorage and base64 encoding.
+**SUMMARY:** Implemented a fixed header with personalized player information, reorganized codebase for better maintainability, and added progressive disclosure system to improve game flow and learning curve.
+
+### DEMAND:
+```
+Let's add a header with perso info (player name and tribe/city/etc with era scale name in book form) and resources for quick reading. On laptop it's a slick header bar. On mobile it's a header with text, then second line with resources, minimal in height.
+Suggest minimal changes so that with an animation, when you start scrolling the header becomes fixed and stays visible ontop.
+Add the name of the ruler in the header. As era advances, ruler name gets more intense (and a tad ridiculous a la Terry Pratchett, but in a French rationalist way).
+Change "souverain" into era-relevant titles.
+```
+
+**FILES TO MODIFY:**
+- `components/Header.tsx` - Create/update with fixed position on scroll
+- `styles/header.css` - Add animation styles
+- `data/eraData.ts` - Add era-specific ruler titles
+- `types.ts` - Add player personalization types
+- `gameReducer.ts` - Handle player name and title changes by era
+
+### CODEBASE REORGANIZATION:
 
 **DEMAND:**
 ```
-* Le systeme de Gaslight marche tres bien, l'idee est top, mais c'est bcp trop frequent et repetitif. Developpe le, moins de notifs frequentes, mais plus variees - on veut par moment des boutons qui changent quand le gaslight est super fort, et une plus grande variete des messages de gaslighting. Certains tentent meme de decourager le joueur de jouer!
-* Ajoute un systeme basique de sauvegarde : auto dans le localStorage, on Save/Restore en base64 for now
+The game folder is getting crazy. Help me refactor, just suggest a hierarchy I'll move stuff myself.
+```
+
+**RECOMMENDED STRUCTURE:**
+```
+src/
+├── components/
+│   ├── cards/         # All card components (UpgradeCard, TheoryCard, etc.)
+│   ├── core/          # Core game logic (PropagationGame, gameReducer)
+│   ├── features/      # Feature components (Achievements, Notifications)
+│   ├── modals/        # All modal components
+│   ├── tabs/          # Tab components
+│   └── ui/            # UI components (Header, Buttons, etc.)
+├── data/              # All game data files
+├── services/          # Service files
+├── styles/            # CSS files
+├── types/             # TypeScript type definitions
+├── utils/             # Utility functions
+└── app/               # Next.js app router structure
+```
+
+### CHARACTER ENCODING FIX:
+
+**DEMAND:**
+```
+I write the site in French and thus get many encoding errors.
+Can you either find a global solution (ideally), or write a script to fix this at scale, like I'm used to with python black tool?
+```
+
+**SOLUTION:**
+Create a shell script to fix unescaped characters:
+
+```bash
+#!/bin/bash
+# fix_unescaped.sh - Fix encoding issues in French text
+
+find src -type f -name "*.tsx" -o -name "*.ts" | xargs sed -i 's/é/é/g; s/è/è/g; s/ê/ê/g; s/à/à/g; s/ô/ô/g; s/ç/ç/g; s/î/î/g; s/ï/ï/g; s/ë/ë/g; s/ù/ù/g; s/û/û/g; s/œ/œ/g'
+```
+
+### NOTIFICATION & ACHIEVEMENT TIMEOUT FIX:
+
+**DEMAND:**
+```
+There's a bug achievements don't disappear after timeout. Same probleme with Notification they should have a decreasing bar and timeout too.
+```
+
+**FILES TO MODIFY:**
+- `components/features/AchievementNotification.tsx` - Add timeout and decreasing progress bar
+- `components/features/NotificationSystem.tsx` - Fix timeout handling with proper cleanup
+
+### LINK ENHANCEMENT:
+
+**DEMAND:**
+```
+Can you leverage the logic adding links from HistoricalContext, and use them in:
+* Upgrades title and description once purchased
+* Scenario text and content (Generate Wikipedia FR links I will check & replace them if needed)
+* Theories, only once propagated, also generate links FR if possible else EN, I'll check them anyway
+* Ethics, in descriptions of actions, generate also likely WP FR or WPEN or "LMGTFY Lesswrong.com keyword" links, I'll improve that later
+```
+
+**FILES TO MODIFY:**
+- `components/cards/UpgradeCard.tsx` - Add link generation to purchased upgrades
+- `components/cards/ScenarioCard.tsx` - Add French Wikipedia links to scenarios
+- `components/cards/TheoryCard.tsx` - Add conditional links to propagated theories
+- `components/tabs/EthicsTab.tsx` - Add mixed link sources to ethical actions
+- `utils/linkGenerator.ts` (new) - Create utility for consistent link generation
+
+### PROGRESSIVE DISCLOSURE SYSTEM:
+
+**DEMAND:**
+```
+This is a refactoring to make the game easier to apprehend. Your goal is to add progressive reveal mechanisms to make each part of the game revealed at a later point.
+E.g. all tabs are hidden at first. At first, you have only Manipulation, and by manipulating you start earning enough for upgrades. When no more upgrades, next era is available. Thus Upgrades become the scaling factor you grind for.
+Adjust purchase costs as needed. Each era unlocks a feature:
+* Moyen age opens Scenarios. They are hidden until then and appear then
+* Industrial age brings Theories, and it must highlight how you can now return to earlier ages to bring them back. Add guidance towards that goal, achievements on that path, and a big button Back to Antiquite with copy suggesting it's worth going back in time to apply this new manipulation technique and propagate theories that interest you. Make it a soft reset, you need to unlock eras again
+* Guerre Froide unlock Ethique, this too suggests you go back in time to see them and apply in a new light: help population see trough and resist manipulation. This unlocks Revelation, which until then has a mysterious popup on hover (mobile on hold)
+* For now Ere numerique unlocks nothing, add a TODO comment with 3 different ideas of a new mechanism it could offer to soft reset an interesting new run with diff mechanics.
+
+Additional progressive reveal mechanisms:
+* Scenarios reveal only one by one, and not until you unlock their relevant era
+* Theories reveal when you can afford 50% of their costs, the relative amount you have being displayed (xx/500)
+* When resetting back to an earlier era to unlock new mechanisms, player should still see unlocked tabs, but not yet the "never reached" era unlocks
+* Implement polynomial scaling for upgrade costs to make progression more challenging
+```
+
+**FILES TO MODIFY:**
+- `core/PropagationGame.tsx` - Implement tab visibility based on game progress
+- `core/gameReducer.ts` - Add feature unlocking logic tied to eras
+- `data/eraData.ts` - Update era data with feature unlock information
+- `types.ts` - Add feature discovery tracking to game state
+- `components/ui/TabNavigation.tsx` - Show/hide tabs based on unlocked features
+- `components/features/TimeTravel.tsx` (new) - Create time travel component for soft resets
+- `data/achievementData.ts` - Add achievements for time travel milestones
+
+## Sprint 9: The Last Fix (v0.8.0) - March 8, 2025
+
+**SUMMARY:** Implemented critical fixes for React component handlers and French translations, ensuring the game runs smoothly across all platforms.
+
+### DEMAND:
+```
+Fix GameButtons component to resolve React Hook errors and improve performance.
+Fix NotificationSystem component related to timeout ref handling.
+Eliminate explicit `any` types for better type safety.
+Round manipulationPoints to eliminate .99999999 issue.
+Fix "Maximum update depth exceeded" error.
+Upgrade LOAD_GAME handler to patch achievements with default values for missing new entries, ensuring existing players can see new achievements.
+Fix positioning and visibility issues with concentric GameButtons.
+Update button colors: Manipulation (Red), Credibility (Blue), Networks (Green), Influence (Purple).
+```
+
+**FILES:**
+- `GameButtons.tsx` (update) - Button handlers refactoring
+- `NotificationSystem.tsx` (update) - Fixed timeout ref handling in effect cleanup
+
+## Sprint 8: Utility & Accessibility (v0.7.0) - March 7-8, 2025
+
+**SUMMARY:** Added extensive utility features, reorganized code structure, and implemented progressive discovery system to enhance player experience and development maintainability.
+
+### DEMAND:
+```
+Create a LinkUtility component for improved navigation.
+Enhance SaveManager with shortcuts.
+Implement a progressive discovery system across multiple components.
+Complete a major code reorganization into a more logical folder structure.
+Add a new Header component for better navigation.
+Implement a welcome modal with personalization options.
+```
+
+**FILES:**
+- `LinkUtility.tsx` (new) - Navigation utility
+- `SaveManager.tsx` - Added shortcuts
+- Core components - Progressive discovery implementation
+- Reorganized file structure
+- `Header.tsx` (new) - Navigation header
+- `WelcomeModal.tsx` (new) - Welcome and personalization
+
+## Sprint 7: Achievements & Controls (v0.6.0) - March 5-6, 2025
+
+**SUMMARY:** Implemented a comprehensive achievement system, enhanced game buttons, and added debug utilities for development.
+
+### DEMAND:
+```
+Add an achievements notification system.
+Create an achievement manager.
+Expand the catalog of achievements.
+Implement sound effects for achievements.
+Completely redesign the GameButtons component with keyboard shortcuts.
+Implement a comprehensive debug helper utility with Shift+Debug keyboard shortcut.
+Add an About page with credits and additional information.
+```
+
+**FILES:**
+- `AchievementNotification.tsx`, `AchievementNotificationManager.tsx` - Achievement notifications
+- `AchievementsTab.tsx`, `achievementData.ts` - Achievement system
+- `GameButtons.tsx` - Redesigned with keyboard shortcuts
+- `debugHelper.ts` - Debug utility
+- `AboutPage.tsx` - About page and credits
+
+## Sprint 6: Educational Features (v0.5.0) - March 3-4, 2025
+
+**SUMMARY:** Added scenario system, educational content, historical context, and various enhancements to prepare for a wider release.
+
+### DEMAND:
+```
+Implement a complete scenario system with modal and tab interfaces.
+Add historical context information.
+Create a tutorial modal.
+Improve game interface.
+Add an About page.
+Make final adjustments before wider release, including Open Graph meta tags and favicon.
+```
+
+**FILES:**
+- `ScenarioModal.tsx`, `ScenariosTab.tsx`, `scenarioData.ts` - Scenario system
+- `HistoricalContext.tsx` - Historical information
+- `TutorialModal.tsx` - Tutorial system
+- `AboutPage.tsx` - About page
+- `layout.tsx` - Added meta tags and favicons
+
+## Sprint 4: Enhanced Gaslighting System and Save Functionality (v0.4.0)
+
+**SUMMARY:** Implemented an improved gaslighting system with reduced frequency but increased variety and impact, along with a complete save/load system using localStorage and base64 encoding.
+
+### DEMAND:
+```
+Le systeme de Gaslight marche tres bien, l'idee est top, mais c'est bcp trop frequent et repetitif. Developpe le, moins de notifs frequentes, mais plus variees - on veut par moment des boutons qui changent quand le gaslight est super fort, et une plus grande variete des messages de gaslighting. Certains tentent meme de decourager le joueur de jouer!
+Ajoute un systeme basique de sauvegarde : auto dans le localStorage, on Save/Restore en base64 for now
 ```
 
 **FILES:**
@@ -18,10 +222,8 @@
 - `GameControls.tsx` (update) - Support for button gaslighting
 - `gameReducer.ts` (update) - Support for save loading
 - `PropagationGame.tsx` (update) - Integration of new systems
-- `systems-documentation.md` - New systems documentation
-- `final-integration-guide.md` - Final integration guide
 
-## Sprint 3: Ethical and Reflective Dimension
+## Sprint 3: Ethical and Reflective Dimension (v0.3.0)
 
 **SUMMARY:** Added an ethical dimension to the game with ethical score system, critical thinking gauge, ethical actions, and alternative "revelation" mode, along with an Ethics tab and multiple game endings.
 
@@ -62,7 +264,7 @@ Objectif éducatif: C'est le cœur du jeu - faire comprendre aux joueurs les mé
 - `PropagationGame.tsx` (update) - Ethical system integration
 - `ethical-system-docs.md` - Ethical system documentation
 
-## Sprint 2: Upgrades and Theories System
+## Sprint 2: Upgrades and Theories System (v0.2.0) - First Deploy
 
 **SUMMARY:** Developed purchasable upgrades system and conspiracy theory propagation mechanisms with risk/reward gameplay and ethical impact.
 
@@ -103,7 +305,7 @@ Objectif éducatif: Illustrer comment la crédibilité et l'influence se constru
 - `PropagationGame.tsx` (update) - New tabs integration
 - `system-documentation.md` - Systems documentation
 
-## Sprint 1: Historical Eras Progression System
+## Sprint 1: Historical Eras Progression System (v0.1.0)
 
 **SUMMARY:** Developed historical eras progression system with different time periods, specific manipulation techniques, and resource multipliers for each era.
 
@@ -144,7 +346,7 @@ Objectif éducatif: Montrer comment les méthodes de manipulation ont évolué a
 - `PropagationGame.tsx` (update) - Integration of era system
 - `era-documentation.md` - Era system documentation
 
-## Sprint 0: Basic Incremental Game Structure
+## Sprint 0: Basic Incremental Game Structure (v0.0.1)
 
 **SUMMARY:** Created the foundation for an incremental game about social manipulation and misinformation, with basic resources, UI, and tick system.
 
@@ -177,7 +379,7 @@ Objectif éducatif: Ce jeu vise à sensibiliser aux mécanismes de propagation d
 - `app/layout.tsx` - Next.js layout
 - `setup-instructions.md` - Setup instructions
 
-## Sprint -1: Project Initialization
+## Sprint -1: Project Initialization (v0.0.0)
 
 **SUMMARY:** Initial request to build an incremental game with React and TypeScript, focusing on clean and well-documented code.
 
