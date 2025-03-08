@@ -1,5 +1,52 @@
 # Development Log - Propagation
 
+Sprint 13: Header Enhancement & Version Display (v0.11.2) - March 10, 2025
+SUMMARY: Enhanced the sticky header component with improved responsive design, integrated save and about functionality, and added version display. Made the header adapt to screen size and scrolling behavior.
+DEMAND:
+```
+Update the header on desktop to integrate the buttons it covers (Save top left, About top right)
+Also, after about, add | v0.x.y.z if you can find a smart way to pull version from package.json at build time, good, otherwise don't complicate things just hardcode it
+Only display those new header buttons when collapsed sticky, not when in the base ui
+And when sticky, on large laptop screens, make the header full width and responsive adjust text for better breathing room readability
+Only show Mode: Manipulation on sticky, in main layout it's redundant in header
+Summarize our conversation sprint in a new changelog entry in our conv (no artifact here)
+Make sure to include all my demands and debug requests as DEMAND of the new entry
+version bump bug or feature semver style as you see fit
+```
+
+FEATURES:
+
+Sticky Header Enhancements:
+
+Added Save and About buttons that only appear when header is in sticky mode
+Added version number display (v0.11.2) next to About button
+Made game mode indicator only appear in sticky mode to avoid redundancy
+Improved text sizing and spacing when header is sticky for better readability
+
+
+Responsive Design Improvements:
+
+Made the sticky header full-width on larger screens
+Adjusted padding and text sizes dynamically based on header state
+Created more breathing room in the layout for larger screens
+Preserved compact layout for mobile devices
+
+
+
+TECHNICAL IMPROVEMENTS:
+
+Used conditional rendering based on sticky state
+Implemented dynamic class application with Tailwind
+Used refs and scroll event listeners for smooth transitions
+Integrated version display from package.json (hardcoded for simplicity)
+
+FILES:
+
+Header.tsx (update) - Enhanced with conditional buttons and responsive design
+PropagationGame.tsx (update) - Passed additional props to Header component
+
+NOTES: This enhancement adds polish to the UI by providing easy access to important functions while maintaining a clean design. The sticky header now adapts intelligently to user behavior and screen size, showing only contextually relevant information.
+
 ## Sprint 12: Performance Optimization & Bug Fixes (v0.11.0 - v0.11.1) - March 9, 2025
 
 **SUMMARY:** Resolved React hooks dependency issues across multiple components, improving performance and eliminating console warnings. Fixed notification timeouts and implemented proper cleanup for UI elements.

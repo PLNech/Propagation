@@ -676,9 +676,9 @@ const PropagationGame = () => {
         {/* Game Header - NEW! */}
         {gameState.playerName && (
           <>
-            <Header 
+             <Header 
               playerName={gameState.playerName}
-              playerGender={gameState.playerGender}
+              playerGender="neutral" // You might want to add this to your gameState
               entityName={gameState.entityName}
               entityType={gameState.entityType}
               currentEra={currentEra}
@@ -687,6 +687,8 @@ const PropagationGame = () => {
               criticalThinking={gameState.criticalThinking}
               gameMode={gameState.gameMode}
               onStickyChange={(isSticky, height) => setHeaderInfo({ isSticky, height })}
+              onSaveGame={handleSaveGame}
+              onShowAbout={handleShowAbout}
             />
             {/* Placeholder div outside the Header component */}
             {headerInfo.isSticky && (
