@@ -895,6 +895,7 @@ const PropagationGame = () => {
             resources={gameState.resources}
             currentEraId={gameState.currentEraId}
             onPurchaseUpgrade={handlePurchaseUpgrade}
+            dispatch={dispatch}
           />
         )}
         

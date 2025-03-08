@@ -30,71 +30,6 @@ const SaveManager: React.FC<SaveManagerProps> = ({
   const [manualSaveInfo, setManualSaveInfo] = useState<{ exists: boolean; timestamp?: number }>({ exists: false });
   const [autoSaveInfo, setAutoSaveInfo] = useState<{ exists: boolean; timestamp?: number }>({ exists: false });
 
-  // Handle keyboard shortcuts
-  useEffect(() => {
-    // Global shortcut to open save menu (S key)
-    const handleGlobalKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 's' && !showModal) {
-        e.preventDefault();
-        setShowModal(true);
-      }
-    };
-    
-    // Shortcuts within the save menu
-    const handleModalKeyDown = (e: KeyboardEvent) => {
-      if (!showModal) return;
-      
-      switch (e.key.toLowerCase()) {
-        case 'escape':
-          e.preventDefault();
-          setShowModal(false);
-          break;
-        case 's':
-          e.preventDefault();
-          handleSave();
-          break;
-        case 'c':
-          e.preventDefault();
-          if (manualSaveInfo.exists) {
-            handleLoad(false);
-          }
-          break;
-        case 'd':
-          e.preventDefault();
-          if (autoSaveInfo.exists) {
-            handleLoad(true);
-          }
-          break;
-        case 'p':
-          e.preventDefault();
-          if (manualSaveInfo.exists) {
-            handleExportCopy();
-          }
-          break;
-        case 'f':
-          e.preventDefault();
-          if (manualSaveInfo.exists) {
-            handleExportFile();
-          }
-          break;
-        case 'r':
-          e.preventDefault();
-          handleReset();
-          break;
-      }
-    };
-    
-    document.addEventListener('keydown', handleGlobalKeyDown);
-    if (showModal) {
-      document.addEventListener('keydown', handleModalKeyDown);
-    }
-    
-    return () => {
-      document.removeEventListener('keydown', handleGlobalKeyDown);
-      document.removeEventListener('keydown', handleModalKeyDown);
-    };
-  }, [showModal, manualSaveInfo.exists, autoSaveInfo.exists]);
-
   // Vérifier l'existence des sauvegardes au chargement
   useEffect(() => {
     setManualSaveInfo(hasSaveGame(false));
@@ -249,6 +184,72 @@ const handleExportCopy = () => {
       setShowModal(false);
     }
   };
+
+
+  // Handle keyboard shortcuts
+  useEffect(() => {
+    // Global shortcut to open save menu (S key)
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 's' && !showModal) {
+        e.preventDefault();
+        setShowModal(true);
+      }
+    };
+    
+    // Shortcuts within the save menu
+    const handleModalKeyDown = (e: KeyboardEvent) => {
+      if (!showModal) return;
+      
+      switch (e.key.toLowerCase()) {
+        case 'escape':
+          e.preventDefault();
+          setShowModal(false);
+          break;
+        case 's':
+          e.preventDefault();
+          handleSave();
+          break;
+        case 'c':
+          e.preventDefault();
+          if (manualSaveInfo.exists) {
+            handleLoad(false);
+          }
+          break;
+        case 'd':
+          e.preventDefault();
+          if (autoSaveInfo.exists) {
+            handleLoad(true);
+          }
+          break;
+        case 'p':
+          e.preventDefault();
+          if (manualSaveInfo.exists) {
+            handleExportCopy();
+          }
+          break;
+        case 'f':
+          e.preventDefault();
+          if (manualSaveInfo.exists) {
+            handleExportFile();
+          }
+          break;
+        case 'r':
+          e.preventDefault();
+          handleReset();
+          break;
+      }
+    };
+    
+    document.addEventListener('keydown', handleGlobalKeyDown);
+    if (showModal) {
+      document.addEventListener('keydown', handleModalKeyDown);
+    }
+    
+    return () => {
+      document.removeEventListener('keydown', handleGlobalKeyDown);
+      document.removeEventListener('keydown', handleModalKeyDown);
+    };
+  }, [showModal, manualSaveInfo.exists, autoSaveInfo.exists, handleLoad, handleReset, handleSave]);
 
   return (
     <>

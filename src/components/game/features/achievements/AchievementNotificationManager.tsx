@@ -33,6 +33,12 @@ const AchievementNotificationManager: React.FC<AchievementNotificationManagerPro
     setQueue(prevQueue => [...prevQueue, ...newAchievements]);
   }, [newlyUnlocked, achievements]);
   
+  // Handle notification dismissal
+  const handleDismiss = (achievement: Achievement) => {
+    onDismiss(achievement.id);
+    setCurrentNotification(null);
+  };
+  
   // Process the queue whenever it changes or when current notification is dismissed
   useEffect(() => {
     let timer: NodeJS.Timeout | null = null;
@@ -52,12 +58,8 @@ const AchievementNotificationManager: React.FC<AchievementNotificationManagerPro
     return () => {
       if (timer) clearTimeout(timer);
     };
-  }, [queue, currentNotification]);
-  // Handle notification dismissal
-  const handleDismiss = (achievement: Achievement) => {
-    onDismiss(achievement.id);
-    setCurrentNotification(null);
-  };
+  }, [queue, currentNotification, handleDismiss]);
+
   
   if (!currentNotification) return null;
   

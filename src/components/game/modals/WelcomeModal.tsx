@@ -9,7 +9,6 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ onSubmit }) => {
   const [playerName, setPlayerName] = useState('');
   const [entityName, setEntityName] = useState('');
   const [suggestedNames, setSuggestedNames] = useState<string[]>([]);
-  const [showSuggestions, setShowSuggestions] = useState(false);
   const [error, setError] = useState('');
   const [step, setStep] = useState(1);
 
@@ -66,7 +65,6 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ onSubmit }) => {
       return;
     }
     setError('');
-    setShowSuggestions(true);
     setStep(2);
     setSuggestedNames(generateNameSuggestions(playerName));
     

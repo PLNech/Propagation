@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { GameResources } from '@/types';
 
 interface GameButtonsProps {
@@ -62,6 +62,8 @@ const GameButtons: React.FC<GameButtonsProps> = ({
     networking: null,
     influence: null
   });
+
+  const buttonTypes = ['manipulate', 'credibility', 'networking', 'influence'];
 
   // Button info with keyboard shortcuts, costs, and witty descriptions
   const buttonInfo = {
@@ -361,36 +363,53 @@ const GameButtons: React.FC<GameButtonsProps> = ({
   };
 
   // Get button position
-  const getButtonPosition = (order: number) => {
+  const getButtonPosition = () => {
     return "left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2";
   };
 
-  // Custom hook to handle button press on mobile and desktop
-  const useButtonPressHandlers = (buttonType: string) => {
-    const isActionAvailable = canAfford[buttonType as keyof typeof canAfford];
-    
-    return {
-      onClick: () => isActionAvailable && startButtonPress(buttonType),
-      onMouseDown: () => isActionAvailable && startButtonPress(buttonType),
-      onMouseUp: () => endButtonPress(buttonType),
-      onMouseEnter: () => setHoveredButton(buttonType),
-      onMouseLeave: () => {
-        setHoveredButton(null);
-        if (pressedButtons[buttonType]) endButtonPress(buttonType);
-      },
-      onTouchStart: (e: React.TouchEvent) => {
-        if (isActionAvailable) {
-          e.preventDefault();
-          setHoveredButton(buttonType);
-          startButtonPress(buttonType);
-        }
-      },
-      onTouchEnd: () => {
-        setTimeout(() => setHoveredButton(null), 500);
-        endButtonPress(buttonType);
-      }
-    };
+  type ButtonHandler = {
+    onClick: () => void;
+    onMouseDown: () => void;
+    onMouseUp: () => void;
+    onMouseEnter: () => void;
+    onMouseLeave: () => void;
+    onTouchStart: (e: React.TouchEvent) => void;
+    onTouchEnd: () => void;
   };
+
+  // Create a map of handlers for each button type at the component top level
+  const buttonHandlersMap = useMemo(() => {
+    const handlersMap: Record<string, ButtonHandler> = {};
+    
+    buttonTypes.forEach((buttonType) => {
+      const isActionAvailable = canAfford[buttonType as keyof typeof canAfford];
+      
+      handlersMap[buttonType] = {
+        onClick: () => isActionAvailable && startButtonPress(buttonType),
+        onMouseDown: () => isActionAvailable && startButtonPress(buttonType),
+        onMouseUp: () => endButtonPress(buttonType),
+        onMouseEnter: () => setHoveredButton(buttonType),
+        onMouseLeave: () => {
+          setHoveredButton(null);
+          if (pressedButtons[buttonType]) endButtonPress(buttonType);
+        },
+        onTouchStart: (e: React.TouchEvent) => {
+          if (isActionAvailable) {
+            e.preventDefault();
+            setHoveredButton(buttonType);
+            startButtonPress(buttonType);
+          }
+        },
+        onTouchEnd: () => {
+          setTimeout(() => setHoveredButton(null), 500);
+          endButtonPress(buttonType);
+        }
+      };
+    });
+    
+    return handlersMap;
+  }, [canAfford, startButtonPress, endButtonPress, setHoveredButton, pressedButtons]);
+  
 
   // Find next button in the propagation sequence
   const getNextButtonInSequence = (currentType: string): string | null => {
@@ -459,6 +478,8 @@ const GameButtons: React.FC<GameButtonsProps> = ({
     }
   };
 
+  
+
   return (
     <div className="mt-8 flex flex-col md:flex-row w-full max-w-4xl mx-auto">
       {/* Circles container - 2/3 width on medium+ screens */}
@@ -481,12 +502,12 @@ const GameButtons: React.FC<GameButtonsProps> = ({
                     ${getPressedClass(buttonType)}
                     ${getRippleClass(buttonType)}
                     ${getButtonSize(info.order)}
-                    ${getButtonPosition(info.order)}
+                    ${getButtonPosition()}
                     overflow-hidden`}
                   style={{
                     backgroundColor: isUnlocked[buttonType as keyof typeof isUnlocked] ? info.color : undefined
                   }}
-                  {...useButtonPressHandlers(buttonType)}
+                  {...buttonHandlersMap[buttonType]}
                   id={buttonType === 'manipulate' ? manipulateButtonId : `${buttonType}-button`}
                 >
                   {renderButtonContent(buttonType)}

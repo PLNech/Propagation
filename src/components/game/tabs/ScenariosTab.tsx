@@ -29,7 +29,7 @@ const ScenariosTab: React.FC<ScenariosTabProps> = ({
     const currentEraIndex = eraProgression.indexOf(currentEraId);
     
     // Get eligible scenarios based on unlocked eras
-    let filtered = scenarios.filter(scenario => {
+    const filtered = scenarios.filter(scenario => {
       const scenarioEraIndex = eraProgression.indexOf(scenario.eraId);
       return scenarioEraIndex <= currentEraIndex; // Only show scenarios from current or previous eras
     });

@@ -16,15 +16,16 @@ const StarWarsCredits = ({ onClose }: { onClose: () => void }) => {
   const animationRef = useRef<number>(0);
   const [scrollPosition, setScrollPosition] = useState(0);
   
-  // Handle hidden achievement trigger for clicking on personal link
+  // TODO: Handle hidden achievement trigger for clicking on personal link
   const handleCreatorLinkClick = () => {
-    // This would be connected to the achievement system in a real implementation
-    if (window.__SECRET_DOM_DO_NOT_USE_OR_YOU_WILL_BE_FIRED) {
-      (window.__SECRET_DOM_DO_NOT_USE_OR_YOU_WILL_BE_FIRED as any).dispatch({ 
-        type: 'UNLOCK_SECRET_ACHIEVEMENT', 
-        payload: { achievementId: 'found_creator_link' } 
-      });
-    }
+    console.log("You found a secret link! TODO REWARD");
+  //   // This would be connected to the achievement system in a real implementation
+  //   if (window.__SECRET_DOM_DO_NOT_USE_OR_YOU_WILL_BE_FIRED) {
+  //     window.__SECRET_DOM_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.dispatch({ 
+  //       type: 'UNLOCK_SECRET_ACHIEVEMENT', 
+  //       payload: { achievementId: 'found_creator_link' } 
+  //     });
+  //   }
   };
 
   // Set up animation loop
@@ -34,7 +35,7 @@ const StarWarsCredits = ({ onClose }: { onClose: () => void }) => {
     achievementSound.volume = 0.5;
     achievementSound.play().catch(e => console.log('Audio playback prevented:', e));
     
-    let startTime = performance.now();
+    const startTime = performance.now();
     let prevTime = startTime;
     
     // Add escape key listener
@@ -184,7 +185,7 @@ const StarWarsCredits = ({ onClose }: { onClose: () => void }) => {
             <p style={{ fontSize: fontSize.text, marginBottom: '3rem' }}>from SpaCy to the one rephrasing this sentence 📜✒️</p>
 
             <h3 style={{ fontSize: fontSize.subheading, marginBottom: '1.5rem' }}>Anthropic</h3>
-            <p style={{ fontSize: fontSize.text, marginBottom: &apos;3rem&apos; }}>for showing *how* it&apos;s done 🤗</p>
+            <p style={{ fontSize: fontSize.text, marginBottom: '3rem' }}>for showing *how* it&apos;s done 🤗</p>
 
             <h3 style={{ fontSize: fontSize.subheading, marginBottom: '1.5rem' }}>and Claude</h3>
             <p style={{ fontSize: fontSize.text, marginBottom: '3rem' }}>for being a worthy _it_</p>

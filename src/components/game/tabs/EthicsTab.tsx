@@ -5,7 +5,8 @@ import {
   EducationalContent, 
   CriticalThinkingQuote, 
   EthicalStats,
-  GameMode 
+  GameMode, 
+  GameAction
 } from '@/types';
 import EthicalActionCard from '../cards/EthicalActionCard';
 import EducationalCard from '../cards/EducationalCard';
@@ -23,7 +24,7 @@ interface EthicsTabProps {
   stats: EthicalStats;
   onPerformEthicalAction: (actionId: string) => void;
   onSwitchGameMode: (mode: GameMode) => void;
-  dispatch: React.Dispatch<any>;
+  dispatch: React.Dispatch<GameAction>;
 }
 
   // Messages ironiques aléatoires

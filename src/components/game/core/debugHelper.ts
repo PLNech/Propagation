@@ -15,6 +15,7 @@ export const createDebugHelper = (
 ) => {
 
     return {
+      dispatch: dispatch, // Convenience: FIXME REMVOE CODE WHICH USES IT
       // Resource manipulation functions
       giveCredibility: (amount = 100) => {
         const state = getState();
