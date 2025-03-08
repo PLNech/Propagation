@@ -305,12 +305,16 @@ Use this prompt to generate a changelog after a sprint:
 > Please keep the features/fixes sections concise and technical. Include actual file paths from our conversation. Don't omit any of my original requests in the DEMAND section.
 
 
-## 🤝 Credits
+## 🤝 Credits & Support
 
 Propagation was created by:
 
 - **Human Designer**: Creative direction, educational philosophy, ethical framework, balancing, refactoring and mechanism designs, lots of guidance on architecture, looots of debugging of various little issues 
 - **Claude AI**: Code architecture, content generation, system implementation, refactoring suggestions, color palettes, UI suggestions, UI implementations, Copy suggestions, MVP section one-shots, Partner across countless conversations
+
+### 💰 Support the Project
+
+If you enjoy Propagation and want to support its development, consider joining our [Patreon](https://www.patreon.com/c/Propagation). Your support helps us create more free educational games and expand the project.
 
 *Special thanks to:*
 - [Anthropic](https://anthropic.com) for developing Claude

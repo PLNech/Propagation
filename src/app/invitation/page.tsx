@@ -5,16 +5,24 @@ import { useSearchParams } from 'next/navigation';
 
 /**
  * Invitation Page Component
- * Creates a printable invitation for the Propagation game
+ * Creates a printable invitation for the Propagation game with decorative elements
  */
 const InvitationPage = function(){
   const searchParams = useSearchParams();
   
   // Get player name from query params or use default
-  const [playerName, setPlayerName] = useState("Gouverneur de la Vérité");
+  const [playerName, setPlayerName] = useState("Clément");
   
   // Get current date in French format
   const [currentDate, setCurrentDate] = useState("");
+  
+  // Get random absurd title
+  const [absurdTitle, setAbsurdTitle] = useState("Futur Président Éternel de la Vérité");
+  
+  const generateAbsurdTitle = () => {
+    // We're not using the random title generator anymore
+    return "Futur Président Éternel de la Vérité";
+  };
   
   useEffect(() => {
     // Handle query parameters
@@ -39,9 +47,17 @@ const InvitationPage = function(){
       setCurrentDate(`${day} ${month} ${year}`);
     }
     
+    // Generate absurd title
+    setAbsurdTitle(generateAbsurdTitle());
+    
     // Add title for the printed page
     document.title = `Invitation pour ${playerName} | Propagation`;
   }, [searchParams]);
+
+  // Decorative patterns
+  const cornerOrnament = "╬";
+  const horizontalPattern = "══════════════════════════";
+  const verticalPattern = "║";
 
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100 p-4">
@@ -69,27 +85,52 @@ const InvitationPage = function(){
           {/* Recto side */}
           <div className="flyer recto">
             <div className="flyer-content">
+              <div className="border-pattern">
+                <div className="border-inner">
+                  <div className="corner-ornament top-left">{cornerOrnament}</div>
+                  <div className="corner-ornament top-right">{cornerOrnament}</div>
+                  <div className="corner-ornament bottom-left">{cornerOrnament}</div>
+                  <div className="corner-ornament bottom-right">{cornerOrnament}</div>
+                </div>
+              </div>
+              
               <div className="flyer-header">
-                <h1 className="flyer-title">Bienvenue au Club</h1>
-                <h2 className="flyer-subtitle">Bienvenue, {playerName}</h2>
+                <h1 className="flyer-title">PROPAGATION</h1>
+                <div className="divider">{horizontalPattern}</div>
+                <h2 className="flyer-subtitle">{absurdTitle}</h2>
               </div>
               
               <div className="flyer-body">
-                <p>En cette ère de surabondance informationnelle, peu sont ceux qui savent vraiment discerner le vrai du faux. Encore moins nombreux sont ceux capables de façonner cette distinction à leur avantage.</p>
-                <p>Vous avez été sélectionné pour rejoindre une élite qui comprend la véritable nature de l&apos;information : malléable, fluide, et surtout, contrôlable.</p>
-                <p>À présent, c&apos;est à votre tour de maîtriser la narrative, de manipuler les croyances, et de propager des idées qui serviront vos intérêts à travers les âges.</p>
-                <p>Rejoignez-nous dans cette danse millénaire du pouvoir et de l&apos;influence.</p>
+                <p className="text-sm">Par Décret du Collectif Propagation, vous êtes convié à assumer le rôle qui vous attend depuis toujours.</p>
+                
+                <div className="divider">❖ ❖</div>
+                
+                <p className="text-sm">Le monde cherche désespérément un guide, un phare dans l&apos;obscurité informationnelle, quelqu&apos;un capable de distinguer le vrai du faux.</p>
+                
+                <p className="text-center font-bold text-sm">{playerName}</p>
+                
+                <div className="divider">❖ ❖</div>
+                
+                <p className="text-sm font-italic">Le temps est venu de guider votre peuple vers la vérité et l&apos;esprit critique.</p>
+                <div className="logo">
+                  <svg viewBox="0 0 24 24" className="eye-logo" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" strokeWidth="1"/>
+                    <circle cx="12" cy="12" r="3" fill="currentColor"/>
+                    <path d="M12 5C7 5 3 12 3 12C3 12 7 19 12 19C17 19 21 12 21 12C21 12 17 5 12 5Z" fill="none" stroke="currentColor" strokeWidth="1"/>
+                  </svg>
+                </div>
+                <div className="logo">
+                  <svg viewBox="0 0 24 24" className="eye-logo" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" strokeWidth="1"/>
+                    <circle cx="12" cy="12" r="3" fill="currentColor"/>
+                    <path d="M12 5C7 5 3 12 3 12C3 12 7 19 12 19C17 19 21 12 21 12C21 12 17 5 12 5Z" fill="none" stroke="currentColor" strokeWidth="1"/>
+                  </svg>
+                </div>
+
               </div>
               
               <div className="flyer-footer">
-                <p className="date">{currentDate}</p>
-                <div className="logo">
-                  <svg viewBox="0 0 24 24" className="eye-logo" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" strokeWidth="0.5"/>
-                    <circle cx="12" cy="12" r="3" fill="currentColor"/>
-                    <path d="M12 5C7 5 3 12 3 12C3 12 7 19 12 19C17 19 21 12 21 12C21 12 17 5 12 5Z" fill="none" stroke="currentColor" strokeWidth="0.5"/>
-                  </svg>
-                </div>
+                {/* <p className="date">{currentDate}</p> */}
               </div>
             </div>
           </div>
@@ -97,36 +138,45 @@ const InvitationPage = function(){
           {/* Verso side */}
           <div className="flyer verso">
             <div className="flyer-content">
+              <div className="border-pattern">
+                <div className="border-inner">
+                  <div className="corner-ornament top-left">{cornerOrnament}</div>
+                  <div className="corner-ornament top-right">{cornerOrnament}</div>
+                  <div className="corner-ornament bottom-left">{cornerOrnament}</div>
+                  <div className="corner-ornament bottom-right">{cornerOrnament}</div>
+                </div>
+              </div>
+              
               <div className="flyer-body mission">
-                <h3 className="mission-title">Votre Mission</h3>
+                <h3 className="mission-title">DIRECTIVES CONFIDENTIELLES</h3>
+                <div className="divider">{horizontalPattern}</div>
                 
                 <ul className="mission-list">
-                  <li>Maîtriser l&apos;art ancestral de la manipulation des foules à travers les époques</li>
-                  <li>Cultiver votre crédibilité tout en tissant des réseaux d&apos;influence</li>
-                  <li>Propager des théories qui servent vos intérêts, qu&apos;elles soient vraies ou non</li>
-                  <li>Étouffer les voix dissidentes avant qu&apos;elles ne gagnent en influence</li>
-                  <li>Adapter vos techniques aux évolutions technologiques et sociales</li>
-                  <li>Garder le contrôle face aux rares individus dotés de pensée critique</li>
-                  <li>Décider si vous manipulerez dans l&apos;ombre ou révélerez la vérité au monde</li>
+                  <li>Semer des graines de curiosité qui fleurissent en réflexions autonomes</li>
+                  <li>Créer des espaces où chacun peut développer sa propre voix critique</li>
+                  <li>Partager le plaisir contagieux de questionner le monde avec bienveillance</li>
+                  <li>Célébrer la diversité des perspectives comme richesse collective</li>
                 </ul>
                 
+                <div className="divider">❖ ❖ ❖</div>
+                
                 <div className="acceptance">
-                  <p>Acceptes-tu ta glorieuse mission ?</p>
+                  <p className="text-sm">Acceptez-vous cette noble mission ?</p>
                   <div className="signature-line"></div>
+                  <p className="text-xs text-center italic mt-1">(L&apos;humanité attend son Président Éternel de la Vérité)</p>
+                </div>
+                <div className="providence-eye">
+                  <svg viewBox="0 0 100 80" xmlns="http://www.w3.org/2000/svg">
+                    <polygon points="50,0 0,80 100,80" fill="none" stroke="currentColor" strokeWidth="2"/>
+                    <circle cx="50" cy="30" r="10" fill="none" stroke="currentColor" strokeWidth="2"/>
+                    <path d="M30,30 C30,30 40,15 50,15 C60,15 70,30 70,30 C70,30 60,45 50,45 C40,45 30,30 30,30 Z" fill="none" stroke="currentColor" strokeWidth="2"/>
+                  </svg>
+                  <p className="verso-text text-xs mt-2">Le Collectif Propagation</p>
                 </div>
               </div>
               
               <div className="flyer-footer">
-                <div className="providence-eye">
-                  <svg viewBox="0 0 100 80" xmlns="http://www.w3.org/2000/svg">
-                    <polygon points="50,0 0,80 100,80" fill="none" stroke="currentColor" strokeWidth="1"/>
-                    <circle cx="50" cy="30" r="10" fill="currentColor"/>
-                    <path d="M30,30 C30,30 40,15 50,15 C60,15 70,30 70,30 C70,30 60,45 50,45 C40,45 30,30 30,30 Z" fill="none" stroke="currentColor" strokeWidth="1"/>
-                    <path d="M20,40 C20,40 35,20 50,20 C65,20 80,40 80,40 C80,40 65,60 50,60 C35,60 20,40 20,40 Z" fill="none" stroke="currentColor" strokeWidth="0.5"/>
-                    <path d="M10,50 C10,50 30,25 50,25 C70,25 90,50 90,50 C90,50 70,75 50,75 C30,75 10,50 10,50 Z" fill="none" stroke="currentColor" strokeWidth="0.3"/>
-                  </svg>
-                </div>
-                <p className="verso-text">La vérité est ce que nous décidons qu&apos;elle soit.</p>
+                
               </div>
             </div>
           </div>
@@ -135,4 +185,5 @@ const InvitationPage = function(){
     </div>
   );
 }
+
 export default InvitationPage;
