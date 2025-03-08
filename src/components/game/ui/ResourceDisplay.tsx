@@ -23,7 +23,7 @@ const ResourceDisplay: React.FC<ResourceDisplayProps> = ({ resources, resourcesU
             <span className="text-lg font-bold text-red-400">{resources.manipulationPoints.toFixed(1)}</span>
           </div>
           <p className="text-sm text-gray-400 mt-1">
-            La ressource primaire qui vous permet de manipuler l'opinion.
+            La ressource primaire qui vous permet de manipuler l&apos;opinion.
           </p>
         </div>
       )}
