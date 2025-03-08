@@ -1,5 +1,66 @@
 # Development Log - Propagation
 
+Sprint 11: UX Improvements and Gender System (v0.10.0)
+
+SUMMARY: Enhanced the notification system with stacked display, added player gender selection for personalized titles, and implemented achievement management features.
+
+### DEMAND:
+```
+Achievements do display the timeout bar go down, but it doesn't dismiss on error, I think there is a bug.
+However clicking the arrow does make them disappear.
+Also now they stack it's a bit surprising that others await behind the current one when it displayed for long.
+Can you show a bit of the next ones under the current achievement, as stacked cards visual?
+
+Add a gender choice (le/la/notre Glorieux Leader).
+This is used in the titles to be masculin/feminin/neutre gender forms in valid French (le Fondateur / la Fondatrice / notre Founder, le Sage / la Sage / juste [Sage nom], etc.).
+And this is leveraged across the game UI to personalize further.
+
+Add a reset achievements button in the achiev tabs. You reset with a single new secret achievement unlocked: Effacer l'Histoire, with a jokish description about new beginnings.
+
+Keyboard shortcuts from save overlap with welcomemodal key input, can we make sure names inputs capture all keys?
+
+Combine nom et genre dans une seule step UI de welcome, "votre nom" "et votre titre"? (implicite choix de forme pas explicite)
+
+Suggere trois descriptions plus fun plus meta plus dans le lore.
+Il faudrait subtilement integrer des stereotypes de genres, mais que ca sonne doucement feministe ironique plus que potentiellement macho.
+```
+FEATURES:
+
+    Player Gender System:
+        Added player gender choice (masculine/feminine/neutral) during onboarding
+        Implemented gendered titles and honorifics throughout the game (e.g., "le Fondateur"/"la Fondatrice"/"Grand Fondateur")
+        Personalized ruler titles based on eras and selected gender presentation
+        Enhanced immersion with flavorful gender option descriptions
+    Achievement Notification Improvements:
+        Redesigned achievement notification system with stacked card visuals
+        Fixed auto-dismiss functionality for smoother experience
+        Implemented notification queue management with visual indicators
+        Added animation for timer bar in notifications
+        Prevented duplicate notifications in the same session
+    Achievement Management:
+        Added "Reset Achievements" functionality with confirmation modal
+        Created new secret achievement "Effacer l'Histoire" for game reset
+        Fixed UI bugs in achievement display
+        Lowered starting ethics score to prevent unintended achievement triggers
+    Technical Improvements:
+        Fixed keyboard shortcut conflicts between save system and modal inputs
+        Improved SaveManager to respect active input fields
+        Enhanced notification system reliability with defensive code
+        Optimized CSS animations by reusing existing keyframes
+
+FILES:
+    types.ts - Added player gender type definitions
+    gameReducer.ts - Updated player info handling and reset functionality
+    AchievementNotificationManager.tsx - Implemented stacked notification display
+    AchievementNotification.tsx - Fixed animation and auto-dismiss
+    WelcomeModal.tsx - Added gender selection with immersive UI
+    Header.tsx - Updated to display gender-appropriate titles
+    SaveManager.tsx - Fixed keyboard shortcut handling
+    achievementData.ts - Added reset achievement and fixed initial values
+
+NOTES: The gender system enhances player immersion while the notification improvements create a more polished user experience. Achievement management provides better control for players who want to restart with a clean slate.
+
+
 ## Sprint 10: Header Enhancement & Progressive Disclosure (v0.9.0) - March 9, 2025
 
 **SUMMARY:** Implemented a fixed header with personalized player information, reorganized codebase for better maintainability, and added progressive disclosure system to improve game flow and learning curve.

@@ -150,7 +150,7 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ onSubmit }) => {
                         <span className="mr-2 text-xl">👑</span>
                         <span>
                           <span className="font-medium">{playerName || 'Nom'} le Grand</span>
-                          <span className="block text-xs text-gray-400">Pour ceux qui croient que l'autorité s'exprime mieux avec une barbe, même imaginaire</span>
+                          <span className="block text-xs text-gray-400">Pour ceux qui croient que la force tient dans une barbe</span>
                         </span>
                       </span>
                     </label>
@@ -186,7 +186,7 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ onSubmit }) => {
                         <span className="mr-2 text-xl">👑</span>
                         <span>
                           <span className="font-medium">Grand {playerName || 'Nom'}</span>
-                          <span className="block text-xs text-gray-400">Parce que le vrai pouvoir transcende les pronoms et confond vos adversaires</span>
+                          <span className="block text-xs text-gray-400">Parce que le vrai pouvoir transcende la grammaire</span>
                         </span>
                       </span>
                     </label>

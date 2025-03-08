@@ -133,7 +133,7 @@ const PropagationGame = () => {
     
     // Add keyboard shortcut (Shift+D) to toggle debug overlay
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.shiftKey && e.key === 'D') {
+      if (e.ctrlKey && e.shiftKey && e.key === 'D') {
         e.preventDefault();
         window.__SECRET_DOM_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.toggleDebugOverlay();
       }
