@@ -276,9 +276,9 @@ export const initialAchievements: Achievement[] = [
     shareText: 'J\'atteins 50 de Pensée Critique dans #Propagation ! Je commence à me demander si ce jeu n\'est pas en train de ME manipuler... 🧐'
   },
   {
-    id: 'ethical_score_75',
+    id: 'ethical_score_93',
     name: 'Bonne Conscience',
-    description: 'Atteignez un score Éthique de 75. Vous privilégiez la vérité à la manipulation.',
+    description: 'Atteignez un score Éthique de 93. Vous privilégiez la vérité à la manipulation.',
     category: 'ethics',
     rarity: 'rare',
     isSecret: false,
@@ -286,7 +286,7 @@ export const initialAchievements: Achievement[] = [
     condition: {
       type: 'resource_threshold',
       target: 'ethicalScore',
-      threshold: 75,
+      threshold: 93,
       compare: 'greater'
     },
     reward: {
@@ -295,7 +295,7 @@ export const initialAchievements: Achievement[] = [
     },
     icon: '😇',
     color: 'bg-green-100 text-green-800',
-    shareText: 'Score Éthique 75+ dans #Propagation ! Je suis tellement moral que j\'en deviens presque ennuyeux...'
+    shareText: 'Score Éthique 93+ dans #Propagation ! Je suis tellement moral que j\'en deviens presque ennuyeux...'
   },
   {
     id: 'ethical_mode_switch',

@@ -328,7 +328,7 @@ export const initialGameState: GameState = {
     // Add critical thinking impact (negative) to existing conspiracy theories
     criticalThinkingImpact: Math.min(-1, Math.floor(theory.ethicalImpact * 1.2)) 
   })),
-  ethicalScore: 100, // Start with perfect ethics
+  ethicalScore: 80, // Start with decent ethics
   criticalThinking: 20, // Start with some critical thinking
   ethicalActions: ethicalActions,
   gameMode: 'manipulation', // Start in manipulation mode
