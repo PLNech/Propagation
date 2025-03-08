@@ -25,67 +25,82 @@
 </div>
 
 ---
+## 🌐 À propos de Propagation
 
-## 🌐 About Propagation
+**Propagation**, ce n'est pas juste un énième jeu idle où tu clique frénétiquement pour voir des nombres augmenter (bon, ok, juste un poil). C'est une _exploration interactive_ de comment l'information se propage, comment les croyances se forment, et comment la manipulation fonctionne — à travers l'histoire jusqu'à nos smartphones addictifs d'aujourd'hui.
 
-**Propagation** is not just another idle game. It's an interactive exploration of how information spreads, how beliefs form, and how manipulation works—across history and into the present day.
+Au fil du jeu, vous traverserez diverses époques historiques — des mythes antiques aux bulles de filtres numériques — en maîtrisant des techniques d'influence de plus en plus sophistiquées tout en vous cognant contre quelques questions éthiques embarrassantes:
 
-As you play, you'll progress through historical eras—from ancient myth-making to digital-age filter bubbles—mastering increasingly sophisticated techniques of influence while confronting profound ethical questions: 
+**Allez-vous manipuler ou révéler ? Embobiner ou éclairer ?**
 
-**Will you manipulate or reveal? Mislead or enlighten?**
+Vos choix comptent, pas seulement pour progresser dans le jeu, mais aussi comme réflexion sur comment l'information façonne notre monde.  
+Ou alors c'est juste un jeu pour faire passer le temps en réunion.  
+À vous de voir.
 
-Your choices matter, not just for game progression, but as reflections on how information shapes our world.
+> "Le jeu qui vous fait questionner les jeux auxquels vous jouez... et pourquoi vous avez encore 93 onglets ouverts."
 
-> "The game that makes you question the games you play..."
+## ✨ Caractéristiques Principales
 
-## ✨ Key Features
+### 🎮 Gameplay Qui Prend Aux Tripes (Ou Pas)
+- **Progression Historique** à travers cinq ères de contrôle de l'information
+- **Gestion de Ressources** équilibrant crédibilité, influence, réseaux et points de manipulation
+- **Améliorations Stratégiques** spécifiques à chaque contexte historique
+- **Théories du Complot** à propager (à vos risques et périls éthiques)
+- **Fins Multiples** basées sur vos choix moraux (ou leur absence)
 
-### 🎮 Engaging Gameplay
-- **Historical Progression** through five eras of information control
-- **Resource Management** balancing credibility, influence, networks, and manipulation
-- **Strategic Upgrades** specific to each historical context
-- **Conspiracy Theories** to propagate (at your ethical peril)
-- **Multiple Endings** based on your ethical choices
+### 🧠 Éléments Meta-Gaming
+- Expérimentez des **mécaniques de gaslighting** qui brouillent la frontière entre jeu et joueur
+- Questionnez vos expériences quand le jeu **brise le quatrième mur** (parfois accidentellement, fragile ces saloperies !)
+- Découvrez le jeu commentant sa propre nature manipulatrice (not yet rejected for being [too meta](https://xkcd.com/1447/))
 
-### 🧠 Meta-Gaming Elements
-- Experience subtle **gaslighting mechanics** that blur the line between game and player
-- Question your experiences as the game occasionally **breaks the fourth wall**
-- Discover the game commenting on its own manipulative nature
+### 🔄 Approche Éducative (On Essaie)
+- Apprenez de vraies **techniques de propagande historiques** dans leur contexte
+- Expérimentez les tensions éthiques du contrôle de l'information
+- Développez des **compétences de pensée critique** applicables à la consommation médiatique moderne
+- Plein de [liens](https://www.lesswrong.com/rationality) pour creuser les refs
 
-### 🔄 Educational Approach
-- Learn real historical **propaganda techniques** in context
-- Experience firsthand the ethical tensions in information control
-- Develop **critical thinking skills** applicable to modern media consumption
+## 🔍 L'Approche Maïeutique (Fancy!)
 
-## 🔍 The Maieutic Approach
+Propagation emploie une **philosophie éducative maïeutique** — au lieu de vous dire quoi penser, on crée les conditions pour que vous découvriez des insights par vous-même.  
+_Comme ça, on peut prétendre que c'était votre idée depuis le début._
 
-Propagation employs a **maieutic educational philosophy**—rather than telling you what to think, it creates conditions for you to discover insights through experience.
+Comme la méthode de Socrate (sauf que notre ciguë à nous est numérique), Propagation ne prêche pas contre la désinformation. Au lieu de ça, on vous met au volant de sa création, pour en expérimenter les effets et faire face aux conséquences. Ou pour rigoler, c'est selon.
 
-Like Socrates' method of helping others give birth to their own realizations, Propagation doesn't preach about misinformation. Instead, it puts you in the driver's seat of creating it, experiencing its effects, and confronting the consequences.
+Le jeu est conçu pour déclencher des moments de réflexion comme:
+- "Attends, est-ce que je suis manipulé par un jeu sur la manipulation?"
+- "Pourquoi propager cette théorie du complot est si efficace mais troublant?"
+- "Tiens, ces techniques historiques ressemblent vachement à ce que je vois sur TikTok..."
 
-The game's systems are designed to trigger moments of reflection:
+Cette approche crée une compréhension plus profonde que l'instruction didactique. Enfin, c'est ce qu'on dit pour justifier le temps passé à coder ce truc.
 
-- "Wait, am I being manipulated by a game about manipulation?"
-- "Why is spreading this conspiracy theory so effective yet troubling?"
-- "How similar are these historical techniques to what I see online today?"
+## 👥 Collaboration Humain × IA (et _beaucoup_ de café)
 
-This approach creates deeper, more lasting understanding than didactic instruction ever could.
+Propagation représente un nouveau type de partenariat créatif — une collaboration humain-IA où:
 
-## 👥 Human × AI Collaboration
+- **La direction humaine** a fourni la vision créative, les garde-fous éthiques, et le contexte réel
+- **L'implémentation IA** a livré l'architecture technique, la génération de contenu, et la conception de systèmes
+- **Le Café**: vous croyez que toutes ces nuits fiévreuses se font comme ça ? Gros merci pour les amis de [Kawa](https://kawa.coffee) <3
 
-Propagation represents a new kind of creative partnership—a human-AI collaboration where:
+----
 
-- **Human direction** provided creative vision, ethical guardrails, and real-world context
-- **AI implementation** delivered technical architecture, content generation, and system design
+<div align="center">
+  <img src="./public/this-is-fine.gif" />
+  <p><i>Le <a href="https://x.com/karpathy/status/1886192184808149383">vibe coding</a> c'est... quelque chose
+  </p>
+</div>
 
-Rather than simply executing instructions, this project evolved through meaningful dialogue—iterative cycles of:
+### Vibe
 
-1. Human goal-setting and feedback
-2. AI proposition and implementation
-3. Collaborative refinement
-4. Ethical reflection
+Plutôt que simplement exécuter des instructions, ce projet a évolué à travers un dialogue significatif — des cycles itératifs de:
 
-The result is neither human nor AI work alone, but something genuinely emergent from the interaction of both intelligences.
+1. Humain fixant des objectifs et donnant du feedback
+2. IA proposant et implémentant
+3. Raffinement collaboratif
+4. Réflexion éthique (parfois)
+
+Le résultat n'est ni un travail purement humain, ni purement IA, mais quelque chose de véritablement émergent de l'interaction des deux intelligences. Et beaucoup de bugs non intentionnels. Mais une création bicéphale à grande vitesse, ça vaut bien un peu de débugging.
+
+----
 
 ## 🛠️ Tech Stack
 
@@ -158,6 +173,60 @@ npm run lint
 3. Make your changes
 4. Run `npm run accent-check` to ensure proper French character encoding
 5. Submit a pull request with a clear description of your changes
+
+### 📋 Release Process
+
+When preparing a new release:
+
+1. Update the CHANGELOG.md with details of your changes
+2. Bump the version in package.json and in Header.tsx according to semantic versioning:
+   - MAJOR version for incompatible API changes (x.0.0)
+   - MINOR version for new functionality in a backward compatible manner (0.x.0)
+   - PATCH version for backward compatible bug fixes (0.0.x)
+3. Run `npm run tag` to create and push a git tag for the new version
+4. Create a GitHub release corresponding to the new tag
+
+#### Changelog Entry Prompt
+
+Use this prompt to generate a changelog after a sprint:
+
+> Create a concise changelog entry for Propagation from our conversation. 
+> Use version [VERSION] following semantic versioning principles based on the changes.
+> 
+> Focus on:
+> 1. A clear, brief summary (1-2 sentences)
+> 2. Include all my original requests in a DEMAND section
+> 3. Key features/fixes organized by category
+> 4. Files modified with short descriptions
+> 5. Any important technical notes
+> 
+> Reference format:
+> 
+> ## Sprint XX: [Feature Name] (v0.Y.Z) - [Date]
+> 
+> **SUMMARY:** [Brief summary of changes]
+> 
+> ### DEMAND:
+> ```
+> [Include ALL my original requests here verbatim, preserving every feature request and bugfix mentioned in our conversation. Capture my exact wording, add line breaks between topics.]
+> ```
+> **FEATURES:**
+> - **[Category]:**
+>   - [Feature description]
+>   - [Feature description]
+>   
+> **FIXES:** (if applicable)
+> - [Fix description]
+> - [Fix description]
+> 
+> **FILES:**
+> - `[filename]` ([update/new]) - [Description]
+> - `[filename]` ([update/new]) - [Description]
+> 
+> **NOTES:** [Any additional context]
+> 
+> Please keep the features/fixes sections concise and technical. Include actual file paths from our conversation. Don't omit any of my original requests in the DEMAND section.
+
 
 ## 🤝 Credits
 
