@@ -12,24 +12,27 @@
 
 ---
 
-## 👁️ [Screenshot Gallery]
+## 👁️ [Gallerie des Écrans]
 
 <div align="center">
+  <!-- Desktop Screenshots -->
+  <p><strong>Desktop Gameplay</strong></p>
   
   ![Desktop Gameplay](assets/screen1.png)
-  *Manipule la population à travers le temps et l'espace*
+  *Manipulate resources in different historical eras*
   
   ![Ethical Choices](assets/screen2.png)
-  *Succès, Scénarios interactifs, et autres mécaniques à découvrir*
+  *Choose between manipulation and revelation*
   
-</div>
-<div>
-  <div style="display: flex; overflow-x: auto; gap: 10px; padding: 10px 0; max-width: 100%;">
-    <img src="assets/mobile1.png" alt="Mobile Screenshot 1" width="200"/>
-    <img src="assets/mobile2.png" alt="Mobile Screenshot 2" width="200"/>
-    <img src="assets/mobile3.png" alt="Mobile Screenshot 3" width="200"/>
-    <img src="assets/mobile4.png" alt="Mobile Screenshot 4" width="200"/>
-    <img src="assets/mobile5.png" alt="Mobile Screenshot 5" width="200"/>
+  <!-- Mobile Screenshots Carousel -->
+  <p><strong>Mobile Experience</strong></p>
+  
+  <div style="display: flex; justify-content: center; gap: 8px; padding: 10px 0;">
+    <img src="assets/mobile1.png" alt="Mobile Screenshot 1" width="150"/>
+    <img src="assets/mobile2.png" alt="Mobile Screenshot 2" width="150"/>
+    <img src="assets/mobile3.png" alt="Mobile Screenshot 3" width="150"/>
+    <img src="assets/mobile4.png" alt="Mobile Screenshot 4" width="150"/>
+    <img src="assets/mobile5.png" alt="Mobile Screenshot 5" width="150"/>
   </div>
   <p align="center"><em>Propagation est, franchement, assez responsive. On essaye tavu.</em></p>
 </div>
