@@ -1,0 +1,61 @@
+name: Issue Management
+
+on:
+  issues:
+    types: [opened, reopened, labeled, unlabeled, edited]
+  issue_comment:
+    types: [created]
+
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'issues' && github.event.action == 'opened'
+    steps:
+      - name: Initial issue labeling
+        uses: github/issue-labeler@v3.2
+        with:
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+          configuration-path: .github/issue-labeler.yml
+          enable-versioned-regex: 0
+      
+      - name: Auto-assign issues to project
+        uses: actions/add-to-project@v0.5.0
+        with:
+          project-url: ${{ secrets.PROJECT_URL }}
+          github-token: ${{ secrets.PROJECT_PAT }}
+          labeled: bug, enhancement, documentation
+      
+      - name: French language detector
+        if: contains(github.event.issue.body, 'é') || contains(github.event.issue.body, 'à') || contains(github.event.issue.body, 'ç')
+        uses: andymckay/labeler@1.0.4
+        with:
+          add-labels: "🇫🇷 français"
+  
+  respond-to-issue:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'issues' && github.event.action == 'opened'
+    steps:
+      - name: Create welcome comment
+        uses: peter-evans/create-or-update-comment@v3
+        with:
+          issue-number: ${{ github.event.issue.number }}
+          body: |
+            Merci pour votre contribution à Propagation! / Thanks for your contribution to Propagation!
+            
+            Our team will review this issue soon. In the meantime:
+            - Please make sure the issue follows our template
+            - Add any additional information that might help us understand the problem
+            - Feel free to link any related issues
+
+  stale-issue-handler:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/stale@v8
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          stale-issue-message: "This issue has been marked as stale because it has had no activity for 30 days. It will be closed in 10 days if no further activity occurs."
+          close-issue-message: "This issue was closed because it had no activity for 40 days."
+          days-before-stale: 30
+          days-before-close: 10
+          exempt-issue-labels: "pinned,security,bug,enhancement"
+          exempt-all-pr-milestones: true

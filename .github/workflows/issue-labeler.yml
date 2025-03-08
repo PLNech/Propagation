@@ -1,0 +1,57 @@
+# Configuration for issue labeler
+bug:
+  - "\\bbug\\b"
+  - "\\bcrash\\b"
+  - "\\berror\\b"
+  - "\\bfails\\b"
+  - "\\bbroken\\b"
+  - "\\bproblem\\b"
+  - "\\bissue\\b"
+  - "\\bfix\\b"
+
+enhancement:
+  - "\\bfeature\\b"
+  - "\\benhancement\\b"
+  - "\\brequest\\b"
+  - "\\bimprove\\b"
+  - "\\bupgrade\\b"
+  - "\\badd\\b"
+  - "\\bnew\\b"
+
+question:
+  - "\\bhow\\b"
+  - "\\bquestion\\b"
+  - "\\bcurious\\b"
+  - "\\bwhy\\b"
+  - "\\bhelp\\b"
+
+gameplay:
+  - "\\bgameplay\\b"
+  - "\\bbalance\\b"
+  - "\\bmechanic\\b"
+  - "\\bdifficulty\\b"
+  - "\\bresource\\b"
+  - "\\bupgrade\\b"
+  - "\\bprogression\\b"
+  - "\\bera\\b"
+
+ui:
+  - "\\bui\\b"
+  - "\\binterface\\b"
+  - "\\blayout\\b"
+  - "\\bbutton\\b"
+  - "\\bdisplay\\b"
+  - "\\bvisual\\b"
+  - "\\bscreen\\b"
+  - "\\bmobile\\b"
+  - "\\bresponsive\\b"
+
+performance:
+  - "\\bperformance\\b"
+  - "\\bslow\\b"
+  - "\\blag\\b"
+  - "\\bfreeze\\b"
+  - "\\bhang\\b"
+  - "\\boptimize\\b"
+  - "\\bload\\b"
+  - "\\bmemory\\b"
