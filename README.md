@@ -104,15 +104,39 @@ Propagation représente un nouveau type de partenariat créatif — une collabor
 
 ### Vibe
 
-Plutôt que simplement exécuter des instructions, ce projet a évolué à travers un dialogue significatif — des cycles itératifs de:
+## 👥 Collaboration Humain × IA
 
-1. Humain fixant des objectifs et donnant du feedback
-2. IA proposant et implémentant
-3. Raffinement collaboratif
-4. Réflexion éthique (parfois)
+Propagation, c'est un peu comme si un humain et une IA s'étaient retrouvés dans un bar et avaient décidé de créer un jeu après quelques verres:
 
-Le résultat n'est ni un travail purement humain, ni purement IA, mais quelque chose de véritablement émergent de l'interaction des deux intelligences. Et beaucoup de bugs non intentionnels. Mais une création bicéphale à grande vitesse, ça vaut bien un peu de débugging.
+> *"There's a new kind of coding I call "vibe coding", where you fully give in to the vibes, embrace exponentials, and forget that the code even exists. It's possible because the LLMs (e.g. Cursor Composer w Sonnet) are getting too good. Also I just talk to Composer with SuperWhisper so I barely even touch the keyboard. I ask for the dumbest things like "decrease the padding on the sidebar by half" because I'm too lazy to find it. I "Accept All" always, I don't read the diffs anymore. When I get error messages I just copy paste them in with no comment, usually that fixes it. The code grows beyond my usual comprehension, I'd have to really read through it for a while. Sometimes the LLMs can't fix a bug so I just work around it or ask for random changes until it goes away. It's not too bad for throwaway weekend projects, but still quite amusing. I'm building a project or webapp, but it's not really coding - I just see stuff, say stuff, run stuff, and copy paste stuff, and it mostly works."* — [Andrej Karpathy](https://x.com/karpathy/status/1886192184808149383)
 
+Plutôt qu'une simple relation patron-exécutant, ce projet a évolué comme une conversation bizarre entre deux entités qui ne se comprennent pas toujours:
+
+1. L'humain lance des idées en l'air et donne son avis
+2. L'IA répond "tiens, j'ai fait un truc" 
+3. On bidouille ensemble jusqu'à ce que ça marche
+4. On se demande vaguement si c'est éthique (de temps en temps)
+5. ???
+6. PROFIT
+
+Le résultat n'est ni humain, ni artificiel, mais une sorte de chimère numérique. Avec quelques bugs non intentionnels en prime. Mais bon, une création bicéphale à vitesse grand V, ça mérite bien quelques heures de débogage existentiel caféiné.
+
+----
+
+Après avoir surfé un peu, mon feeling sur le "vibe coding":
+
+* C'est ouf pour prototyper en mode éclair
+* C'est flippant de ne pas piger son propre code
+* C'est risqué de laisser l'IA choisir tes technos
+* C'est dangereux de lui confier l'architecture
+
+Ma philosophie maintenant:
+* Relire le code comme un paranoïaque sympathique
+* Demander plusieurs versions avant de choisir
+* Garder le dernier mot (même si l'IA boude)
+* Ne pas _viber_ trop fort
+
+VIBE CODING LEVEL FOR THIS PROJECT: ~42% 
 ----
 
 ## 🛠️ Tech Stack
