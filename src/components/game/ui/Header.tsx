@@ -25,6 +25,12 @@ interface HeaderProps {
   entityType: string;
   currentEra: HistoricalEra;
   resources: GameResources;
+  resourcesUnlocked: {
+    manipulationPoints: boolean;
+    credibility: boolean;
+    influence: boolean;
+    networks: boolean;
+  };
   ethicalScore: number;
   criticalThinking: number;
   gameMode: 'manipulation' | 'revelation';
@@ -38,6 +44,7 @@ const Header: React.FC<HeaderProps> = ({
   entityType,
   currentEra,
   resources,
+  resourcesUnlocked,
   ethicalScore,
   criticalThinking,
   gameMode,
@@ -190,24 +197,30 @@ const Header: React.FC<HeaderProps> = ({
       </div>
     )}
 
-    {/* Right side: Condensed resources + About */}
+    {/* Right side: Condensed resources + About */}        
     <div className="flex items-center space-x-3">
       <div className="flex items-center">
-          <span>{resourceIcons.manipulationPoints}</span>
-          <span className={`ml-1 text-red-300 ${isSticky ? 'text-xs' : ''}`}>{resources.manipulationPoints.toFixed(0)}</span>
+        <span>{resourceIcons.manipulationPoints}</span>
+        <span className={`ml-1 text-red-300 ${isSticky ? 'text-xs' : ''}`}>{resources.manipulationPoints.toFixed(0)}</span>
       </div>
-      <div className="flex items-center">
+      {resourcesUnlocked?.credibility && (
+        <div className="flex items-center">
           <span>{resourceIcons.credibility}</span>
           <span className={`ml-1 text-blue-300 ${isSticky ? 'text-xs' : ''}`}>{resources.credibility.toFixed(0)}</span>
-      </div>
-      <div className="flex items-center">
+        </div>
+      )}
+      {resourcesUnlocked?.networks && (
+        <div className="flex items-center">
           <span>{resourceIcons.networks}</span>
           <span className={`ml-1 text-green-300 ${isSticky ? 'text-xs' : ''}`}>{resources.networks.toFixed(0)}</span>
-      </div>
-      <div className="flex items-center">
+        </div>
+      )}
+      {resourcesUnlocked?.influence && (
+        <div className="flex items-center">
           <span>{resourceIcons.influence}</span>
           <span className={`ml-1 text-purple-300 ${isSticky ? 'text-xs' : ''}`}>{resources.influence.toFixed(0)}</span>
-      </div>
+        </div>
+      )}
     
       <div className="flex items-center ml-2 pl-2 border-l border-gray-700">
         <div className="w-2 h-2 rounded-full mr-1" style={{

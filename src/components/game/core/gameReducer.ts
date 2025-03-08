@@ -301,9 +301,9 @@ const addRewards = (
 * @returns Estimated number of lives impacted
 */
 const calculateLivesImpacted = (influence: number, networks: number): number => {
-  // Simple formula: influence * networks * 10 
+  // Simple formula: influence * networks / 100 
   // This gives a sense of scale while keeping numbers manageable
-  return Math.floor(influence * networks * 10);
+  return Math.floor(influence * networks / 100);
 };
 
 /**
@@ -319,6 +319,12 @@ export const initialGameState: GameState = {
     influence: 0,
     networks: 0,
     manipulationPoints: 0,
+  },
+  resourcesUnlocked: {
+    manipulationPoints: true,
+    credibility: false,
+    influence: false,
+    networks: false
   },
   eras: historicalEras,
   highestEraReached: 'antiquity',
@@ -388,9 +394,9 @@ export const gameReducer = (state: GameState, action: ExtendedGameAction): GameS
       
       // Update resources
       const updatedResources = calculateResourcesUpdate(
-        state.resources, 
-        deltaTime, 
-        multipliers, 
+        state.resources,
+        deltaTime,
+        multipliers,
         passiveGen,
         state.criticalThinking,
         state.gameMode
@@ -419,38 +425,55 @@ export const gameReducer = (state: GameState, action: ExtendedGameAction): GameS
       const activeEndingId = triggeredEnding ? triggeredEnding.id : null;
       
       // Update endings if one was triggered
-      const updatedEndings = gameEnded 
-      ? state.gameEndings.map(ending => 
-        ending.id === activeEndingId ? { ...ending, triggered: true } : ending
-      )
-      : state.gameEndings;
-
-
-    // Check for resource threshold scenario triggers
-    if (!state.activeScenarioId) {
-      const resourceThresholdScenario = state.scenarios.find(s => 
-        !s.completed && 
-        !state.completedScenarios.includes(s.id) &&
-        s.triggerCondition?.type === 'resourceThreshold' &&
-        typeof s.triggerCondition.value === 'number' &&
-        state.resources.influence >= s.triggerCondition.value
-      );
+      const updatedEndings = gameEnded
+        ? state.gameEndings.map(ending =>
+            ending.id === activeEndingId ? { ...ending, triggered: true } : ending
+          )
+        : state.gameEndings;
+    
+      // Check for resource unlocks based on manipulation points
+      const manipulationPoints = updatedResources.manipulationPoints;
+      const updatedResourcesUnlocked = {...state.resourcesUnlocked};
       
-      if (resourceThresholdScenario) {
-        return {
-          ...state,
-          lastTick: currentTime,
-          resources: updatedResources,
-          upgrades: updatedUpgrades,
-          ethicalActions: updatedEthicalActions,
-          ethicalStats: updatedStats,
-          gameEndings: updatedEndings,
-          gameEnded,
-          activeEndingId,
-          activeScenarioId: resourceThresholdScenario.id
-        };
+      // Progressive resource unlocking based on manipulation points thresholds
+      if (!updatedResourcesUnlocked.credibility && manipulationPoints >= 50) {
+        updatedResourcesUnlocked.credibility = true;
       }
-    }
+      
+      if (!updatedResourcesUnlocked.networks && manipulationPoints >= 150) {
+        updatedResourcesUnlocked.networks = true;
+      }
+      
+      if (!updatedResourcesUnlocked.influence && manipulationPoints >= 300) {
+        updatedResourcesUnlocked.influence = true;
+      }
+    
+      // Check for resource threshold scenario triggers
+      if (!state.activeScenarioId) {
+        const resourceThresholdScenario = state.scenarios.find(s =>
+          !s.completed &&
+          !state.completedScenarios.includes(s.id) &&
+          s.triggerCondition?.type === 'resourceThreshold' &&
+          typeof s.triggerCondition.value === 'number' &&
+          state.resources.influence >= s.triggerCondition.value
+        );
+        
+        if (resourceThresholdScenario) {
+          return {
+            ...state,
+            lastTick: currentTime,
+            resources: updatedResources,
+            upgrades: updatedUpgrades,
+            ethicalActions: updatedEthicalActions,
+            ethicalStats: updatedStats,
+            gameEndings: updatedEndings,
+            gameEnded,
+            activeEndingId,
+            activeScenarioId: resourceThresholdScenario.id,
+            resourcesUnlocked: updatedResourcesUnlocked
+          };
+        }
+      }
       
       return {
         ...state,
@@ -461,7 +484,8 @@ export const gameReducer = (state: GameState, action: ExtendedGameAction): GameS
         ethicalStats: updatedStats,
         gameEndings: updatedEndings,
         gameEnded,
-        activeEndingId
+        activeEndingId,
+        resourcesUnlocked: updatedResourcesUnlocked
       };
     }
     case 'SET_PLAYER_INFO':
@@ -523,6 +547,22 @@ export const gameReducer = (state: GameState, action: ExtendedGameAction): GameS
       }
       
       return result;
+    }
+
+    case 'UNLOCK_RESOURCE': {
+      const { resource } = action.payload;
+      
+      if (!state.resourcesUnlocked[resource]) {
+        // Unlock the resource
+        return {
+          ...state,
+          resourcesUnlocked: {
+            ...state.resourcesUnlocked,
+            [resource]: true
+          }
+        };
+      }
+      return state;
     }
   
     case 'UNLOCK_ERA': {
@@ -1235,13 +1275,14 @@ export const gameReducer = (state: GameState, action: ExtendedGameAction): GameS
       console.log("Loading gameState:", loadedState);
       
       // Handle completely missing features in older save versions
-      if (!loadedState.scenarios || !loadedState.achievementState) {
+      if (!loadedState.scenarios || !loadedState.achievementState || !loadedState.resourcesUnlocked) {
         const patched = {
           ...loadedState,
-          scenarios: scenarios,
-          activeScenarioId: null,
-          completedScenarios: [],
-          achievementState: initialAchievementState,
+          scenarios: loadedState.scenarios || scenarios,
+          activeScenarioId: loadedState.activeScenarioId || null,
+          completedScenarios: loadedState.completedScenarios || [],
+          achievementState: loadedState.achievementState || initialAchievementState,
+        resourcesUnlocked: loadedState.resourcesUnlocked || initialGameState.resourcesUnlocked
         };
         return patched;
       }

@@ -5,6 +5,13 @@ interface WelcomeModalProps {
   onSubmit: (playerName: string, playerGender: 'masculine' | 'feminine' | 'neutral', entityName: string) => void;
 }
 
+// Famous name suggestions by category
+const famousNameSuggestions = {
+  rulers: ['Alexandre', 'Cléopâtre', 'Victoria', 'Akbar', 'Catherine', 'Charles', 'Élisabeth', 'Louis', 'Pierre', 'Justinien'],
+  thinkers: ['Socrate', 'Simone', 'Confucius', 'Marie', 'Albert', 'Victor', 'Voltaire', 'Hypatie', 'René', 'Hannah'],
+  icons: ['Elvis', 'Madonna', 'Freddie', 'Édith', 'Frida', 'Gandhi', 'Rosa', 'Mandela', 'Pelé', 'Maria']
+};
+
 const WelcomeModal: React.FC<WelcomeModalProps> = ({ onSubmit }) => {
   const [playerName, setPlayerName] = useState('');
   const [entityName, setEntityName] = useState('');
@@ -110,18 +117,52 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ onSubmit }) => {
               </p>
               
               <form onSubmit={handleNameSubmit} className="mt-6">
-                <div className="mb-4">
-                  <label htmlFor="playerName" className="block text-gray-300 mb-2">Quel est votre nom, cher Leader ?</label>
-                  <input 
-                    type="text" 
-                    id="playerName"
-                    value={playerName}
-                    onChange={(e) => setPlayerName(e.target.value)}
-                    className="w-full p-2 bg-gray-700 border border-gray-600 rounded autofocus focus:border-purple-500 focus:outline-none"
-                    placeholder="Votre nom"
-                  />
-                  {error && <p className="text-red-400 text-sm mt-1">{error}</p>}
+              <div className="mb-4">
+                <label htmlFor="playerName" className="block text-gray-300 mb-2">Quel est votre nom, cher Leader ?</label>
+                <input 
+                  type="text" 
+                  id="playerName"
+                  value={playerName}
+                  onChange={(e) => setPlayerName(e.target.value)}
+                  className="w-full p-2 bg-gray-700 border border-gray-600 rounded autofocus focus:border-purple-500 focus:outline-none"
+                  placeholder="Votre nom"
+                />
+                {error && <p className="text-red-400 text-sm mt-1">{error}</p>}
+              </div>
+
+              {/* Famous name suggestions - NEW SECTION */}
+              <div className="mb-6">
+                <div className="grid grid-cols-1 gap-2 mb-2">
+                  <select 
+                    onChange={(e) => {
+                      if (e.target.value) setPlayerName(e.target.value);
+                    }}
+                    className="w-full p-2 bg-gray-700 border border-gray-600 rounded focus:border-purple-500 focus:outline-none"
+                    value=""
+                  >
+                    <option value="" disabled>Choisir une inspiration...</option>
+                    <optgroup label="Grands dirigeants">
+                      {famousNameSuggestions.rulers.map((name, i) => (
+                        <option key={`ruler-${i}`} value={name}>{name}</option>
+                      ))}
+                    </optgroup>
+                    <optgroup label="Grands penseurs">
+                      {famousNameSuggestions.thinkers.map((name, i) => (
+                        <option key={`thinker-${i}`} value={name}>{name}</option>
+                      ))}
+                    </optgroup>
+                    <optgroup label="Figures emblématiques">
+                      {famousNameSuggestions.icons.map((name, i) => (
+                        <option key={`icon-${i}`} value={name}>{name}</option>
+                      ))}
+                    </optgroup>
+                  </select>
                 </div>
+                <p className="text-xs text-gray-400 italic">
+                  Vous pouvez sélectionner un nom ou saisir le vôtre ci-dessus.
+                </p>
+              </div>
+              
                                 
                 <div className="mb-4">
                   <label className="block text-gray-300 mb-2">Et comment dois-je vous appeler, {playerName || 'Ô Sage'} ?</label>

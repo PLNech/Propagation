@@ -185,6 +185,12 @@ export interface GameState {
   entityName: string;
   entityType: 'Tribu' | 'Village' | 'Cité' | 'Pays' | 'Empire';
   resources: GameResources;
+  resourcesUnlocked: {
+    manipulationPoints: boolean;
+    credibility: boolean;
+    influence: boolean;
+    networks: boolean;
+  };
   eras: HistoricalEra[];
   highestEraReached: string,
   currentEraId: string;
@@ -245,6 +251,7 @@ export type GameAction =
 | { type: 'NETWORKING'; }  // Generate networks
 | { type: 'CREDIBILITY'; }  // Generate credibility
 | { type: 'INFLUENCE'; }  // Generate influence
+| { type: 'UNLOCK_RESOURCE'; payload: { resource: keyof GameResources } }
 | { type: 'UNLOCK_ERA'; payload: { eraId: string } }  // Unlock a new era
 | { type: 'SELECT_ERA'; payload: { eraId: string } }  // Select an era as current
 | { type: 'PURCHASE_UPGRADE'; payload: { upgradeId: string } }  // Purchase an upgrade

@@ -67,12 +67,12 @@ const PropagationGame = () => {
 
   // Helper functions to determine which features are unlocked
   const isUpgradesUnlocked = (): boolean => {
-    return gameState.resources.manipulationPoints >= 10;
+    return gameState.resources.manipulationPoints >= 50;
   };
   
   const isProgressionUnlocked = (): boolean => {
     // Check if any upgrades have been purchased or player has enough manipulation points
-    return gameState.upgrades.some(upgrade => upgrade.purchased) || gameState.resources.manipulationPoints >= 50;
+    return gameState.upgrades.some(upgrade => upgrade.purchased) || gameState.resources.manipulationPoints >= 200;
   };
   
   // Define era progression once
@@ -677,18 +677,19 @@ const PropagationGame = () => {
         {gameState.playerName && (
           <>
              <Header 
-              playerName={gameState.playerName}
-              playerGender="neutral" // You might want to add this to your gameState
-              entityName={gameState.entityName}
-              entityType={gameState.entityType}
-              currentEra={currentEra}
-              resources={gameState.resources}
-              ethicalScore={gameState.ethicalScore}
-              criticalThinking={gameState.criticalThinking}
-              gameMode={gameState.gameMode}
-              onStickyChange={(isSticky, height) => setHeaderInfo({ isSticky, height })}
-              onSaveGame={handleSaveGame}
-              onShowAbout={handleShowAbout}
+  playerName={gameState.playerName}
+  playerGender="neutral"
+  entityName={gameState.entityName}
+  entityType={gameState.entityType}
+  currentEra={currentEra}
+  resources={gameState.resources}
+  resourcesUnlocked={gameState.resourcesUnlocked}
+  ethicalScore={gameState.ethicalScore}
+  criticalThinking={gameState.criticalThinking}
+  gameMode={gameState.gameMode}
+  onStickyChange={(isSticky, height) => setHeaderInfo({ isSticky, height })}
+  onSaveGame={handleSaveGame}
+  onShowAbout={handleShowAbout}
             />
             {/* Placeholder div outside the Header component */}
             {headerInfo.isSticky && (
@@ -870,7 +871,8 @@ const PropagationGame = () => {
                   resources={gameState.resources}
                   manipulateButtonId="manipulate-button" 
                 />
-                <ResourceDisplay resources={gameState.resources} />
+                <ResourceDisplay resources={gameState.resources}
+                resourcesUnlocked={gameState.resourcesUnlocked} />
                 
                 {/* Era benefits preview */}
                 <div className="mt-8 p-4 bg-gray-800 rounded-lg">
