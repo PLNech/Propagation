@@ -468,44 +468,65 @@ export const createDebugHelper = (
         
         // Resources Section
         const resourcesCard = createSectionCard('Resources');
-        
         // Resource inputs
         ['Credibility', 'Influence', 'Networks', 'ManipulationPoints'].forEach(resource => {
           const resourceInput = createNumberInput(resource, 100);
           const giveButton = createActionButton(`Give ${resource}`, () => {
             const amount = parseInt(resourceInput.value, 10) || 100;
-            (window.__SECRET_DOM_DO_NOT_USE_OR_YOU_WILL_BE_FIRED as any)[`give${resource}`](amount);
+            
+            const secretDom = window.__SECRET_DOM_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
+            if (resource === 'Credibility' && typeof secretDom.giveCredibility === 'function') {
+              secretDom.giveCredibility(amount);
+            } else if (resource === 'Influence' && typeof secretDom.giveInfluence === 'function') {
+              secretDom.giveInfluence(amount);
+            } else if (resource === 'Networks' && typeof secretDom.giveNetworks === 'function') {
+              secretDom.giveNetworks(amount);
+            } else if (resource === 'ManipulationPoints' && typeof secretDom.giveManipulationPoints === 'function') {
+              secretDom.giveManipulationPoints(amount);
+            }
+            
             updateStateDisplay();
           });
-          
           const container = document.createElement('div');
           container.style.cssText = 'display: flex; margin-bottom: 10px;';
           container.appendChild(resourceInput);
           container.appendChild(giveButton);
           resourcesCard.appendChild(container);
         });
-        
+
         const giveAllContainer = document.createElement('div');
         const giveAllInput = createNumberInput('giveAllAmount', 100);
         const giveAllButton = createActionButton('Give All Resources', () => {
           const amount = parseInt(giveAllInput.value, 10) || 100;
-          window.__SECRET_DOM_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.giveAllResources(amount);
+          
+          const secretDom = window.__SECRET_DOM_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
+          if (typeof secretDom.giveAllResources === 'function') {
+            secretDom.giveAllResources(amount);
+          }
+          
           updateStateDisplay();
         });
         giveAllContainer.style.cssText = 'display: flex; margin-bottom: 10px;';
         giveAllContainer.appendChild(giveAllInput);
         giveAllContainer.appendChild(giveAllButton);
         resourcesCard.appendChild(giveAllContainer);
-        
+
         // Game State Section
         const stateCard = createSectionCard('Game State');
-        
+
         // Ethics & Critical Thinking
         ['Ethics', 'CriticalThinking'].forEach(stat => {
           const statInput = createNumberInput(stat, 50);
           const setButton = createActionButton(`Set ${stat}`, () => {
             const value = parseInt(statInput.value, 10) || 50;
-            (window.__SECRET_DOM_DO_NOT_USE_OR_YOU_WILL_BE_FIRED as any)[`set${stat}`](value);
+            
+            const secretDom = window.__SECRET_DOM_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
+            if (stat === 'Ethics' && typeof secretDom.setEthics === 'function') {
+              secretDom.setEthics(value);
+            } else if (stat === 'CriticalThinking' && typeof secretDom.setCriticalThinking === 'function') {
+              secretDom.setCriticalThinking(value);
+            }
+            
             updateStateDisplay();
           });
           

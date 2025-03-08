@@ -1,5 +1,5 @@
 import React from 'react';
-import { Upgrade, GameResources } from '@/types';
+import { Upgrade, GameResources, GameAction } from '@/types';
 import UpgradeCard from '@/game/cards/UpgradeCard';
 
 interface UpgradesTabProps {
@@ -7,6 +7,7 @@ interface UpgradesTabProps {
   resources: GameResources;
   currentEraId: string;
   onPurchaseUpgrade: (upgradeId: string) => void;
+  dispatch: React.Dispatch<GameAction>;
 }
 
 /**
@@ -16,7 +17,8 @@ const UpgradesTab: React.FC<UpgradesTabProps> = ({
   upgrades, 
   resources, 
   currentEraId, 
-  onPurchaseUpgrade 
+  onPurchaseUpgrade,
+  dispatch
 }) => {
   // Filter upgrades for current era and visible ones
   const availableUpgrades = upgrades.filter(
@@ -48,6 +50,7 @@ const UpgradesTab: React.FC<UpgradesTabProps> = ({
                 upgrade={upgrade}
                 resources={resources}
                 onPurchase={onPurchaseUpgrade}
+                dispatch={dispatch}
               />
             ))}
           </div>
@@ -64,6 +67,7 @@ const UpgradesTab: React.FC<UpgradesTabProps> = ({
                 upgrade={upgrade}
                 resources={resources}
                 onPurchase={onPurchaseUpgrade}
+                dispatch={dispatch}
               />
             ))}
           </div>

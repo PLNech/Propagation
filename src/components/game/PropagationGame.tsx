@@ -85,10 +85,10 @@ const PropagationGame = () => {
     return highestEraIndex >= requiredEraIndex;
   };
   
-  const isScenariosUnlocked = (): boolean => {
-    // Scenarios are unlocked once player has reached Middle Ages era
-    return hasReachedEra('middleAges');
-  };
+  // const isScenariosUnlocked = (): boolean => {
+  //   // Scenarios are unlocked once player has reached Middle Ages era
+  //   return hasReachedEra('middleAges');
+  // };
   
   const isTheoriesUnlocked = (): boolean => {
     // Theories are unlocked once player has reached Industrial era
@@ -868,6 +868,7 @@ const PropagationGame = () => {
                   
                   <button 
                     onClick={() => handleTabChange('progression')}
+                    hidden={!isProgressionUnlocked()}
                     className="mt-3 w-full py-1 text-sm bg-purple-800 hover:bg-purple-700 rounded"
                   >
                     Voir toutes les ères
@@ -1009,7 +1010,7 @@ const PropagationGame = () => {
               <div className="ml-3 flex-1">
                 <h3 className="text-lg font-medium text-purple-300">Nouveauté : Théories du complot !</h3>
                 <p className="mt-1 text-sm text-purple-200">
-                  L'Ère Industrielle vous permet de propager des théories du complot pour un gain d'influence rapide. Vous pouvez maintenant retourner aux ères précédentes pour y appliquer ces nouvelles techniques.
+                  L&lsquo;Ère Industrielle vous permet de propager des théories du complot pour un gain d&lsquo;influence rapide. Vous pouvez maintenant retourner aux ères précédentes pour y appliquer ces nouvelles techniques.
                 </p>
                 <div className="mt-3 flex space-x-3">
                   <button 
@@ -1031,7 +1032,7 @@ const PropagationGame = () => {
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
                     </svg>
-                    Retour à l'Antiquité
+                    Retour à l&lsquo;Antiquité
                   </button>
                 </div>
               </div>
@@ -1058,7 +1059,7 @@ const PropagationGame = () => {
               <div className="ml-3 flex-1">
                 <h3 className="text-lg font-medium text-green-300">Nouveauté : Système Éthique et Mode Révélation !</h3>
                 <p className="mt-1 text-sm text-green-200">
-                  La Guerre Froide débloque le mode Révélation, qui vous permet d'aider la population à voir à travers la manipulation. Vous pouvez maintenant choisir entre manipuler ou révéler la vérité.
+                  La Guerre Froide débloque le mode Révélation, qui vous permet d&lsquo;aider la population à voir à travers la manipulation. Vous pouvez maintenant choisir entre manipuler ou révéler la vérité.
                 </p>
                 <div className="mt-3 flex space-x-3">
                   <button 
@@ -1106,9 +1107,9 @@ const PropagationGame = () => {
                 </svg>
               </div>
               <div className="ml-3 flex-1">
-                <h3 className="text-lg font-medium text-blue-300">Vous avez atteint l'Ère Numérique !</h3>
+                <h3 className="text-lg font-medium text-blue-300">Vous avez atteint l&lsquo;Ère Numérique !</h3>
                 <p className="mt-1 text-sm text-blue-200">
-                  Félicitations ! Vous avez atteint l'ère la plus avancée. Continuez à explorer toutes les possibilités du jeu et à débloquer tous les succès.
+                  Félicitations ! Vous avez atteint l&lsquo;ère la plus avancée. Continuez à explorer toutes les possibilités du jeu et à débloquer tous les succès.
                   
                   {/* TODO: Add new mechanics for Digital Era. Ideas:
                   1. Viral Campaigns: One-time events that provide massive but temporary boosts to all resources
