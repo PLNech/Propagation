@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { GameState } from '@/types';
 import {
   saveGame,
@@ -44,7 +44,7 @@ const SaveManager: React.FC<SaveManagerProps> = ({
   };
 
   // Sauvegarder le jeu
-  const handleSave = () => {
+  const handleSave = useCallback(() => {
     const success = saveGame(gameState);
     setSaveStatus(success ? 'saved' : 'error');
     
@@ -58,7 +58,8 @@ const SaveManager: React.FC<SaveManagerProps> = ({
     
     // Réinitialiser le statut après un délai
     setTimeout(() => setSaveStatus('idle'), 2000);
-  };
+  }, [gameState, onSaveState]);
+
 
 // TODO: Integrate save deletion?
 //   const handleDeleteSave = () => {
@@ -123,7 +124,7 @@ const handleExportCopy = () => {
   };
 
   // Charger le jeu
-  const handleLoad = (useAutoSave = false) => {
+  const handleLoad = useCallback((useAutoSave = false) => {
     const saveInfo = useAutoSave ? autoSaveInfo : manualSaveInfo;
     
     // Format the save date for display
@@ -155,7 +156,7 @@ const handleExportCopy = () => {
       // Réinitialiser le statut après un délai
       setTimeout(() => setSaveStatus('idle'), 2000);
     }
-  };
+  }, [autoSaveInfo, manualSaveInfo, onLoadState]);
 
   // Importer une sauvegarde
   const handleImport = () => {
@@ -178,13 +179,13 @@ const handleExportCopy = () => {
   };
 
   // Réinitialiser le jeu
-  const handleReset = () => {
+  const handleReset = useCallback(() => {
     if (window.confirm('Recommencer le jeu en gardant seulement vos Succès ?')) {
       onResetGame();
       setShowModal(false);
     }
-  };
-
+  }, [onResetGame]);
+  
   // Handle keyboard shortcuts
   useEffect(() => {
     // Global shortcut to open save menu (S key)

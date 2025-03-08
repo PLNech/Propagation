@@ -302,10 +302,10 @@ const PropagationGame = () => {
     return () => clearInterval(timer);
   }, [gameState.tickInterval, checkForGaslightEffects]);
     
-  const handlePlayerNameSubmit = (playerName: string, entityName: string) => {
+  const handlePlayerNameSubmit = (playerName: string, playerGender: "masculine" | "feminine" | "neutral", entityName: string) => {
     dispatch({ 
       type: 'SET_PLAYER_INFO', 
-      payload: { playerName, entityName } 
+      payload: { playerName, playerGender, entityName } 
     });
     setShowWelcomeModal(false);
     // Show tutorial after welcome modal
@@ -320,7 +320,7 @@ const PropagationGame = () => {
     lastActionRef.current = 'MANIPULATE';
     
     // Rare manipulation effect (gaslighting)
-    if (Math.random() > 0.99 && interactionCount.current > 20) {
+  if (Math.random() > 0.99 && interactionCount.current > 20) {
       setTimeout(() => {
         const manipulateBtn = document.getElementById('manipulate-button');
         if (manipulateBtn) {
@@ -678,6 +678,7 @@ const PropagationGame = () => {
           <>
             <Header 
               playerName={gameState.playerName}
+              playerGender={gameState.playerGender}
               entityName={gameState.entityName}
               entityType={gameState.entityType}
               currentEra={currentEra}

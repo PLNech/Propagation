@@ -13,65 +13,6 @@ interface HeaderProps {
     onStickyChange?: (isSticky: boolean, height: number) => void;
   }
   
-  // Update generateRulerTitle function to use gender
-  const generateRulerTitle = () => {
-    const name = playerName || 'Anonyme';
-    
-    switch(currentEra.id) {
-      case 'antiquity':
-        if (playerGender === 'masculine') return `${name} le Fondateur`;
-        if (playerGender === 'feminine') return `${name} la Fondatrice`;
-        return `${name}, Guide Fondateur`;
-      case 'middleAges':
-        if (playerGender === 'masculine') return `${name} le Sage`;
-        if (playerGender === 'feminine') return `${name} la Sage`;
-        return `Sage ${name}`;
-      case 'industrial':
-        if (playerGender === 'masculine') return `Grand ${name} l'Orchestrateur`;
-        if (playerGender === 'feminine') return `Grande ${name} l'Orchestratrice`;
-        return `${name}, Grand Orchestrateur`;
-      case 'coldWar':
-        if (playerGender === 'masculine') return `Son Excellence ${name}`;
-        if (playerGender === 'feminine') return `Son Excellence ${name}`;
-        return `Excellence ${name}`;
-      case 'digital':
-        if (playerGender === 'masculine') return `${name} l'Omniscient`;
-        if (playerGender === 'feminine') return `${name} l'Omnisciente`;
-        return `${name}, Entité Omnisciente`;
-      default:
-        return name;
-    }
-  };
-  
-  // Update getRulerTitle function to use gender
-  const getRulerTitle = () => {
-    switch(currentEra.id) {
-      case 'antiquity':
-        if (playerGender === 'masculine') return 'Chef Tribal';
-        if (playerGender === 'feminine') return 'Cheffe Tribale';
-        return 'Guide Tribal';
-      case 'middleAges':
-        if (playerGender === 'masculine') return 'Seigneur';
-        if (playerGender === 'feminine') return 'Dame';
-        return 'Suzerain';
-      case 'industrial':
-        if (playerGender === 'masculine') return 'Maître de Presse';
-        if (playerGender === 'feminine') return 'Maîtresse de Presse';
-        return 'Maître des Médias';
-      case 'coldWar':
-        if (playerGender === 'masculine') return 'Commissaire';
-        if (playerGender === 'feminine') return 'Commissaire';
-        return 'Haut Commissaire';
-      case 'digital':
-        if (playerGender === 'masculine') return 'Architecte de Réalités';
-        if (playerGender === 'feminine') return 'Architecte de Réalités';
-        return 'Grand Architecte';
-      default:
-        if (playerGender === 'masculine') return 'Souverain';
-        if (playerGender === 'feminine') return 'Souveraine';
-        return 'Dirigeant Suprême';
-    }
-  };// src/components/game/Header.tsx
 import React, { useState, useEffect } from 'react';
 import { GameResources, HistoricalEra } from '@/types';
 

@@ -20,13 +20,16 @@ interface NotificationSystemProps {
 const NotificationSystem: React.FC<NotificationSystemProps> = ({ notifications, onDismiss }) => {
   // Use a ref to track notification timeouts across renders
   const timeoutRef = useRef<Map<string, NodeJS.Timeout>>(new Map());
-  
-  // Auto-dismiss notifications after their duration
+    
+    
   useEffect(() => {
+    // Create a copy of the current map to use in cleanup
+    const currentTimeouts = timeoutRef.current;
+    
     // For each notification, set up a timeout if it doesn't already have one
     notifications.forEach(notification => {
       // Only set a new timeout if this notification doesn't already have one
-      if (!timeoutRef.current.has(notification.id)) {
+      if (!currentTimeouts.has(notification.id)) {
         console.log(`Setting timeout for notification ${notification.id}, duration: ${notification.duration}ms`);
         const timer = setTimeout(() => {
           console.log(`Auto-dismissing notification ${notification.id}`);
@@ -34,7 +37,7 @@ const NotificationSystem: React.FC<NotificationSystemProps> = ({ notifications, 
         }, notification.duration);
         
         // Store the timeout ID
-        timeoutRef.current.set(notification.id, timer);
+        currentTimeouts.set(notification.id, timer);
       }
     });
     
@@ -44,10 +47,10 @@ const NotificationSystem: React.FC<NotificationSystemProps> = ({ notifications, 
       const currentIds = new Set(notifications.map(n => n.id));
       
       // Clear timeouts for notifications that are no longer present
-      timeoutRef.current.forEach((timer, id) => {
+      currentTimeouts.forEach((timer, id) => {
         if (!currentIds.has(id)) {
           clearTimeout(timer);
-          timeoutRef.current.delete(id);
+          currentTimeouts.delete(id);
         }
       });
     };

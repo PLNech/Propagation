@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { GameResources } from '@/types';
 
 interface GameButtonsProps {
@@ -31,11 +31,6 @@ const GameButtons: React.FC<GameButtonsProps> = ({
   const isCredibilityUnlocked = resources.manipulationPoints >= 200 || resources.credibility > 0;
   const isInfluenceUnlocked = resources.manipulationPoints >= 400 || resources.influence > 0;
 
-  // Check if player can afford each action
-  const canAffordNetworking = resources.manipulationPoints >= 2 && isNetworkingUnlocked;
-  const canAffordCredibility = resources.manipulationPoints >= 3 && isCredibilityUnlocked;
-  const canAffordInfluence = resources.manipulationPoints >= 5 && isInfluenceUnlocked;
-
   // Button press tracking state
   const [pressedButtons, setPressedButtons] = useState<Record<string, boolean>>({
     manipulate: false,
@@ -63,10 +58,10 @@ const GameButtons: React.FC<GameButtonsProps> = ({
     influence: null
   });
 
-  const buttonTypes = ['manipulate', 'credibility', 'networking', 'influence'];
-
+  const buttonTypes = useMemo(() => ['manipulate', 'credibility', 'networking', 'influence'], []);
+  
   // Button info with keyboard shortcuts, costs, and witty descriptions
-  const buttonInfo = {
+  const buttonInfo = useMemo(() => ({
     manipulate: {
       key: "q",
       cost: 0,
@@ -131,34 +126,41 @@ const GameButtons: React.FC<GameButtonsProps> = ({
         digital: "Hacker l'attention"
       }
     }
-  };
-
+  }), []);
+ 
   // Button action mapping
-  const buttonActions = {
+  const buttonActions = useMemo(() => ({
     manipulate: onManipulate,
     credibility: onCredibility,
     networking: onNetworking,
     influence: onInfluence
-  };
+  }), [onManipulate, onCredibility, onNetworking, onInfluence]);
 
   // Affordability and unlock checks
-  const canAfford = {
-    manipulate: true,
-    credibility: canAffordCredibility,
-    networking: canAffordNetworking,
-    influence: canAffordInfluence
-  };
+  const canAfford = useMemo(() => {
+    // Check if player can afford each action
+    const canAffordNetworking = resources.manipulationPoints >= 2 && isNetworkingUnlocked;
+    const canAffordCredibility = resources.manipulationPoints >= 3 && isCredibilityUnlocked;
+    const canAffordInfluence = resources.manipulationPoints >= 5 && isInfluenceUnlocked;
+
+    return {
+      manipulate: true,
+      credibility: canAffordCredibility,
+      networking: canAffordNetworking,
+      influence: canAffordInfluence
+    };
+  }, [resources.manipulationPoints, isNetworkingUnlocked, isCredibilityUnlocked, isInfluenceUnlocked]);
 
   // Unlock status
-  const isUnlocked = {
+  const isUnlocked = useMemo(() => ({
     manipulate: true,
     credibility: isCredibilityUnlocked,
     networking: isNetworkingUnlocked,
     influence: isInfluenceUnlocked
-  };
+  }), [isCredibilityUnlocked, isNetworkingUnlocked, isInfluenceUnlocked]);
 
   // Trigger ripple effect and propagate to next level
-  const triggerRippleEffect = (buttonType: string) => {
+  const triggerRippleEffect = useCallback((buttonType: string) => {
     const order = buttonInfo[buttonType as keyof typeof buttonInfo].order;
     
     // Reset all ripples first
@@ -173,8 +175,8 @@ const GameButtons: React.FC<GameButtonsProps> = ({
     setRippleEffects(prev => ({ ...prev, [buttonType]: true }));
     
     // Find the next button in order to propagate the effect
-    const buttonTypes = Object.keys(buttonInfo) as Array<keyof typeof buttonInfo>;
-    const nextButton = buttonTypes.find(type => 
+    const nextButtonTypes = Object.keys(buttonInfo) as Array<keyof typeof buttonInfo>;
+    const nextButton = nextButtonTypes.find(type => 
       buttonInfo[type].order === order + 1 && isUnlocked[type as keyof typeof isUnlocked]
     );
     
@@ -194,10 +196,21 @@ const GameButtons: React.FC<GameButtonsProps> = ({
         influence: false
       });
     }, 600);
-  };
+  }, [buttonInfo, isUnlocked]);
+  
+  // End button press and clear interval
+  const endButtonPress = useCallback((buttonType: string) => {
+    setPressedButtons(prev => ({ ...prev, [buttonType]: false }));
+    
+    if (buttonIntervals.current[buttonType]) {
+      clearInterval(buttonIntervals.current[buttonType] as NodeJS.Timeout);
+      buttonIntervals.current[buttonType] = null;
+    }
+  }, []);
 
+  
   // Start button press and set interval for repeated actions
-  const startButtonPress = (buttonType: string) => {
+  const startButtonPress = useCallback((buttonType: string) => {
     // Only proceed if the action is affordable
     if (!canAfford[buttonType as keyof typeof canAfford]) return;
     
@@ -225,20 +238,13 @@ const GameButtons: React.FC<GameButtonsProps> = ({
         }
       }, 250); // Repeat every 250ms while holding
     }
-  };
-
-  // End button press and clear interval
-  const endButtonPress = (buttonType: string) => {
-    setPressedButtons(prev => ({ ...prev, [buttonType]: false }));
-    
-    if (buttonIntervals.current[buttonType]) {
-      clearInterval(buttonIntervals.current[buttonType] as NodeJS.Timeout);
-      buttonIntervals.current[buttonType] = null;
-    }
-  };
-
+  }, [canAfford, resources.manipulationPoints, buttonActions, triggerRippleEffect, endButtonPress]);
+ 
   // Keyboard event handling
   useEffect(() => {
+    // Store the current ref in a variable to use in cleanup
+    const currentButtonIntervals = buttonIntervals.current;
+    
     const handleKeyDown = (e: KeyboardEvent) => {
       // Prevent handling if in an input field
       if (e.target instanceof HTMLInputElement || 
@@ -257,7 +263,7 @@ const GameButtons: React.FC<GameButtonsProps> = ({
       };
       
       const buttonType = keyToButton[key];
-      if (buttonType && !buttonIntervals.current[buttonType] && canAfford[buttonType as keyof typeof canAfford]) {
+      if (buttonType && !currentButtonIntervals[buttonType] && canAfford[buttonType as keyof typeof canAfford]) {
         startButtonPress(buttonType);
       }
     };
@@ -287,16 +293,16 @@ const GameButtons: React.FC<GameButtonsProps> = ({
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
       
-      // Clear all intervals
-      Object.keys(buttonIntervals.current).forEach(buttonType => {
-        if (buttonIntervals.current[buttonType]) {
-          clearInterval(buttonIntervals.current[buttonType] as NodeJS.Timeout);
-          buttonIntervals.current[buttonType] = null;
+      // Clear all intervals using the closure variable
+      Object.keys(currentButtonIntervals).forEach(buttonType => {
+        if (currentButtonIntervals[buttonType]) {
+          clearInterval(currentButtonIntervals[buttonType] as NodeJS.Timeout);
+          currentButtonIntervals[buttonType] = null;
         }
       });
     };
-  }, [resources.manipulationPoints]); // Re-evaluate when resources change
-  
+  }, [resources.manipulationPoints, canAfford, startButtonPress, endButtonPress]); // Added missing dependencies
+
   // Handle gaslighting effects on button text
   const getGaslightedLabel = (buttonType: string, originalLabel: string) => {
     if (isGaslightActive && Math.random() > 0.85) {
@@ -408,7 +414,7 @@ const GameButtons: React.FC<GameButtonsProps> = ({
     });
     
     return handlersMap;
-  }, [canAfford, startButtonPress, endButtonPress, setHoveredButton, pressedButtons]);
+  }, [canAfford, startButtonPress, endButtonPress, setHoveredButton, pressedButtons, buttonTypes]);
   
 
   // Find next button in the propagation sequence

@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 
 interface WelcomeModalProps {
-  onSubmit: (playerName: string, entityName: string, playerGender: 'masculine' | 'feminine' | 'neutral') => void;
+  onSubmit: (playerName: string, playerGender: 'masculine' | 'feminine' | 'neutral', entityName: string) => void;
 }
 
 const WelcomeModal: React.FC<WelcomeModalProps> = ({ onSubmit }) => {
@@ -83,24 +83,13 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ onSubmit }) => {
     if (!entityName) {
       setEntityName(suggestedNames[0] || `${playerName}ium`);
     }
-    onSubmit(playerName, entityName, playerGender);
+    onSubmit(playerName, playerGender, entityName);
   };
 
   const handleCustomEntityNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEntityName(e.target.value);
   };
   
-  // Get example title based on gender
-  const getTitleExample = () => {
-    switch(playerGender) {
-      case 'masculine':
-        return 'le Fondateur, le Sage...';
-      case 'feminine':
-        return 'la Fondatrice, la Sage...';
-      case 'neutral':
-        return `Sage ${playerName || 'X'}, notre Guide...`;
-    }
-  };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
@@ -168,7 +157,7 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ onSubmit }) => {
                         <span className="mr-2 text-xl">👑</span>
                         <span>
                           <span className="font-medium">{playerName || 'Nom'} la Grande</span>
-                          <span className="block text-xs text-gray-400">Pour gouverner d'une main de fer dans un gant de velours</span>
+                          <span className="block text-xs text-gray-400">Pour gouverner d&apos;une main de fer dans un gant de velours</span>
                         </span>
                       </span>
                     </label>
