@@ -252,6 +252,11 @@ const GameButtons: React.FC<GameButtonsProps> = ({
         return;
       }
       
+      // Prevent handling repeated keydown events (key repeats)
+      if (e.repeat) {
+        return;
+      }
+      
       const key = e.key.toLowerCase();
       
       // Map keys to button types
@@ -300,8 +305,16 @@ const GameButtons: React.FC<GameButtonsProps> = ({
           currentButtonIntervals[buttonType] = null;
         }
       });
+      
+      // Additional safety: Clear all current intervals directly
+      Object.keys(buttonIntervals.current).forEach(buttonType => {
+        if (buttonIntervals.current[buttonType]) {
+          clearInterval(buttonIntervals.current[buttonType] as NodeJS.Timeout);
+          buttonIntervals.current[buttonType] = null;
+        }
+      });
     };
-  }, [resources.manipulationPoints, canAfford, startButtonPress, endButtonPress]); // Added missing dependencies
+  }, [resources.manipulationPoints, canAfford, startButtonPress, endButtonPress]);
 
   // Handle gaslighting effects on button text
   const getGaslightedLabel = (buttonType: string, originalLabel: string) => {
@@ -450,7 +463,7 @@ const GameButtons: React.FC<GameButtonsProps> = ({
         return (
           <div className="absolute inset-0 flex flex-col items-center justify-center">
             <span className="text-white text-3xl md:text-4xl font-bold">{info.icon}</span>
-            <span className="text-white text-xs md:text-sm font-bold mt-1 bg-black/30 px-2 py-0.5 rounded">[{info.key.toUpperCase()}]</span>
+            <span className="text-white text-xs md:text-sm font-bold mt-1 bg-black/30 px-2 py-0.5 rounded hidden md:inline-block">[{info.key.toUpperCase()}]</span>
           </div>
         );
       case 2: // Credibility
