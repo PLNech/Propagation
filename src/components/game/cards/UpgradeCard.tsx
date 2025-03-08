@@ -1,17 +1,18 @@
 import React from 'react';
-import { Upgrade, GameResources } from '@/types';
+import { Upgrade, GameResources, GameAction } from '@/types';
 import { ReferenceLinks, upgradePatterns } from '../ui/LinkUtility';
 
 interface UpgradeCardProps {
   upgrade: Upgrade;
   resources: GameResources;
   onPurchase: (upgradeId: string) => void;
+  dispatch: React.Dispatch<GameAction>;
 }
 
 /**
  * Card component for displaying a purchasable upgrade
  */
-const UpgradeCard: React.FC<UpgradeCardProps> = ({ upgrade, resources, onPurchase }) => {
+const UpgradeCard: React.FC<UpgradeCardProps> = ({ upgrade, resources, onPurchase, dispatch }) => {
   // Check if player can afford this upgrade
   const canAfford = Object.entries(upgrade.cost).every(([resource, amount]) => {
     return resources[resource as keyof GameResources] >= (amount || 0);
@@ -85,7 +86,7 @@ const UpgradeCard: React.FC<UpgradeCardProps> = ({ upgrade, resources, onPurchas
         )}
       </div>
       
-      <p className="text-sm text-gray-300 mt-2 mb-3">{upgrade.description}</p>
+      <p className="text-sm text-gray-300 mt-2 mb-3">{renderDescription()}</p>
       
       {!upgrade.purchased && (
         <div className="mt-2">

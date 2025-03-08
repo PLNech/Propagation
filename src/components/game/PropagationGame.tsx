@@ -42,6 +42,7 @@ type TabType = 'resources' | 'progression' | 'upgrades' | 'theories' | 'ethics' 
  * Main game component with all systems including enhanced gaslighting and save/load
  */
 const PropagationGame = () => {
+  const [isLoading, setIsLoading] = useState(true); // To avoir tutorial flashing
   const [gameState, dispatch] = useReducer(gameReducer, initialGameState);
   const [activeTab, setActiveTab] = useState<TabType>('resources');
   const { notifications, addNotification, dismissNotification } = useNotifications();
@@ -144,12 +145,16 @@ const PropagationGame = () => {
       document.removeEventListener('keydown', handleKeyDown);
     };
   }, []);
-  
+    
   // Vérifier s'il y a une sauvegarde à charger
   useEffect(() => {
     const loadSavedGame = async () => {
+      // Start with loading state
+      setIsLoading(true);
+      
       if (hasLoadedSave.current) {
         setShowTutorial(false);
+        setIsLoading(false);
         return;
       }
       
@@ -162,13 +167,22 @@ const PropagationGame = () => {
           addNotification('Partie précédente chargée automatiquement', 'info', 3000);
           hasLoadedSave.current = true;
           setShowTutorial(false);
+        } else {
+          // No valid state, show welcome modal
+          setShowWelcomeModal(true);
         }
+      } else {
+        // No save exists, show welcome modal
+        setShowWelcomeModal(true);
       }
+      
+      // Mark loading as complete
+      setIsLoading(false);
     };
     
     loadSavedGame();
   }, [addNotification]);
-  
+
   // Configurer l'auto-sauvegarde
   useEffect(() => {
     const stopAutoSave = setupAutoSave(() => gameStateRef.current, 60000);
@@ -287,17 +301,18 @@ const PropagationGame = () => {
     // Clean up interval on component unmount
     return () => clearInterval(timer);
   }, [gameState.tickInterval, checkForGaslightEffects]);
-  
-
+    
   const handlePlayerNameSubmit = (playerName: string, entityName: string) => {
     dispatch({ 
       type: 'SET_PLAYER_INFO', 
       payload: { playerName, entityName } 
     });
     setShowWelcomeModal(false);
-    // Show tutorial after welcome
+    // Show tutorial after welcome modal
     setShowTutorial(true);
+    setOnboardingCompleted(false);
   };
+
   // Handle the manipulate button click
   const handleManipulate = () => {
     dispatch({ type: 'MANIPULATE' });
@@ -659,15 +674,18 @@ const PropagationGame = () => {
             )}
           </>
         )}
+  
+        {!isLoading && (
+          <>
+            {showWelcomeModal && (
+              <WelcomeModal onSubmit={handlePlayerNameSubmit} />
+            )}
 
-        {showWelcomeModal && (
-          <WelcomeModal onSubmit={handlePlayerNameSubmit} />
+            {!showWelcomeModal && showTutorial && (
+              <TutorialModal onClose={handleTutorialClose} />
+            )}
+          </>
         )}
-
-        {!showWelcomeModal && showTutorial && (
-          <TutorialModal onClose={handleTutorialClose} />
-        )}
-
 
         {/* Only show other modals after onboarding is completed */}
         {onboardingCompleted && (

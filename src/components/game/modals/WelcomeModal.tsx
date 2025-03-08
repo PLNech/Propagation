@@ -117,7 +117,7 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ onSubmit }) => {
                     id="playerName"
                     value={playerName}
                     onChange={(e) => setPlayerName(e.target.value)}
-                    className="w-full p-2 bg-gray-700 border border-gray-600 rounded focus:border-purple-500 focus:outline-none"
+                    className="w-full p-2 bg-gray-700 border border-gray-600 rounded autofocus focus:border-purple-500 focus:outline-none"
                     placeholder="Votre nom"
                   />
                   {error && <p className="text-red-400 text-sm mt-1">{error}</p>}
