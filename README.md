@@ -16,12 +16,22 @@
 
 <div align="center">
   
-  ![Gameplay Screenshot](assets/screen2.png)
-  *Manipulate resources in different historical eras*
+  ![Desktop Gameplay](assets/screen1.png)
+  *Manipule la population à travers le temps et l'espace*
   
-  ![Ethical Choices](assets/screen2.jpg)
-  *Choose between manipulation and revelation*
+  ![Ethical Choices](assets/screen2.png)
+  *Succès, Scénarios interactifs, et autres mécaniques à découvrir*
   
+</div>
+<div>
+  <div style="display: flex; overflow-x: auto; gap: 10px; padding: 10px 0; max-width: 100%;">
+    <img src="assets/mobile1.png" alt="Mobile Screenshot 1" width="200"/>
+    <img src="assets/mobile2.png" alt="Mobile Screenshot 2" width="200"/>
+    <img src="assets/mobile3.png" alt="Mobile Screenshot 3" width="200"/>
+    <img src="assets/mobile4.png" alt="Mobile Screenshot 4" width="200"/>
+    <img src="assets/mobile5.png" alt="Mobile Screenshot 5" width="200"/>
+  </div>
+  <p align="center"><em>Propagation est, franchement, assez responsive. On essaye tavu.</em></p>
 </div>
 
 ---

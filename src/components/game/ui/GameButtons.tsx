@@ -540,7 +540,7 @@ const GameButtons: React.FC<GameButtonsProps> = ({
         </div>
         
         {/* Keyboard shortcut hint - centered below circles */}
-        <div className="text-xs text-center text-gray-400 mt-2">
+        <div className="text-xs text-center text-gray-400 mt-2 hidden md:inline-block">
           Maintenez ou utilisez [Q,W,E,R] pour actions répétées
         </div>
       </div>
