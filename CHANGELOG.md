@@ -1,5 +1,58 @@
 # Development Log - Propagation
 
+## Sprint 12: Performance Optimization & Bug Fixes (v0.11.0 - v0.11.1) - March 9, 2025
+
+**SUMMARY:** Resolved React hooks dependency issues across multiple components, improving performance and eliminating console warnings. Fixed notification timeouts and implemented proper cleanup for UI elements.
+
+### DEMAND:
+```
+Fix React Hooks dependency warnings appearing in the console:
+
+NotificationSystem.tsx has issues with timeoutRef.current in effect cleanup
+GameButtons.tsx has multiple warnings related to buttonIntervals.current, missing dependencies in useEffect and useMemo hooks
+SaveManager.tsx has issues with handler functions changing on every render
+Fix circular dependencies in GameButtons.tsx
+Ensure proper ref handling for cleanup functions
+Implement useCallback and useMemo for functions and objects recreated on render
+Address all warnings without changing component functionality
+```
+
+### v0.11.0: React Hooks Optimization
+
+**FEATURES:**
+- **Dependency Management:**
+  - Implemented proper dependency tracking across all components
+  - Used appropriate React hooks (useCallback, useMemo) to prevent unnecessary re-renders
+  - Fixed circular dependency issues in GameButtons.tsx
+  
+- **Performance Improvements:**
+  - Optimized rendering cycle with memoized components and handlers
+  - Reduced memory usage from improper effect cleanup
+  - Improved overall application performance
+
+**FILES:**
+- `NotificationSystem.tsx` (update) - Fixed timeoutRef handling in useEffect cleanup
+- `GameButtons.tsx` (update) - Comprehensive refactoring of hooks and dependencies
+- `SaveManager.tsx` (update) - Implemented useCallback for handler functions
+
+### v0.11.1: Critical Bug Fixes
+
+**FIXES:**
+- **Proper Cleanup:**
+  - Fixed timeout management in NotificationSystem to prevent memory leaks
+  - Added defensive code to ensure button intervals are properly cleared
+  - Fixed circular reference in GameButtons causing maximum depth exceeded errors
+
+- **UI Improvements:**
+  - Ensured consistent button behavior during rapid interactions
+  - Fixed edge cases in SaveManager's keyboard shortcuts
+  - Protected against potential race conditions in timer-based effects
+
+**FILES:**
+- Same as v0.11.0, with additional bug fixes and stability improvements
+
+**NOTES:** These optimizations represent an important milestone in codebase stability, resolving all console warnings and preventing potential memory leaks. The changes maintain complete functionality while improving performance across all components.
+
 Sprint 11: UX Improvements and Gender System (v0.10.0)
 
 SUMMARY: Enhanced the notification system with stacked display, added player gender selection for personalized titles, and implemented achievement management features.
