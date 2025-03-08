@@ -1,13 +1,14 @@
-// src/components/game/WelcomeModal.tsx (updated version)
+
 import React, { useState, useEffect } from 'react';
 
 interface WelcomeModalProps {
-  onSubmit: (playerName: string, entityName: string) => void;
+  onSubmit: (playerName: string, entityName: string, playerGender: 'masculine' | 'feminine' | 'neutral') => void;
 }
 
 const WelcomeModal: React.FC<WelcomeModalProps> = ({ onSubmit }) => {
   const [playerName, setPlayerName] = useState('');
   const [entityName, setEntityName] = useState('');
+  const [playerGender, setPlayerGender] = useState<'masculine' | 'feminine' | 'neutral'>('masculine');
   const [suggestedNames, setSuggestedNames] = useState<string[]>([]);
   const [error, setError] = useState('');
   const [step, setStep] = useState(1);
@@ -82,11 +83,23 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ onSubmit }) => {
     if (!entityName) {
       setEntityName(suggestedNames[0] || `${playerName}ium`);
     }
-    onSubmit(playerName, entityName);
+    onSubmit(playerName, entityName, playerGender);
   };
 
   const handleCustomEntityNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEntityName(e.target.value);
+  };
+  
+  // Get example title based on gender
+  const getTitleExample = () => {
+    switch(playerGender) {
+      case 'masculine':
+        return 'le Fondateur, le Sage...';
+      case 'feminine':
+        return 'la Fondatrice, la Sage...';
+      case 'neutral':
+        return `Sage ${playerName || 'X'}, notre Guide...`;
+    }
   };
 
   return (
@@ -109,7 +122,7 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ onSubmit }) => {
               
               <form onSubmit={handleNameSubmit} className="mt-6">
                 <div className="mb-4">
-                  <label htmlFor="playerName" className="block text-gray-300 mb-2">Comment souhaitez-vous être appelé(e)?</label>
+                  <label htmlFor="playerName" className="block text-gray-300 mb-2">Quel est votre nom, cher Leader ?</label>
                   <input 
                     type="text" 
                     id="playerName"
@@ -119,6 +132,65 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ onSubmit }) => {
                     placeholder="Votre nom"
                   />
                   {error && <p className="text-red-400 text-sm mt-1">{error}</p>}
+                </div>
+                                
+                <div className="mb-4">
+                  <label className="block text-gray-300 mb-2">Et comment dois-je vous appeler, {playerName || 'Ô Sage'} ?</label>
+                  <div className="space-y-2">
+                    <label className={`block p-3 rounded-md cursor-pointer border ${playerGender === 'masculine' ? 'bg-purple-900 border-purple-500' : 'bg-gray-800 border-gray-700 hover:bg-gray-700'}`}>
+                      <input 
+                        type="radio" 
+                        name="gender" 
+                        value="masculine" 
+                        checked={playerGender === 'masculine'}
+                        onChange={() => setPlayerGender('masculine')} 
+                        className="sr-only" 
+                      />
+                      <span className="flex items-center">
+                        <span className="mr-2 text-xl">👑</span>
+                        <span>
+                          <span className="font-medium">{playerName || 'Nom'} le Grand</span>
+                          <span className="block text-xs text-gray-400">Pour ceux qui croient que l'autorité s'exprime mieux avec une barbe, même imaginaire</span>
+                        </span>
+                      </span>
+                    </label>
+                    
+                    <label className={`block p-3 rounded-md cursor-pointer border ${playerGender === 'feminine' ? 'bg-purple-900 border-purple-500' : 'bg-gray-800 border-gray-700 hover:bg-gray-700'}`}>
+                      <input 
+                        type="radio" 
+                        name="gender" 
+                        value="feminine" 
+                        checked={playerGender === 'feminine'}
+                        onChange={() => setPlayerGender('feminine')} 
+                        className="sr-only" 
+                      />
+                      <span className="flex items-center">
+                        <span className="mr-2 text-xl">👑</span>
+                        <span>
+                          <span className="font-medium">{playerName || 'Nom'} la Grande</span>
+                          <span className="block text-xs text-gray-400">Pour gouverner d'une main de fer dans un gant de velours</span>
+                        </span>
+                      </span>
+                    </label>
+                    
+                    <label className={`block p-3 rounded-md cursor-pointer border ${playerGender === 'neutral' ? 'bg-purple-900 border-purple-500' : 'bg-gray-800 border-gray-700 hover:bg-gray-700'}`}>
+                      <input 
+                        type="radio" 
+                        name="gender" 
+                        value="neutral" 
+                        checked={playerGender === 'neutral'}
+                        onChange={() => setPlayerGender('neutral')} 
+                        className="sr-only" 
+                      />
+                      <span className="flex items-center">
+                        <span className="mr-2 text-xl">👑</span>
+                        <span>
+                          <span className="font-medium">Grand {playerName || 'Nom'}</span>
+                          <span className="block text-xs text-gray-400">Parce que le vrai pouvoir transcende les pronoms et confond vos adversaires</span>
+                        </span>
+                      </span>
+                    </label>
+                  </div>
                 </div>
                 
                 <button 
@@ -134,7 +206,7 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ onSubmit }) => {
           {step === 2 && (
             <>
               <p className="text-gray-200 leading-relaxed mb-4">
-                Excellent, <span className="text-purple-300 font-semibold">{playerName}</span>! 
+                Parfait, <span className="text-purple-300 font-semibold">{playerName}</span>! 
                 Maintenant, choisissez le nom de votre tribu primitive, qui évoluera au fil des âges.
               </p>
               

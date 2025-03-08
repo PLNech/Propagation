@@ -181,6 +181,7 @@ export type GameMode = 'manipulation' | 'revelation';
 */
 export interface GameState {
   playerName: string;
+  playerGender: 'masculine' | 'feminine' | 'neutral';
   entityName: string;
   entityType: 'Tribu' | 'Village' | 'Cité' | 'Pays' | 'Empire';
   resources: GameResources;
@@ -238,7 +239,7 @@ export interface GameState {
 * Actions that can modify the game state
 */
 export type GameAction = 
-| { type: 'SET_PLAYER_INFO'; payload: { playerName: string, entityName: string } }
+| { type: 'SET_PLAYER_INFO'; payload: { playerName: string, playerGender: string, entityName: string } }
 | { type: 'TICK'; payload: { currentTime: number } }  // Regular game update
 | { type: 'MANIPULATE'; }  // Player initiated action
 | { type: 'NETWORKING'; }  // Generate networks

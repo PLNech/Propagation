@@ -311,6 +311,7 @@ const calculateLivesImpacted = (influence: number, networks: number): number => 
 */
 export const initialGameState: GameState = {
   playerName: '',
+  playerGender: 'neutral',
   entityName: '',
   entityType: 'Tribu',
   resources: {
@@ -467,6 +468,7 @@ export const gameReducer = (state: GameState, action: ExtendedGameAction): GameS
       return {
         ...state,
         playerName: action.payload.playerName,
+        playerGender: action.payload.playerGender,
         entityName: action.payload.entityName || `${action.payload.playerName}ium`, // Use provided entity name or create one
       };
       

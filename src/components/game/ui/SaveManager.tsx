@@ -185,11 +185,19 @@ const handleExportCopy = () => {
     }
   };
 
-
   // Handle keyboard shortcuts
   useEffect(() => {
     // Global shortcut to open save menu (S key)
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      // Skip if we're typing in an input field, textarea, or any editable element
+      if (
+        document.activeElement instanceof HTMLInputElement || 
+        document.activeElement instanceof HTMLTextAreaElement ||
+        (document.activeElement && document.activeElement.hasAttribute('contenteditable'))
+      ) {
+        return;
+      }
+
       if (e.key === 's' && !showModal) {
         e.preventDefault();
         setShowModal(true);
@@ -199,6 +207,20 @@ const handleExportCopy = () => {
     // Shortcuts within the save menu
     const handleModalKeyDown = (e: KeyboardEvent) => {
       if (!showModal) return;
+      
+      // Allow normal typing in input fields within the modal
+      if (
+        document.activeElement instanceof HTMLInputElement || 
+        document.activeElement instanceof HTMLTextAreaElement ||
+        (document.activeElement && document.activeElement.hasAttribute('contenteditable'))
+      ) {
+        // Only handle Escape key to close modal, ignore other shortcuts when typing
+        if (e.key === 'Escape') {
+          e.preventDefault();
+          setShowModal(false);
+        }
+        return;
+      }
       
       switch (e.key.toLowerCase()) {
         case 'escape':
@@ -250,7 +272,6 @@ const handleExportCopy = () => {
       document.removeEventListener('keydown', handleModalKeyDown);
     };
   }, [showModal, manualSaveInfo.exists, autoSaveInfo.exists, handleLoad, handleReset, handleSave]);
-
   return (
     <>
     <button

@@ -1,9 +1,8 @@
-// src/components/game/Header.tsx
-import React, { useState, useEffect } from 'react';
-import { GameResources, HistoricalEra } from '@/types';
+// src/components/game/ui/Header.tsx
 
 interface HeaderProps {
     playerName: string;
+    playerGender: 'masculine' | 'feminine' | 'neutral';
     entityName: string;
     entityType: string;
     currentEra: HistoricalEra;
@@ -12,10 +11,86 @@ interface HeaderProps {
     criticalThinking: number;
     gameMode: 'manipulation' | 'revelation';
     onStickyChange?: (isSticky: boolean, height: number) => void;
-}
+  }
+  
+  // Update generateRulerTitle function to use gender
+  const generateRulerTitle = () => {
+    const name = playerName || 'Anonyme';
+    
+    switch(currentEra.id) {
+      case 'antiquity':
+        if (playerGender === 'masculine') return `${name} le Fondateur`;
+        if (playerGender === 'feminine') return `${name} la Fondatrice`;
+        return `${name}, Guide Fondateur`;
+      case 'middleAges':
+        if (playerGender === 'masculine') return `${name} le Sage`;
+        if (playerGender === 'feminine') return `${name} la Sage`;
+        return `Sage ${name}`;
+      case 'industrial':
+        if (playerGender === 'masculine') return `Grand ${name} l'Orchestrateur`;
+        if (playerGender === 'feminine') return `Grande ${name} l'Orchestratrice`;
+        return `${name}, Grand Orchestrateur`;
+      case 'coldWar':
+        if (playerGender === 'masculine') return `Son Excellence ${name}`;
+        if (playerGender === 'feminine') return `Son Excellence ${name}`;
+        return `Excellence ${name}`;
+      case 'digital':
+        if (playerGender === 'masculine') return `${name} l'Omniscient`;
+        if (playerGender === 'feminine') return `${name} l'Omnisciente`;
+        return `${name}, Entité Omnisciente`;
+      default:
+        return name;
+    }
+  };
+  
+  // Update getRulerTitle function to use gender
+  const getRulerTitle = () => {
+    switch(currentEra.id) {
+      case 'antiquity':
+        if (playerGender === 'masculine') return 'Chef Tribal';
+        if (playerGender === 'feminine') return 'Cheffe Tribale';
+        return 'Guide Tribal';
+      case 'middleAges':
+        if (playerGender === 'masculine') return 'Seigneur';
+        if (playerGender === 'feminine') return 'Dame';
+        return 'Suzerain';
+      case 'industrial':
+        if (playerGender === 'masculine') return 'Maître de Presse';
+        if (playerGender === 'feminine') return 'Maîtresse de Presse';
+        return 'Maître des Médias';
+      case 'coldWar':
+        if (playerGender === 'masculine') return 'Commissaire';
+        if (playerGender === 'feminine') return 'Commissaire';
+        return 'Haut Commissaire';
+      case 'digital':
+        if (playerGender === 'masculine') return 'Architecte de Réalités';
+        if (playerGender === 'feminine') return 'Architecte de Réalités';
+        return 'Grand Architecte';
+      default:
+        if (playerGender === 'masculine') return 'Souverain';
+        if (playerGender === 'feminine') return 'Souveraine';
+        return 'Dirigeant Suprême';
+    }
+  };// src/components/game/Header.tsx
+import React, { useState, useEffect } from 'react';
+import { GameResources, HistoricalEra } from '@/types';
+
+interface HeaderProps {
+    playerName: string;
+    playerGender: 'masculine' | 'feminine' | 'neutral';
+    entityName: string;
+    entityType: string;
+    currentEra: HistoricalEra;
+    resources: GameResources;
+    ethicalScore: number;
+    criticalThinking: number;
+    gameMode: 'manipulation' | 'revelation';
+    onStickyChange?: (isSticky: boolean, height: number) => void;
+  }
 
 const Header: React.FC<HeaderProps> = ({
     playerName,
+    playerGender,
     entityName,
     entityType,
     currentEra,
@@ -29,41 +104,64 @@ const Header: React.FC<HeaderProps> = ({
     const [isSticky, setIsSticky] = useState(false);
     const headerRef = React.useRef<HTMLDivElement>(null);
     
-    // src/components/game/Header.tsx - add this function inside the component before the return statement
-    // Generate increasingly pompous ruler titles based on era
+
+    // Update generateRulerTitle function to use gender
     const generateRulerTitle = () => {
         const name = playerName || 'Anonyme';
         
         switch(currentEra.id) {
-            case 'antiquity':
-            return `${name} le Fondateur`;
-            case 'middleAges':
-            return `${name} le Sage`; // , Maître des Rumeurs
-            case 'industrial':
-            return `Grand ${name} l'Orchestrateur`; // des Vérités Convenables
-            case 'coldWar':
-            return `Son Excellence ${name}`;  // le Magnifique, Architecte Suprême de la Réalité Nécessaire
-            case 'digital':
-            return `${name} l'Omniscient, `; // Grand Manipulateur des Algorithmes, Empereur des Faits Alternatifs, Maître Absolu du Grand Récit Universel
-            default:
+        case 'antiquity':
+            if (playerGender === 'masculine') return `${name} le Fondateur`;
+            if (playerGender === 'feminine') return `${name} la Fondatrice`;
+            return `${name}, Guide Fondateur`;
+        case 'middleAges':
+            if (playerGender === 'masculine') return `${name} le Sage`;
+            if (playerGender === 'feminine') return `${name} la Sage`;
+            return `Sage ${name}`;
+        case 'industrial':
+            if (playerGender === 'masculine') return `Grand ${name} l'Orchestrateur`;
+            if (playerGender === 'feminine') return `Grande ${name} l'Orchestratrice`;
+            return `${name}, Grand Orchestrateur`;
+        case 'coldWar':
+            if (playerGender === 'masculine') return `Son Excellence ${name}`;
+            if (playerGender === 'feminine') return `Son Excellence ${name}`;
+            return `Excellence ${name}`;
+        case 'digital':
+            if (playerGender === 'masculine') return `${name} l'Omniscient`;
+            if (playerGender === 'feminine') return `${name} l'Omnisciente`;
+            return `${name}, Entité Omnisciente`;
+        default:
             return name;
         }
     };
-    // Get era-specific ruler title
+    
+    // Update getRulerTitle function to use gender
     const getRulerTitle = () => {
         switch(currentEra.id) {
-            case 'antiquity':
-            return 'Chef Tribal';
-            case 'middleAges':
-            return 'Seigneur';
-            case 'industrial':
-            return 'Maître de Presse';
-            case 'coldWar':
-            return 'Commissaire';
-            case 'digital':
-            return 'Architecte de Réalités';
-            default:
-            return 'Souverain';
+        case 'antiquity':
+            if (playerGender === 'masculine') return 'Chef Tribal';
+            if (playerGender === 'feminine') return 'Cheffe Tribale';
+            return 'Guide Tribal';
+        case 'middleAges':
+            if (playerGender === 'masculine') return 'Seigneur';
+            if (playerGender === 'feminine') return 'Dame';
+            return 'Suzerain';
+        case 'industrial':
+            if (playerGender === 'masculine') return 'Maître de Presse';
+            if (playerGender === 'feminine') return 'Maîtresse de Presse';
+            return 'Maître des Médias';
+        case 'coldWar':
+            if (playerGender === 'masculine') return 'Commissaire';
+            if (playerGender === 'feminine') return 'Commissaire';
+            return 'Haut Commissaire';
+        case 'digital':
+            if (playerGender === 'masculine') return 'Architecte de Réalités';
+            if (playerGender === 'feminine') return 'Architecte de Réalités';
+            return 'Grand Architecte';
+        default:
+            if (playerGender === 'masculine') return 'Souverain';
+            if (playerGender === 'feminine') return 'Souveraine';
+            return 'Dirigeant Suprême';
         }
     };
     

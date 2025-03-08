@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from 'react';
+// src/components/game/features/achievements/AchievementNotificationManager.tsx
+
+import React, { useState, useEffect, useRef } from 'react';
 import { Achievement } from '@/types';
 import AchievementNotification from './AchievementNotification';
 
@@ -10,7 +12,7 @@ interface AchievementNotificationManagerProps {
 
 /**
  * Manages the queue of achievement notifications to prevent overlap
- * Only shows one notification at a time
+ * Only shows one notification at a time and prevents duplicates
  */
 const AchievementNotificationManager: React.FC<AchievementNotificationManagerProps> = ({
   newlyUnlocked,
@@ -20,14 +22,24 @@ const AchievementNotificationManager: React.FC<AchievementNotificationManagerPro
   const [currentNotification, setCurrentNotification] = useState<Achievement | null>(null);
   const [queue, setQueue] = useState<Achievement[]>([]);
   
+  // Keep track of shown achievements to prevent duplicates in the same session
+  const shownAchievementsRef = useRef<Set<string>>(new Set());
+  
   // Set up the notification queue whenever newlyUnlocked changes
   useEffect(() => {
     // Find achievement objects for all newly unlocked achievements
     const newAchievements = newlyUnlocked
       .map(id => achievements.find(a => a.id === id))
-      .filter((a): a is Achievement => a !== undefined);
+      .filter((a): a is Achievement => a !== undefined)
+      // Filter out achievements we've already shown
+      .filter(achievement => !shownAchievementsRef.current.has(achievement.id));
     
     if (newAchievements.length === 0) return;
+    
+    // Mark these achievements as shown
+    newAchievements.forEach(achievement => {
+      shownAchievementsRef.current.add(achievement.id);
+    });
     
     // Add new achievements to the queue
     setQueue(prevQueue => [...prevQueue, ...newAchievements]);
@@ -35,22 +47,27 @@ const AchievementNotificationManager: React.FC<AchievementNotificationManagerPro
   
   // Handle notification dismissal
   const handleDismiss = (achievement: Achievement) => {
+    // Dismiss from parent component
     onDismiss(achievement.id);
+    
+    // Clear current notification
     setCurrentNotification(null);
   };
   
-
   // Process the queue whenever it changes or when current notification is dismissed
   useEffect(() => {
     // If there's no current notification and the queue has items, show the next one
     if (!currentNotification && queue.length > 0) {
       const nextNotification = queue[0];
+      const newQueue = queue.slice(1);
+      
       setCurrentNotification(nextNotification);
-      setQueue(prevQueue => prevQueue.slice(1));
+      setQueue(newQueue);
     }
   }, [queue, currentNotification]);
 
-  if (!currentNotification) return null;
+  // If no notifications to show, render nothing
+  if (!currentNotification && queue.length === 0) return null;
   
   // Get up to 3 additional notifications to show as stacked
   const queuedNotifications = queue.slice(0, 3);
@@ -58,14 +75,15 @@ const AchievementNotificationManager: React.FC<AchievementNotificationManagerPro
   return (
     <div className="fixed bottom-4 right-4 z-50 max-w-md w-full">
       {/* Current notification */}
-      <AchievementNotification
-        achievement={currentNotification}
-        onDismiss={() => handleDismiss(currentNotification)}
-        autoDismissDelay={8000} // Increased time to read
-      />
+      {currentNotification && (
+        <AchievementNotification
+          achievement={currentNotification}
+          onDismiss={() => handleDismiss(currentNotification)}
+          autoDismissDelay={8000} // Increased time to read
+        />
+      )}
       
       {/* Stacked notifications */}
-      
       {queuedNotifications.length > 0 && (
         <div className="mt-2 flex justify-end">
           {queuedNotifications.map((achievement, index) => (
@@ -101,6 +119,6 @@ const AchievementNotificationManager: React.FC<AchievementNotificationManagerPro
       )}
     </div>
   );
-}
+};
 
 export default AchievementNotificationManager;
