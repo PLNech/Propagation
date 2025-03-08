@@ -198,7 +198,7 @@ const TheoriesTab: React.FC<TheoriesTabProps> = ({
                         <div className="flex justify-between items-start">
                           <div>
                             <h3 className="text-lg font-semibold">{theory.name}</h3>
-                            <p className="text-xs text-gray-400 mt-1">Théorie en cours d'élaboration</p>
+                            <p className="text-xs text-gray-400 mt-1">Théorie en cours d&apos;élaboration</p>
                           </div>
                           <div className="text-sm">
                             <span className={`${manipulationPoints < theory.cost ? 'text-red-400' : 'text-green-400'}`}>

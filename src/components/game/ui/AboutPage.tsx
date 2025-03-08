@@ -184,7 +184,7 @@ const StarWarsCredits = ({ onClose }: { onClose: () => void }) => {
             <p style={{ fontSize: fontSize.text, marginBottom: '3rem' }}>from SpaCy to the one rephrasing this sentence 📜✒️</p>
 
             <h3 style={{ fontSize: fontSize.subheading, marginBottom: '1.5rem' }}>Anthropic</h3>
-            <p style={{ fontSize: fontSize.text, marginBottom: '3rem' }}>for showing *how* it's done 🤗</p>
+            <p style={{ fontSize: fontSize.text, marginBottom: &apos;3rem&apos; }}>for showing *how* it&apos;s done 🤗</p>
 
             <h3 style={{ fontSize: fontSize.subheading, marginBottom: '1.5rem' }}>and Claude</h3>
             <p style={{ fontSize: fontSize.text, marginBottom: '3rem' }}>for being a worthy _it_</p>
@@ -426,7 +426,7 @@ const AboutPage: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                     <i>Propagation</i> représente un nouveau type de partenariat créatif — une collaboration humain-IA où :
                   </p>
                   <ul className="list-disc list-inside text-gray-300 mb-4 space-y-2">
-                  <li>La <span className="text-blue-300">direction humaine</span> a fourni la vision créative, les garde-fous éthiques et le contexte réel. Ah, et de la relecture/réécriture, de la sueur, du debug en veux-tu en voilà, du déblocage d'IA qui tourne en rond, et autre flexibilité bien humaine :P</li>
+                  <li>La <span className="text-blue-300">direction humaine</span> a fourni la vision créative, les garde-fous éthiques et le contexte réel. Ah, et de la relecture/réécriture, de la sueur, du debug en veux-tu en voilà, du déblocage d&apos;IA qui tourne en rond, et autre flexibilité bien humaine :P</li>
                   </ul>
                   <p className="text-gray-300">
                     Ce projet a évolué grâce à un dialogue significatif — des cycles itératifs de définition d&apos;objectifs humains, propositions de l&apos;IA, raffinement collaboratif et réflexion éthique.

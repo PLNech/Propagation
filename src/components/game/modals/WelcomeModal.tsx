@@ -101,11 +101,11 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ onSubmit }) => {
             <>
               <p className="text-gray-200 leading-relaxed mb-4">
                 Vous vous apprêtez à devenir un <span className="text-purple-300 font-semibold">Léviathan en devenir</span>, 
-                une entité qui façonne l'information et manipule la perception à travers les âges.
+                une entité qui façonne l&apos;information et manipule la perception à travers les âges.
               </p>
     
               <p className="text-gray-200 leading-relaxed mb-4">
-                D'une simple tribu à l'Antiquité jusqu'à un vaste empire à l'Ère Numérique, 
+                D&apos;une simple tribu à l&apos;Antiquité jusqu&apos;à un vaste empire à l&apos;Ère Numérique, 
                 votre influence grandira... mais à quel prix pour la vérité?
               </p>
               
@@ -181,7 +181,7 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ onSubmit }) => {
           )}
           
           <p className="mt-4 text-xs text-gray-400 italic">
-            "Le grand art de la persuasion consiste autant à faire aimer la vérité qu'à faire croire le mensonge." — Proverbe
+            &quot;Le grand art de la persuasion consiste autant à faire aimer la vérité qu&apos;à faire croire le mensonge.&quot; — Proverbe
           </p>
         </div>
       </div>

@@ -1069,7 +1069,7 @@ const PropagationGame = () => {
                     }}
                     className="bg-green-700 hover:bg-green-600 text-white px-3 py-1 rounded text-sm"
                   >
-                    Découvrir l'éthique
+                    Découvrir l&apos;éthique
                   </button>
                   <button 
                     onClick={() => {
