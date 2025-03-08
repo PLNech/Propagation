@@ -6,7 +6,7 @@
   
   **An incremental game about information, manipulation, and critical thinking**
   
-  [Play Now](https://propagation.vercel.app) | [Learn More](#about-propagation) | [Development Log](src/doc/log.md)
+  [Play Now](https://propagation.vercel.app) | [Learn More](#about-propagation) | [Development Log](CHANGELOG.md)
   
 </div>
 
@@ -112,16 +112,63 @@ npm run dev
 
 Then open [http://localhost:3000](http://localhost:3000) to see the game in action!
 
+## 🤝 Contributing
+
+We welcome contributions to Propagation! The game is primarily written in French, which can sometimes cause encoding issues in React.
+
+### 🔧 Development Tools
+
+#### French Character Encoding Fixer
+
+The project includes a helpful script for handling French accented characters that can cause React "unescaped entity" errors:
+
+```bash
+# Check for potential encoding issues without fixing them
+npm run accent-check
+
+# Automatically fix encoding issues
+npm run accent-fix
+```
+
+The script intelligently identifies and fixes unescaped French characters (é, è, ê, à, etc.) in JSX content while preserving them in JavaScript props and other contexts.
+
+Options:
+- `--help` - Show help information
+- `--apply` - Apply fixes directly (instead of just showing what would change)
+- `--backup` - Create backup files before making changes
+- `--verbose` - Show detailed information about processing
+
+#### Other Development Commands
+
+```bash
+# Run the development server with turbopack
+npm run dev
+
+# Build the project
+npm run build
+
+# Run linting
+npm run lint
+```
+
+### 📝 Pull Request Guidelines
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Run `npm run accent-check` to ensure proper French character encoding
+5. Submit a pull request with a clear description of your changes
+
 ## 🤝 Credits
 
 Propagation was created by:
 
-- **Human Designer**: Creative direction, educational philosophy, ethical framework
-- **Claude AI**: Code architecture, content generation, system implementation
+- **Human Designer**: Creative direction, educational philosophy, ethical framework, balancing, refactoring and mechanism designs, lots of guidance on architecture, looots of debugging of various little issues 
+- **Claude AI**: Code architecture, content generation, system implementation, refactoring suggestions, color palettes, UI suggestions, UI implementations, Copy suggestions, MVP section one-shots, Partner across countless conversations
 
 *Special thanks to:*
 - [Anthropic](https://anthropic.com) for developing Claude
-- The rich academic literature on propaganda, media literacy, and critical thinking
+- The rich academic literature and content creation online on propaganda, media literacy, and critical thinking
 - You, for playing and reflecting
 
 ---
