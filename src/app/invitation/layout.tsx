@@ -1,9 +1,10 @@
 import './styles.css';
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 
 export const metadata: Metadata = {
   title: 'Propagation - Invitation Imprimable',
   description: 'Invitation officielle à rejoindre le monde des manipulateurs d\'information',
+  metadataBase: new URL('https://propagation.vercel.app'), 
   openGraph: {
     title: 'Propagation - Invitation à Contrôler la Narrative',
     description: 'Rejoignez l\'élite des manipulateurs de l\'information à travers les âges',
@@ -18,6 +19,10 @@ export const metadata: Metadata = {
     locale: 'fr_FR',
     type: 'website',
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: '#1f2937',
 };
 
 export default function InvitationLayout({

@@ -62,42 +62,49 @@ const PropagationGame = () => {
     // Référence à l'état du jeu pour les sauvegardes
   const gameStateRef = useRef(gameState);
   const lastActionRef = useRef("NONE");
-  
+    
   // const getState = () => gameStateRef.current;
-
+  
   // Helper functions to determine which features are unlocked
   const isUpgradesUnlocked = (): boolean => {
     return gameState.resources.manipulationPoints >= 50;
   };
-  
+
   const isProgressionUnlocked = (): boolean => {
     // Check if any upgrades have been purchased or player has enough manipulation points
     return gameState.upgrades.some(upgrade => upgrade.purchased) || gameState.resources.manipulationPoints >= 200;
   };
-  
+
   // Define era progression once
   const eraProgression = ['antiquity', 'middleAges', 'industrial', 'coldWar', 'digital'];
-  
+
   // Helper function to check if an era has been reached
   const hasReachedEra = (requiredEra: string): boolean => {
     const requiredEraIndex = eraProgression.indexOf(requiredEra);
     const highestEraIndex = eraProgression.indexOf(gameState.highestEraReached);
+    
+    // Also check if the feature has been discovered before (for cases where a save game is loaded)
+    if (requiredEra === 'middleAges' && gameState.featureDiscovered?.scenarios) {
+      return true;
+    }
+    if (requiredEra === 'industrial' && gameState.featureDiscovered?.theories) {
+      return true;
+    }
+    if (requiredEra === 'coldWar' && gameState.featureDiscovered?.ethics) {
+      return true;
+    }
+    
     return highestEraIndex >= requiredEraIndex;
   };
-  
-  // const isScenariosUnlocked = (): boolean => {
-  //   // Scenarios are unlocked once player has reached Middle Ages era
-  //   return hasReachedEra('middleAges');
-  // };
-  
+
   const isTheoriesUnlocked = (): boolean => {
-    // Theories are unlocked once player has reached Industrial era
-    return hasReachedEra('industrial');
+    // Theories are unlocked once player has reached Industrial era or discovered the feature
+    return hasReachedEra('industrial') || gameState.featureDiscovered?.theories === true;
   };
-  
+
   const isEthicsUnlocked = (): boolean => {
-    // Ethics are unlocked once player has reached Cold War era
-    return hasReachedEra('coldWar');
+    // Ethics are unlocked once player has reached Cold War era or discovered the feature
+    return hasReachedEra('coldWar') || gameState.featureDiscovered?.ethics === true;
   };
   
   // Mettre à jour la référence quand l'état change
@@ -677,19 +684,19 @@ const PropagationGame = () => {
         {gameState.playerName && (
           <>
              <Header 
-  playerName={gameState.playerName}
-  playerGender="neutral"
-  entityName={gameState.entityName}
-  entityType={gameState.entityType}
-  currentEra={currentEra}
-  resources={gameState.resources}
-  resourcesUnlocked={gameState.resourcesUnlocked}
-  ethicalScore={gameState.ethicalScore}
-  criticalThinking={gameState.criticalThinking}
-  gameMode={gameState.gameMode}
-  onStickyChange={(isSticky, height) => setHeaderInfo({ isSticky, height })}
-  onSaveGame={handleSaveGame}
-  onShowAbout={handleShowAbout}
+              playerName={gameState.playerName}
+              playerGender="neutral"
+              entityName={gameState.entityName}
+              entityType={gameState.entityType}
+              currentEra={currentEra}
+              resources={gameState.resources}
+              resourcesUnlocked={gameState.resourcesUnlocked}
+              ethicalScore={gameState.ethicalScore}
+              criticalThinking={gameState.criticalThinking}
+              gameMode={gameState.gameMode}
+              onStickyChange={(isSticky, height) => setHeaderInfo({ isSticky, height })}
+              onSaveGame={handleSaveGame}
+              onShowAbout={handleShowAbout}
             />
             {/* Placeholder div outside the Header component */}
             {headerInfo.isSticky && (

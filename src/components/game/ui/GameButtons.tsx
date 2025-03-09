@@ -289,6 +289,7 @@ const GameButtons: React.FC<GameButtonsProps> = ({
       }
     };
     
+    
     // Add event listeners
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('keyup', handleKeyUp);
@@ -304,7 +305,7 @@ const GameButtons: React.FC<GameButtonsProps> = ({
           clearInterval(currentButtonIntervals[buttonType] as NodeJS.Timeout);
           currentButtonIntervals[buttonType] = null;
         }
-      });
+      });  
       
       // Additional safety: Clear all current intervals directly
       Object.keys(buttonIntervals.current).forEach(buttonType => {

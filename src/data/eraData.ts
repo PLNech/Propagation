@@ -1,5 +1,7 @@
 import { HistoricalEra } from '@/types';
 
+export const eraProgression = ['antiquity', 'middleAges', 'industrial', 'coldWar', 'digital'];
+
 /**
  * Data for all historical eras in the game
  */

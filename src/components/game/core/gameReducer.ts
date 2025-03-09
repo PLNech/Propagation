@@ -6,7 +6,7 @@ import {
   GameMode,
   GameEnding 
 } from '@/types';
-import { historicalEras } from '@/data/eraData';
+import { eraProgression, historicalEras } from '@/data/eraData';
 import { upgrades } from '@/data/upgradeData';
 import { conspiracyTheories } from '@/data/conspiracyData';
 import { scenarios } from '@/data/scenarioData';
@@ -426,11 +426,11 @@ export const gameReducer = (state: GameState, action: ExtendedGameAction): GameS
       
       // Update endings if one was triggered
       const updatedEndings = gameEnded
-        ? state.gameEndings.map(ending =>
-            ending.id === activeEndingId ? { ...ending, triggered: true } : ending
-          )
-        : state.gameEndings;
-    
+      ? state.gameEndings.map(ending =>
+        ending.id === activeEndingId ? { ...ending, triggered: true } : ending
+      )
+      : state.gameEndings;
+      
       // Check for resource unlocks based on manipulation points
       const manipulationPoints = updatedResources.manipulationPoints;
       const updatedResourcesUnlocked = {...state.resourcesUnlocked};
@@ -447,7 +447,7 @@ export const gameReducer = (state: GameState, action: ExtendedGameAction): GameS
       if (!updatedResourcesUnlocked.influence && manipulationPoints >= 300) {
         updatedResourcesUnlocked.influence = true;
       }
-    
+      
       // Check for resource threshold scenario triggers
       if (!state.activeScenarioId) {
         const resourceThresholdScenario = state.scenarios.find(s =>
@@ -489,14 +489,14 @@ export const gameReducer = (state: GameState, action: ExtendedGameAction): GameS
       };
     }
     case 'SET_PLAYER_INFO':
-      return {
-        ...state,
-        playerName: action.payload.playerName,
-        playerGender: action.payload.playerGender,
-        entityName: action.payload.entityName || `${action.payload.playerName}ium`, // Use provided entity name or create one
-      };
-      
-
+    return {
+      ...state,
+      playerName: action.payload.playerName,
+      playerGender: action.payload.playerGender,
+      entityName: action.payload.entityName || `${action.payload.playerName}ium`, // Use provided entity name or create one
+    };
+    
+    
     case 'MANIPULATE': {
       let result: GameState;
       // Different behavior based on game mode
@@ -548,7 +548,7 @@ export const gameReducer = (state: GameState, action: ExtendedGameAction): GameS
       
       return result;
     }
-
+    
     case 'UNLOCK_RESOURCE': {
       const { resource } = action.payload;
       
@@ -564,7 +564,7 @@ export const gameReducer = (state: GameState, action: ExtendedGameAction): GameS
       }
       return state;
     }
-  
+    
     case 'UNLOCK_ERA': {
       const eraId = action.payload.eraId;
       const eraToUnlock = state.eras.find(era => era.id === eraId);
@@ -576,30 +576,29 @@ export const gameReducer = (state: GameState, action: ExtendedGameAction): GameS
       
       // Adjust era unlocking costs - make early progression easier
       const unlockCost = eraId === 'middleAges' ? 50 : // Lower cost for first era progression
-                        eraId === 'industrial' ? 150 :
-                        eraId === 'coldWar' ? 500 :
-                        eraId === 'digital' ? 1500 :
-                        eraToUnlock.unlockCost;
+      eraId === 'industrial' ? 150 :
+      eraId === 'coldWar' ? 500 :
+      eraId === 'digital' ? 1500 :
+      eraToUnlock.unlockCost;
       
       // Determine entity type based on era
       let entityType = state.entityType;
       switch(eraId) {
         case 'middleAges':
-          entityType = 'Village';
-          break;
+        entityType = 'Village';
+        break;
         case 'industrial':
-          entityType = 'Cité';
-          break;
+        entityType = 'Cité';
+        break;
         case 'coldWar':
-          entityType = 'Pays';
-          break;
+        entityType = 'Pays';
+        break;
         case 'digital':
-          entityType = 'Empire';
-          break;
+        entityType = 'Empire';
+        break;
       }
-        
+      
       // Check if this is a higher era than previously reached
-      const eraProgression = ['antiquity', 'middleAges', 'industrial', 'coldWar', 'digital'];
       const newEraIndex = eraProgression.indexOf(eraId);
       const highestEraIndex = eraProgression.indexOf(state.highestEraReached);
       
@@ -684,8 +683,8 @@ export const gameReducer = (state: GameState, action: ExtendedGameAction): GameS
       
       // Update upgrade visibility based on new purchases
       const updatedUpgrades = updateUpgradeVisibility(updatedState);
-
-
+      
+      
       // Check if any scenario should be triggered by this upgrade
       const triggerableScenario = state.scenarios.find(s => 
         !s.completed && 
@@ -693,7 +692,7 @@ export const gameReducer = (state: GameState, action: ExtendedGameAction): GameS
         s.triggerCondition?.type === 'upgradesPurchased' &&
         s.triggerCondition.value === upgradeId
       );
-
+      
       // If a scenario should be triggered, set it as active
       if (triggerableScenario) {
         return {
@@ -747,30 +746,30 @@ export const gameReducer = (state: GameState, action: ExtendedGameAction): GameS
       if (isSuccessful) {
         // Add rewards if successful
         const resourcesWithRewards = addRewards(updatedResources, theoryToPropagate.rewards);
-
-
-      // Check if any scenario should be triggered by this theory
-      const triggerableScenario = state.scenarios.find(s => 
-        !s.completed && 
-        !state.completedScenarios.includes(s.id) &&
-        s.triggerCondition?.type === 'propagateTheory' &&
-        s.triggerCondition.value === theoryId
-      );
-      
-      // If a scenario should be triggered, set it as active
-      if (triggerableScenario) {
-        return {
-          ...state,
-          resources: resourcesWithRewards,
-          ethicalScore: newEthicalScore,
-          criticalThinking: newCriticalThinking,
-          ethicalStats: updatedStats,
-          conspiracyTheories: state.conspiracyTheories.map(theory => 
-            theory.id === theoryId ? { ...theory, propagated: true } : theory
-          ),
-          activeScenarioId: triggerableScenario.id
-        };
-      }
+        
+        
+        // Check if any scenario should be triggered by this theory
+        const triggerableScenario = state.scenarios.find(s => 
+          !s.completed && 
+          !state.completedScenarios.includes(s.id) &&
+          s.triggerCondition?.type === 'propagateTheory' &&
+          s.triggerCondition.value === theoryId
+        );
+        
+        // If a scenario should be triggered, set it as active
+        if (triggerableScenario) {
+          return {
+            ...state,
+            resources: resourcesWithRewards,
+            ethicalScore: newEthicalScore,
+            criticalThinking: newCriticalThinking,
+            ethicalStats: updatedStats,
+            conspiracyTheories: state.conspiracyTheories.map(theory => 
+              theory.id === theoryId ? { ...theory, propagated: true } : theory
+            ),
+            activeScenarioId: triggerableScenario.id
+          };
+        }
         
         return {
           ...state,
@@ -909,7 +908,7 @@ export const gameReducer = (state: GameState, action: ExtendedGameAction): GameS
         activeScenarioId: null
       };
     }
-
+    
     case 'DISCOVER_FEATURE': {
       const { feature } = action.payload;
       
@@ -921,7 +920,7 @@ export const gameReducer = (state: GameState, action: ExtendedGameAction): GameS
         }
       };
     }
-
+    
     case 'ACKNOWLEDGE_FEATURE': {
       const { feature } = action.payload;
       
@@ -951,8 +950,8 @@ export const gameReducer = (state: GameState, action: ExtendedGameAction): GameS
         activeScenarioId: null
       };
     }
-
-
+    
+    
     case 'CHECK_ACHIEVEMENTS': {
       // Check for newly unlocked achievements
       const newlyUnlocked = checkAchievements(state);
@@ -1018,7 +1017,7 @@ export const gameReducer = (state: GameState, action: ExtendedGameAction): GameS
       
       return updatedState;
     }
-
+    
     case 'UNLOCK_ACHIEVEMENT': {
       const { achievementId } = action.payload;
       const achievement = state.achievementState.achievements.find(a => a.id === achievementId);
@@ -1053,7 +1052,7 @@ export const gameReducer = (state: GameState, action: ExtendedGameAction): GameS
       
       return updatedState;
     }
-
+    
     case 'VIEW_ACHIEVEMENT': {
       const { achievementId } = action.payload;
       
@@ -1066,8 +1065,8 @@ export const gameReducer = (state: GameState, action: ExtendedGameAction): GameS
         }
       };
     }
-
-
+    
+    
     case 'RESET_ACHIEVEMENTS': {
       // Keep track of the secret "reset achievements" achievement
       const resetAchievement = state.achievementState.achievements.find(a => a.id === 'reset_achievements');
@@ -1078,15 +1077,15 @@ export const gameReducer = (state: GameState, action: ExtendedGameAction): GameS
           ...initialAchievementState,
           achievements: initialAchievementState.achievements.map(a => 
             a.id === 'reset_achievements' && resetAchievement?.unlocked
-              ? { ...a, unlocked: true, unlockedAt: resetAchievement.unlockedAt }
-              : a
+            ? { ...a, unlocked: true, unlockedAt: resetAchievement.unlockedAt }
+            : a
           ),
           totalUnlocked: resetAchievement?.unlocked ? 1 : 0,
           newUnlocked: []
         }
       };
     }
-
+    
     case 'DISMISS_ACHIEVEMENT_NOTIFICATION': {
       const { achievementId } = action.payload;
       
@@ -1098,7 +1097,7 @@ export const gameReducer = (state: GameState, action: ExtendedGameAction): GameS
         }
       };
     }
-
+    
     case 'SHARE_ACHIEVEMENT': {
       // Update stats to mark that player has shared an achievement
       return {
@@ -1111,7 +1110,7 @@ export const gameReducer = (state: GameState, action: ExtendedGameAction): GameS
         }
       };
     }
-
+    
     case 'CLICK_GASLIGHT_EFFECT': {
       // Update stats to mark that player has clicked a gaslight effect
       return {
@@ -1121,224 +1120,249 @@ export const gameReducer = (state: GameState, action: ExtendedGameAction): GameS
           manipulateClicks: state.stats?.manipulateClicks || 0,
           hasClickedGaslightEffect: true,
           hasSharedAchievement: state.stats?.hasSharedAchievement || false        }
-      };
-    }
-    
-    case 'NETWORKING': {
-      // Check if player has enough manipulation points
-      if (state.resources.manipulationPoints < 2) {
-        return state;
-      }
-      
-      // Calculate multipliers
-      const multipliers = calculateResourceMultipliers(state);
-      
-      // Spend manipulation points and generate networks
-      return {
-        ...state,
-        resources: {
-          ...state.resources,
-          manipulationPoints: state.resources.manipulationPoints - 2,
-          networks: state.resources.networks + 1 * multipliers.networks,
-        },
-      };
-    }
-    
-    case 'CREDIBILITY': {
-      // Check if player has enough manipulation points
-      if (state.resources.manipulationPoints < 3) {
-        return state;
-      }
-      
-      // Calculate multipliers
-      const multipliers = calculateResourceMultipliers(state);
-      
-      // Spend manipulation points and generate credibility
-      return {
-        ...state,
-        resources: {
-          ...state.resources,
-          manipulationPoints: state.resources.manipulationPoints - 3,
-          credibility: state.resources.credibility + 1.5 * multipliers.credibility,
-        },
-      };
-    }
-    
-    case 'INFLUENCE': {
-      // Check if player has enough manipulation points
-      if (state.resources.manipulationPoints < 5) {
-        return state;
-      }
-      
-      // Calculate multipliers
-      const multipliers = calculateResourceMultipliers(state);
-      
-      // Spend manipulation points and generate influence
-      return {
-        ...state,
-        resources: {
-          ...state.resources,
-          manipulationPoints: state.resources.manipulationPoints - 5,
-          influence: state.resources.influence + 2 * multipliers.influence,
-        },
-      };
-    }
-    
-    case 'SWITCH_GAME_MODE': {
-      const { mode } = action.payload;
-      
-      // If already in this mode, do nothing
-      if (state.gameMode === mode) {
-        return state;
-      }
-      
-      // Switching to revelation mode increases ethical score and critical thinking
-      const ethicalBoost = mode === 'revelation' ? 10 : 0;
-      const criticalThinkingBoost = mode === 'revelation' ? 5 : 0;
-      
-      return {
-        ...state,
-        gameMode: mode,
-        ethicalScore: Math.min(100, state.ethicalScore + ethicalBoost),
-        criticalThinking: Math.min(100, state.criticalThinking + criticalThinkingBoost),
-        stats: {
-          ...state.stats,
-          manipulateClicks: state.stats?.manipulateClicks || 0,
-          previousGameMode: state.gameMode,
-          hasSharedAchievement: state.stats?.hasSharedAchievement || false,
-          hasClickedGaslightEffect: state.stats?.hasClickedGaslightEffect || false
-        }
-      };
-    }
-   
-    case 'CLICK_LORE_LINK': {
-      const { linkType, url } = action.payload;
-      
-      // Update clicked links lists
-      const clickedLoreLinks = [...(state.stats?.clickedLoreLinks || []), url];
-      
-      let clickedHistoryLinks = state.stats?.clickedHistoryLinks || [];
-      let clickedPhilosophyLinks = state.stats?.clickedPhilosophyLinks || [];
-      let clickedPropagandaLinks = state.stats?.clickedPropagandaLinks || [];
-      
-      // Update category-specific lists based on link type
-      if (linkType === 'history') {
-        clickedHistoryLinks = [...clickedHistoryLinks, url];
-      } else if (linkType === 'philosophy') {
-        clickedPhilosophyLinks = [...clickedPhilosophyLinks, url];
-      } else if (linkType === 'propaganda') {
-        clickedPropagandaLinks = [...clickedPropagandaLinks, url];
-      }
-      
-      return {
-        ...state,
-        stats: {
-          ...state.stats,
-          manipulateClicks: state.stats?.manipulateClicks || 0,
-          hasSharedAchievement: state.stats?.hasSharedAchievement || false,
-          hasClickedGaslightEffect: state.stats?.hasClickedGaslightEffect || false,
-          clickedLoreLinks,
-          clickedHistoryLinks,
-          clickedPhilosophyLinks,
-          clickedPropagandaLinks
-        }
-      };
-    }
-
-    case 'ACKNOWLEDGE_ENDING': {
-      const { endingId } = action.payload;
-      
-      // Update statistics if this ending wasn't already counted
-      const ending = state.gameEndings.find(e => e.id === endingId);
-      const endingAlreadyCounted = ending && ending.triggered;
-      
-      const updatedStats = endingAlreadyCounted 
-      ? state.ethicalStats 
-      : {
-        ...state.ethicalStats,
-        endingsUnlocked: state.ethicalStats.endingsUnlocked + 1
-      };
-      
-      return {
-        ...state,
-        gameEnded: false, // Allow gameplay to continue
-        activeEndingId: null,
-        ethicalStats: updatedStats,
-        gameEndings: state.gameEndings.map(ending => 
-          ending.id === endingId ? { ...ending, triggered: true } : ending
-        )
-      };
-    }
-    
-    case 'LOAD_GAME': {
-      const loadedState = action.payload.state;
-      console.log("Loading gameState:", loadedState);
-      
-      // Handle completely missing features in older save versions
-      if (!loadedState.scenarios || !loadedState.achievementState || !loadedState.resourcesUnlocked) {
-        const patched = {
-          ...loadedState,
-          scenarios: loadedState.scenarios || scenarios,
-          activeScenarioId: loadedState.activeScenarioId || null,
-          completedScenarios: loadedState.completedScenarios || [],
-          achievementState: loadedState.achievementState || initialAchievementState,
-        resourcesUnlocked: loadedState.resourcesUnlocked || initialGameState.resourcesUnlocked
         };
-        return patched;
       }
       
-      // Patch the achievements with any new ones
-      const patchedAchievements = patchAchievementsWithNewOnes(
-        loadedState.achievementState.achievements,
-        initialAchievementState.achievements
-      );
-      
-      // If any new achievements were added, update the state
-      if (patchedAchievements.length !== loadedState.achievementState.achievements.length) {
-        console.log(`Patching ${patchedAchievements.length - loadedState.achievementState.achievements.length} new achievements into save`);
+      case 'NETWORKING': {
+        // Check if player has enough manipulation points
+        if (state.resources.manipulationPoints < 2) {
+          return state;
+        }
         
-        // Create patched state with new achievements
-        const patchedState = {
-          ...loadedState,
-          achievementState: {
-            ...loadedState.achievementState,
-            achievements: patchedAchievements,
-            totalAchievements: initialAchievementState.totalAchievements // Use the current total
+        // Calculate multipliers
+        const multipliers = calculateResourceMultipliers(state);
+        
+        // Spend manipulation points and generate networks
+        return {
+          ...state,
+          resources: {
+            ...state.resources,
+            manipulationPoints: state.resources.manipulationPoints - 2,
+            networks: state.resources.networks + 1 * multipliers.networks,
+          },
+        };
+      }
+      
+      case 'CREDIBILITY': {
+        // Check if player has enough manipulation points
+        if (state.resources.manipulationPoints < 3) {
+          return state;
+        }
+        
+        // Calculate multipliers
+        const multipliers = calculateResourceMultipliers(state);
+        
+        // Spend manipulation points and generate credibility
+        return {
+          ...state,
+          resources: {
+            ...state.resources,
+            manipulationPoints: state.resources.manipulationPoints - 3,
+            credibility: state.resources.credibility + 1.5 * multipliers.credibility,
+          },
+        };
+      }
+      
+      case 'INFLUENCE': {
+        // Check if player has enough manipulation points
+        if (state.resources.manipulationPoints < 5) {
+          return state;
+        }
+        
+        // Calculate multipliers
+        const multipliers = calculateResourceMultipliers(state);
+        
+        // Spend manipulation points and generate influence
+        return {
+          ...state,
+          resources: {
+            ...state.resources,
+            manipulationPoints: state.resources.manipulationPoints - 5,
+            influence: state.resources.influence + 2 * multipliers.influence,
+          },
+        };
+      }
+      
+      case 'SWITCH_GAME_MODE': {
+        const { mode } = action.payload;
+        
+        // If already in this mode, do nothing
+        if (state.gameMode === mode) {
+          return state;
+        }
+        
+        // Switching to revelation mode increases ethical score and critical thinking
+        const ethicalBoost = mode === 'revelation' ? 10 : 0;
+        const criticalThinkingBoost = mode === 'revelation' ? 5 : 0;
+        
+        return {
+          ...state,
+          gameMode: mode,
+          ethicalScore: Math.min(100, state.ethicalScore + ethicalBoost),
+          criticalThinking: Math.min(100, state.criticalThinking + criticalThinkingBoost),
+          stats: {
+            ...state.stats,
+            manipulateClicks: state.stats?.manipulateClicks || 0,
+            previousGameMode: state.gameMode,
+            hasSharedAchievement: state.stats?.hasSharedAchievement || false,
+            hasClickedGaslightEffect: state.stats?.hasClickedGaslightEffect || false
           }
         };
-        
-        return patchedState;
       }
       
-      return loadedState;
-    }
+      case 'CLICK_LORE_LINK': {
+        const { linkType, url } = action.payload;
         
-    case 'RESET': {
-      // Save current achievement state
-      const currentAchievementState = state.achievementState;
-      
-      // Get the reset_achievements achievement
-      const resetAchievement = currentAchievementState.achievements.find(a => a.id === 'reset_achievements');
-      const wasResetAchievementUnlocked = resetAchievement?.unlocked || false;
-      
-      // Reset game to initial state
-      const newState = { ...initialGameState };
-      
-      // If the reset_achievements achievement was unlocked, keep it unlocked
-      if (wasResetAchievementUnlocked) {
-        newState.achievementState = {
-          ...initialAchievementState,
-          achievements: initialAchievementState.achievements.map(a => 
-            a.id === 'reset_achievements' ? { ...a, unlocked: true, unlockedAt: resetAchievement?.unlockedAt || Date.now() } : a
-          ),
-          totalUnlocked: 1
+        // Update clicked links lists
+        const clickedLoreLinks = [...(state.stats?.clickedLoreLinks || []), url];
+        
+        let clickedHistoryLinks = state.stats?.clickedHistoryLinks || [];
+        let clickedPhilosophyLinks = state.stats?.clickedPhilosophyLinks || [];
+        let clickedPropagandaLinks = state.stats?.clickedPropagandaLinks || [];
+        
+        // Update category-specific lists based on link type
+        if (linkType === 'history') {
+          clickedHistoryLinks = [...clickedHistoryLinks, url];
+        } else if (linkType === 'philosophy') {
+          clickedPhilosophyLinks = [...clickedPhilosophyLinks, url];
+        } else if (linkType === 'propaganda') {
+          clickedPropagandaLinks = [...clickedPropagandaLinks, url];
+        }
+        
+        return {
+          ...state,
+          stats: {
+            ...state.stats,
+            manipulateClicks: state.stats?.manipulateClicks || 0,
+            hasSharedAchievement: state.stats?.hasSharedAchievement || false,
+            hasClickedGaslightEffect: state.stats?.hasClickedGaslightEffect || false,
+            clickedLoreLinks,
+            clickedHistoryLinks,
+            clickedPhilosophyLinks,
+            clickedPropagandaLinks
+          }
         };
       }
       
-      return newState;
+      case 'ACKNOWLEDGE_ENDING': {
+        const { endingId } = action.payload;
+        
+        // Update statistics if this ending wasn't already counted
+        const ending = state.gameEndings.find(e => e.id === endingId);
+        const endingAlreadyCounted = ending && ending.triggered;
+        
+        const updatedStats = endingAlreadyCounted 
+        ? state.ethicalStats 
+        : {
+          ...state.ethicalStats,
+          endingsUnlocked: state.ethicalStats.endingsUnlocked + 1
+        };
+        
+        return {
+          ...state,
+          gameEnded: false, // Allow gameplay to continue
+          activeEndingId: null,
+          ethicalStats: updatedStats,
+          gameEndings: state.gameEndings.map(ending => 
+            ending.id === endingId ? { ...ending, triggered: true } : ending
+          )
+        };
+      }
+      
+      case 'LOAD_GAME': {
+        const loadedState = action.payload.state;
+        console.log("Loading gameState:", loadedState);
+        
+        // Handle completely missing features in older save versions
+        if (!loadedState.scenarios || !loadedState.achievementState || !loadedState.resourcesUnlocked || !loadedState.featureDiscovered) {
+          const patched = {
+            ...loadedState,
+            scenarios: loadedState.scenarios || scenarios,
+            activeScenarioId: loadedState.activeScenarioId || null,
+            completedScenarios: loadedState.completedScenarios || [],
+            achievementState: loadedState.achievementState || initialAchievementState,
+            resourcesUnlocked: loadedState.resourcesUnlocked || initialGameState.resourcesUnlocked,
+            featureDiscovered: loadedState.featureDiscovered || {
+              scenarios: false,
+              theories: false,
+              ethics: false,
+              digital: false
+            }
+          };
+          return patched;
+        }
+
+
+        // Patch to ensure feature discovery state is correctly set based on highest era reached
+        if (loadedState.highestEraReached) {
+          const highestEraIndex = eraProgression.indexOf(loadedState.highestEraReached);
+          if (highestEraIndex >= 1 && !loadedState.featureDiscovered.scenarios) {
+            loadedState.featureDiscovered.scenarios = true;
+          }
+          if (highestEraIndex >= 2 && !loadedState.featureDiscovered.theories) {
+            loadedState.featureDiscovered.theories = true;
+          }
+          if (highestEraIndex >= 3 && !loadedState.featureDiscovered.ethics) {
+            loadedState.featureDiscovered.ethics = true;
+          }
+          if (highestEraIndex >= 4 && !loadedState.featureDiscovered.digital) {
+            loadedState.featureDiscovered.digital = true;
+          }
+        }
+        
+        
+        // Patch the achievements with any new ones
+        const patchedAchievements = patchAchievementsWithNewOnes(
+          loadedState.achievementState.achievements,
+          initialAchievementState.achievements
+        );
+        
+        // If any new achievements were added, update the state
+        if (patchedAchievements.length !== loadedState.achievementState.achievements.length) {
+          console.log(`Patching ${patchedAchievements.length - loadedState.achievementState.achievements.length} new achievements into save`);
+          
+          // Create patched state with new achievements
+          const patchedState = {
+            ...loadedState,
+            achievementState: {
+              ...loadedState.achievementState,
+              achievements: patchedAchievements,
+              totalAchievements: initialAchievementState.totalAchievements // Use the current total
+            }
+          };
+          
+          return patchedState;
+        }
+        
+        return loadedState;
+      }
+      
+      case 'RESET': {
+        // Save current achievement state
+        const currentAchievementState = state.achievementState;
+        
+        // Get the reset_achievements achievement
+        const resetAchievement = currentAchievementState.achievements.find(a => a.id === 'reset_achievements');
+        const wasResetAchievementUnlocked = resetAchievement?.unlocked || false;
+        
+        // Reset game to initial state
+        const newState = { ...initialGameState };
+        
+        // If the reset_achievements achievement was unlocked, keep it unlocked
+        if (wasResetAchievementUnlocked) {
+          newState.achievementState = {
+            ...initialAchievementState,
+            achievements: initialAchievementState.achievements.map(a => 
+              a.id === 'reset_achievements' ? { ...a, unlocked: true, unlockedAt: resetAchievement?.unlockedAt || Date.now() } : a
+            ),
+            totalUnlocked: 1
+          };
+        }
+        
+        return newState;
+      }
+      
+      default:
+      return state;
     }
-    
-    default:
-    return state;
-  }
-};
+  };
