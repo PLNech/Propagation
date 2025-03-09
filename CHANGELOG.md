@@ -1,6 +1,6 @@
 # Development Log - Propagation
 
-## Sprint 5: Documentation Enhancement (v0.11.3) - 2025-03-08
+## Sprint 14: Documentation Enhancement (v0.11.3) - 2025-03-08
 SUMMARY: Updated the README with a French translation, lighter tone, and more humble approach while adding humorous elements inspired by Terry Pratchett.
 DEMAND:
 ```
@@ -38,7 +38,7 @@ package.json (update) - Bumped version number from 0.4.0 to 0.4.1
 
 NOTES: This patch primarily focuses on documentation improvements rather than functional changes, making it appropriate for a patch version bump (0.4.1) according to semantic versioning principles. The changes maintain all the original information while improving accessibility for French-speaking users and adding humor.
 
-## Sprint 13: Header Enhancement & Version Display (v0.11.2) - March 10, 2025
+## Sprint 13: Header Enhancement & Version Display (v0.11.2) - 2025-03-08
 
 SUMMARY: Enhanced the sticky header component with improved responsive design, integrated save and about functionality, and added version display. Made the header adapt to screen size and scrolling behavior.
 ### DEMAND:
