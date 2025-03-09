@@ -152,7 +152,7 @@ const ScenarioModal: React.FC<ScenarioModalProps> = ({ scenario, onMakeChoice, o
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4 overflow-y-auto">
+    <div className="fixed inset-0 bg-black bg-opacity-80 flex items-start justify-center z-50 p-4 overflow-y-auto">
       <div className={`max-w-4xl w-full ${styles.border} border-2 ${styles.background} rounded-lg shadow-2xl max-h-[90vh] overflow-y-auto ${styles.font}`}>
         {/* Header */}
         <div className={`${styles.header} p-5 border-b ${styles.border}`}>

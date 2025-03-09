@@ -162,7 +162,7 @@ const AboutPage: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const historicalResources = resources.filter(r => r.category === 'historical');
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4 overflow-y-auto">
+    <div className="fixed inset-0 bg-black bg-opacity-75 flex items-start justify-center z-50 p-4 overflow-y-auto pt-8">
       <div className="bg-gray-800 rounded-lg max-w-4xl w-full border border-gray-600 shadow-xl max-h-[90vh] overflow-y-auto">
         <div className="p-6">
           <div className="flex justify-between items-center mb-4">

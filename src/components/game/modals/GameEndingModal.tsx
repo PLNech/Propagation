@@ -46,7 +46,7 @@ const GameEndingModal: React.FC<GameEndingModalProps> = ({ ending, stats, onAckn
   const style = getEndingStyle();
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black bg-opacity-75 flex items-start justify-center z-50 p-4 overflow-y-auto">
       <div className={`max-w-2xl w-full ${style.bg} ${style.border} border-2 rounded-lg shadow-2xl overflow-hidden`}>
         <div className="p-6">
           <h2 className="text-2xl font-bold mb-4 text-center">{ending.title}</h2>

@@ -98,8 +98,8 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ onSubmit }) => {
   };
   
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4 overflow-auto">
-      <div className="max-w-md w-full bg-gray-800 border-2 border-purple-700 rounded-lg shadow-2xl overflow-hidden my-4">
+    <div className="fixed inset-0 bg-black bg-opacity-75 flex items-start justify-center z-50 p-4 overflow-y-auto">
+      <div className="max-w-md w-full bg-gray-800 border-2 border-purple-700 rounded-lg shadow-2xl overflow-hidden my-8 mb-16">
         <div className="p-6">
           <h2 className="text-2xl font-bold mb-4 text-center text-purple-300">Bienvenue dans Propagation</h2>
           
